@@ -441,6 +441,7 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
       <GhostEntityRenderer
         zIndex={101}
         imageUrl={shouldShowBreakGhost ? charcter02Url : undefined}
+        preloadImageUrl={charcter02Url}
         alphaBoost={shouldShowBreakGhost ? 1.6 : 1}
         breakDurationMs={breakDurationMs}
         breakProgress={breakProgressState}

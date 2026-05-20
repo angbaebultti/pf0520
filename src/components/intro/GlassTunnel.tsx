@@ -16,6 +16,9 @@ const CAMERA_START_Z = 2.2
 const CHARACTER_END_Z = -28
 const CAMERA_END_Z = -42
 const STAR_COUNT = 420
+const PHASE_TUNNEL_END = 0.7
+const PHASE_REVEAL_START = 0.8
+const ASCII_CHARS = '@#%XO+=:. '
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 const smoothstep = (edge0: number, edge1: number, value: number) => {
@@ -228,19 +231,54 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     let isAnimating = false
     const meImage = new Image()
     let isMeLoaded = false
+    const asciiCanvas = document.createElement('canvas')
+    const asciiContext = asciiCanvas.getContext('2d', { willReadFrequently: true })
+    let asciiGlyphs: Array<{ char: string; brightness: number }> = []
+    let asciiCols = 0
+    let asciiRows = 0
+
+    const buildAsciiGlyphs = () => {
+      if (!asciiContext || !meImage.naturalWidth || !meImage.naturalHeight) return
+
+      asciiCols = 64
+      asciiRows = Math.max(1, Math.round(asciiCols * (meImage.naturalHeight / meImage.naturalWidth) * 0.52))
+      asciiCanvas.width = asciiCols
+      asciiCanvas.height = asciiRows
+      asciiContext.clearRect(0, 0, asciiCols, asciiRows)
+      asciiContext.drawImage(meImage, 0, 0, asciiCols, asciiRows)
+
+      const imageData = asciiContext.getImageData(0, 0, asciiCols, asciiRows).data
+      asciiGlyphs = Array.from({ length: asciiCols * asciiRows }, (_, index) => {
+        const pixelIndex = index * 4
+        const brightness =
+          (imageData[pixelIndex] * 0.2126 + imageData[pixelIndex + 1] * 0.7152 + imageData[pixelIndex + 2] * 0.0722) / 255
+        const charIndex = clamp(Math.floor(brightness * (ASCII_CHARS.length - 1)), 0, ASCII_CHARS.length - 1)
+        return { char: ASCII_CHARS[charIndex], brightness }
+      })
+    }
+
     meImage.src = meUrl
     meImage.onload = () => {
       isMeLoaded = true
+      buildAsciiGlyphs()
       render()
     }
 
-    const resizePortraitCanvas = () => {
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
-      portraitCanvas.width = Math.max(1, Math.floor(window.innerWidth * pixelRatio))
-      portraitCanvas.height = Math.max(1, Math.floor(window.innerHeight * pixelRatio))
+    const getSequenceProgress = () => clamp((CAMERA_START_Z - currentZ) / (CAMERA_START_Z - CAMERA_END_Z), 0, 1)
+
+    const resizeCanvases = () => {
+      const rendererPixelRatio = Math.min(window.devicePixelRatio || 1, 1.25)
+      const portraitPixelRatio = 1
+      renderer.setPixelRatio(rendererPixelRatio)
+      renderer.setSize(window.innerWidth, window.innerHeight, false)
+      camera.aspect = window.innerWidth / window.innerHeight
+      camera.updateProjectionMatrix()
+
+      portraitCanvas.width = Math.max(1, Math.floor(window.innerWidth * portraitPixelRatio))
+      portraitCanvas.height = Math.max(1, Math.floor(window.innerHeight * portraitPixelRatio))
       portraitCanvas.style.width = `${window.innerWidth}px`
       portraitCanvas.style.height = `${window.innerHeight}px`
-      portraitContext.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      portraitContext.setTransform(portraitPixelRatio, 0, 0, portraitPixelRatio, 0, 0)
     }
 
     const updateCharacter = () => {
@@ -295,11 +333,16 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     const drawPortraitReveal = () => {
       const width = window.innerWidth
       const height = window.innerHeight
-      const rawVoidProgress = clamp((CHARACTER_END_Z - currentZ) / (CHARACTER_END_Z - CAMERA_END_Z), 0, 1)
-      const reveal = smoothstep(0.04, 1, rawVoidProgress)
+      const sequenceProgress = getSequenceProgress()
+      const arrivalProgress = clamp((sequenceProgress - PHASE_TUNNEL_END) / (1 - PHASE_TUNNEL_END), 0, 1)
+      const revealProgress = clamp((sequenceProgress - PHASE_REVEAL_START) / (1 - PHASE_REVEAL_START), 0, 1)
+      const reveal = smoothstep(0.08, 1, revealProgress)
 
       portraitContext.clearRect(0, 0, width, height)
-      if (!isMeLoaded || rawVoidProgress <= 0) return
+      if (!isMeLoaded || sequenceProgress < PHASE_TUNNEL_END) {
+        portraitCanvas.style.opacity = '0'
+        return
+      }
 
       portraitContext.globalCompositeOperation = 'source-over'
       portraitContext.fillStyle = `rgba(4, 8, 18, ${0.18 + reveal * 0.16})`
@@ -310,9 +353,10 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       const targetWidth = targetHeight * imageRatio
       const x = (width - targetWidth) * 0.5
       const y = (height - targetHeight) * 0.5
-      const decodeLine = y + targetHeight * reveal
       const clarity = smoothstep(0.16, 1, reveal)
       const readable = smoothstep(0.32, 1, reveal)
+      const asciiShift = targetHeight * 1.18 * revealProgress
+      const asciiOpacity = 1 - smoothstep(0.72, 1, revealProgress) * 0.92
 
       portraitContext.save()
       portraitContext.globalAlpha = 0.06 + readable * 0.18
@@ -327,76 +371,53 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       portraitContext.restore()
 
       portraitContext.save()
-      portraitContext.globalAlpha = 0.08 + readable * 0.88
-      portraitContext.filter = `grayscale(${0.98 - clarity * 0.18}) blur(${14 - clarity * 14}px) contrast(${0.48 + clarity * 0.58}) brightness(${0.58 + clarity * 0.46}) saturate(${0.35 + clarity * 0.38})`
+      portraitContext.globalAlpha = 0.04 + readable * 0.92
+      portraitContext.filter = `grayscale(${0.98 - clarity * 0.18}) blur(${12 - clarity * 12}px) contrast(${0.5 + clarity * 0.62}) brightness(${0.62 + clarity * 0.42}) saturate(${0.32 + clarity * 0.4})`
       portraitContext.drawImage(meImage, x, y, targetWidth, targetHeight)
       portraitContext.restore()
 
-      portraitContext.save()
-      portraitContext.beginPath()
-      portraitContext.rect(x, y, targetWidth, Math.max(0, decodeLine - y))
-      portraitContext.clip()
-      portraitContext.globalAlpha = 0.34 + readable * 0.56
-      portraitContext.filter = `grayscale(${0.92 - clarity * 0.1}) blur(${6 - clarity * 6}px) contrast(${0.72 + clarity * 0.34}) brightness(${0.74 + clarity * 0.26}) saturate(0.58)`
-      portraitContext.drawImage(meImage, x, y, targetWidth, targetHeight)
-      portraitContext.restore()
+      if (asciiGlyphs.length > 0 && asciiCols > 0 && asciiRows > 0) {
+        const cellX = targetWidth / asciiCols
+        const cellY = targetHeight / asciiRows
+        const fontSize = clamp(cellY * 0.92, 6, 12)
+        portraitContext.save()
+        portraitContext.beginPath()
+        portraitContext.rect(x, y, targetWidth, targetHeight)
+        portraitContext.clip()
+        portraitContext.globalCompositeOperation = 'screen'
+        portraitContext.font = `${fontSize}px Consolas, 'Courier New', monospace`
+        portraitContext.textAlign = 'center'
+        portraitContext.textBaseline = 'middle'
+        portraitContext.shadowColor = 'rgba(210, 235, 255, 0.5)'
+        portraitContext.shadowBlur = 3
 
-      portraitContext.save()
-      portraitContext.beginPath()
-      portraitContext.rect(x, decodeLine - targetHeight * 0.08, targetWidth, Math.max(0, y + targetHeight - decodeLine + targetHeight * 0.08))
-      portraitContext.clip()
-      portraitContext.globalCompositeOperation = 'screen'
-      const ditherAlpha = 0.58 * (1 - clarity) + 0.06 * (1 - reveal)
-      for (let py = y; py < y + targetHeight; py += 7) {
-        for (let px = x; px < x + targetWidth; px += 7) {
-          const noise = Math.sin(px * 12.9898 + py * 78.233 + rawVoidProgress * 12.7)
-          const bandFade = clamp((py - decodeLine + targetHeight * 0.08) / (targetHeight * 0.22), 0, 1)
-          if (noise > 0.18) {
-            portraitContext.fillStyle = `rgba(205, 230, 255, ${ditherAlpha * bandFade * (noise > 0.78 ? 0.9 : 0.32)})`
-            portraitContext.fillRect(px, py, noise > 0.78 ? 2 : 1, noise > 0.78 ? 2 : 1)
+        for (let row = 0; row < asciiRows; row += 1) {
+          const py = y + row * cellY + cellY * 0.5 + asciiShift
+          if (py < y - cellY || py > y + targetHeight + cellY) continue
+
+          const rowFade = clamp((y + targetHeight - py) / (targetHeight * 0.24), 0, 1)
+          const slideFade = clamp((py - y + cellY * 2) / (targetHeight * 0.18), 0, 1)
+          const lineAlpha = asciiOpacity * rowFade * slideFade
+          if (lineAlpha <= 0.01) continue
+
+          for (let col = 0; col < asciiCols; col += 1) {
+            const { char, brightness } = asciiGlyphs[row * asciiCols + col]
+            if (char === ' ') continue
+
+            const noise = Math.sin((row + 1) * 18.31 + (col + 1) * 4.79 + arrivalProgress * 9.4)
+            const px = x + col * cellX + cellX * 0.5 + noise * 0.45 * (1 - clarity)
+            const ink = 0.32 + (1 - brightness) * 0.58
+            portraitContext.fillStyle = `rgba(225, 238, 248, ${lineAlpha * ink})`
+            portraitContext.fillText(char, px, py)
           }
         }
+        portraitContext.restore()
       }
-
-      portraitContext.font = '10px Consolas, monospace'
-      portraitContext.textAlign = 'left'
-      for (let row = 0; row < 34; row += 1) {
-        const textY = y + ((row * 37 + rawVoidProgress * 18) % targetHeight)
-        const bandFade = clamp((textY - decodeLine + targetHeight * 0.08) / (targetHeight * 0.3), 0, 1)
-        if (bandFade <= 0) continue
-        portraitContext.fillStyle = `rgba(180, 218, 255, ${0.12 * (1 - clarity) * bandFade})`
-        portraitContext.fillText(row % 3 === 0 ? '01011001 0010' : row % 3 === 1 ? 'SIGNAL_REBUILD' : '1010 0110 1101', x + ((row * 83) % Math.max(1, targetWidth - 120)), textY)
-      }
-      portraitContext.restore()
-
-      portraitContext.save()
-      portraitContext.beginPath()
-      portraitContext.rect(x, decodeLine - targetHeight * 0.1, targetWidth, targetHeight * 0.14)
-      portraitContext.clip()
-      portraitContext.globalAlpha = 0.1 * (1 - reveal)
-      portraitContext.filter = 'grayscale(0.9) contrast(1.08) brightness(1.04)'
-      for (let slice = 0; slice < 4; slice += 1) {
-        const sliceY = decodeLine + (slice - 2) * 8
-        const sliceHeight = 2 + (slice % 2) * 2
-        const offset = ((slice % 2 === 0 ? -1 : 1) * (3 + slice)) * (1 - reveal)
-        portraitContext.drawImage(
-          meImage,
-          0,
-          clamp((sliceY - y) / targetHeight, 0, 1) * meImage.naturalHeight,
-          meImage.naturalWidth,
-          (sliceHeight / targetHeight) * meImage.naturalHeight,
-          x + offset,
-          sliceY,
-          targetWidth,
-          sliceHeight,
-        )
-      }
-      portraitContext.restore()
 
       const grainWidth = Math.max(1, Math.floor(targetWidth))
       const grainHeight = Math.max(1, Math.floor(targetHeight))
-      portraitContext.fillStyle = `rgba(210, 226, 255, ${0.025 * (1 - reveal) + 0.01})`
-      for (let grain = 0; grain < 240; grain += 1) {
+      portraitContext.fillStyle = `rgba(210, 226, 255, ${0.014 * (1 - reveal) + 0.008})`
+      for (let grain = 0; grain < 140; grain += 1) {
         const px = x + ((grain * 97) % grainWidth)
         const py = y + ((grain * 193) % grainHeight)
         portraitContext.fillRect(px, py, 1, 1)
@@ -408,7 +429,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         portraitContext.fillRect(0, sy, width, 1)
       }
       portraitContext.globalAlpha = 1
-      portraitCanvas.style.opacity = String(smoothstep(0, 0.22, rawVoidProgress) * 0.96)
+      portraitCanvas.style.opacity = String(smoothstep(0, 0.16, arrivalProgress) * 0.96)
     }
 
     const render = () => {
@@ -417,14 +438,13 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         return
       }
 
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.5)
-      renderer.setPixelRatio(pixelRatio)
-      renderer.setSize(window.innerWidth, window.innerHeight, false)
-      camera.aspect = window.innerWidth / window.innerHeight
-      camera.updateProjectionMatrix()
-      camera.position.z = currentZ
-      camera.lookAt(0, 0, currentZ - 28)
-      stars.position.z = (CAMERA_START_Z - currentZ) * 0.18
+      const sequenceProgress = getSequenceProgress()
+      const tunnelProgress = clamp(sequenceProgress / PHASE_TUNNEL_END, 0, 1)
+      const cameraZ = CAMERA_START_Z + (CHARACTER_END_Z - CAMERA_START_Z) * tunnelProgress
+
+      camera.position.z = cameraZ
+      camera.lookAt(0, 0, cameraZ - 28)
+      stars.position.z = (CAMERA_START_Z - cameraZ) * 0.18
       updateCharacter()
       renderer.render(scene, camera)
       drawPortraitReveal()
@@ -455,7 +475,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     }
 
     const onResize = () => {
-      resizePortraitCanvas()
+      resizeCanvases()
       render()
     }
     const onContextLost = (event: Event) => {
@@ -463,7 +483,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       drawCanvasFallback(canvas)
     }
 
-    resizePortraitCanvas()
+    resizeCanvases()
     render()
     canvas.addEventListener('webglcontextlost', onContextLost)
     window.addEventListener('resize', onResize)

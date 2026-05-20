@@ -1,11 +1,13 @@
 import { useEffect, useRef, type FC } from 'react'
 import characterUrl from '@assets/character.png'
 
-const GHOST_SIZE = 280
+const GHOST_SIZE = 240
+const processedGhostCache = new Map<string, ImageData>()
 
 interface GhostEntityRendererProps {
   zIndex?: number
   imageUrl?: string
+  preloadImageUrl?: string
   alphaBoost?: number
   breakProgress?: number
   breakDurationMs?: number
@@ -25,9 +27,72 @@ function getBreakOpacity(progress: number, durationMs: number) {
   return Math.min(fadeIn, fadeOut)
 }
 
+function processGhostImage(url: string, onReady?: (imageData: ImageData) => void) {
+  const cached = processedGhostCache.get(url)
+  if (cached) {
+    onReady?.(cached)
+    return
+  }
+
+  const workCanvas = document.createElement('canvas')
+  const workContext = workCanvas.getContext('2d', { willReadFrequently: true })
+  if (!workContext) return
+
+  workCanvas.width = GHOST_SIZE
+  workCanvas.height = GHOST_SIZE
+
+  const img = new Image()
+  img.onload = () => {
+    if (!img.naturalWidth || !img.naturalHeight) return
+
+    const scale = Math.min(GHOST_SIZE / img.naturalWidth, GHOST_SIZE / img.naturalHeight) * 0.94
+    const w = img.naturalWidth * scale
+    const h = img.naturalHeight * scale
+    const ox = (GHOST_SIZE - w) * 0.5
+    const oy = (GHOST_SIZE - h) * 0.5
+
+    workContext.clearRect(0, 0, GHOST_SIZE, GHOST_SIZE)
+    workContext.imageSmoothingEnabled = true
+    workContext.imageSmoothingQuality = 'low'
+    workContext.drawImage(img, ox, oy, w, h)
+
+    const imageData = workContext.getImageData(0, 0, GHOST_SIZE, GHOST_SIZE)
+    const data = imageData.data
+    const bake = url === characterUrl ? 1.0 : 1.42
+
+    for (let row = 0; row < GHOST_SIZE; row += 1) {
+      for (let col = 0; col < GHOST_SIZE; col += 1) {
+        const index = (row * GHOST_SIZE + col) * 4
+        const red = data[index]
+        const green = data[index + 1]
+        const blue = data[index + 2]
+        const sourceAlpha = data[index + 3] / 255
+        const luminance = (red * 0.2126 + green * 0.7152 + blue * 0.0722) / 255
+        const edgeFade = Math.min(col, row, GHOST_SIZE - col, GHOST_SIZE - row) / 38
+        const faceBias = row > GHOST_SIZE * 0.14 && row < GHOST_SIZE * 0.48 && col > GHOST_SIZE * 0.28 && col < GHOST_SIZE * 0.72
+        const scanline = row % 3 === 0 ? 0.42 : row % 3 === 1 ? 0.88 : 0.62
+        const orderedNoise = ((col * 13 + row * 7) % 17) / 17
+        const threshold = faceBias ? 0.07 : 0.14
+        const visibility = Math.max(0, (luminance - threshold + orderedNoise * 0.08) * (faceBias ? 2.15 : 1.58))
+        const alpha = Math.min(sourceAlpha * visibility * scanline * Math.min(edgeFade, 1) * bake, faceBias ? 1 : 0.82)
+
+        data[index] = Math.min(255, (70 + luminance * 120) * bake)
+        data[index + 1] = 255
+        data[index + 2] = Math.min(255, (54 + luminance * 48) * bake)
+        data[index + 3] = alpha * 255
+      }
+    }
+
+    processedGhostCache.set(url, imageData)
+    onReady?.(imageData)
+  }
+  img.src = url
+}
+
 const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
   zIndex = 101,
   imageUrl,
+  preloadImageUrl,
   alphaBoost = 1,
   breakProgress = 0,
   breakDurationMs = 0,
@@ -61,7 +126,7 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
     let frame = 0
 
     const resize = () => {
-      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.25)
+      const pixelRatio = Math.min(window.devicePixelRatio || 1, 1)
       canvas.width = Math.floor(window.innerWidth * pixelRatio)
       canvas.height = Math.floor(window.innerHeight * pixelRatio)
       canvas.style.width = `${window.innerWidth}px`
@@ -133,7 +198,7 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
       context.drawImage(gCanvas, x + 3.5 + jitter, y, ghostWidth, ghostHeight)
 
       context.filter = 'none'
-      for (let i = 0; i < 16; i += 1) {
+      for (let i = 0; i < 8; i += 1) {
         const sliceY = Math.floor((Math.sin(time * 0.74 + i * 2.31) * 0.5 + 0.5) * GHOST_SIZE)
         const sliceHeight = 1 + ((i + frame) % 4)
         const destY = y + (sliceY / GHOST_SIZE) * ghostHeight
@@ -168,7 +233,7 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
 
       context.globalAlpha = baseAlpha * 0.08
       context.fillStyle = 'rgba(220, 255, 210, 0.085)'
-      for (let i = 0; i < 38; i += 1) {
+      for (let i = 0; i < 14; i += 1) {
         context.fillRect(x + Math.random() * ghostWidth, y + Math.random() * ghostHeight, Math.random() * 3 + 1, 1)
       }
 
@@ -212,6 +277,11 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
     }
   }, [])
 
+  useEffect(() => {
+    if (!preloadImageUrl) return
+    processGhostImage(preloadImageUrl)
+  }, [preloadImageUrl])
+
   // ── Effect 2: rebuild ghost texture when imageUrl changes ─────────────
   // Does NOT restart the animation – just overwrites the off-screen canvas.
   useEffect(() => {
@@ -221,6 +291,15 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
     // On initial mount Effect 1 runs first (in declaration order) so refs are set.
     // If refs are somehow null (unmounted), do nothing.
     if (!ghostCanvas || !ghostContext) return
+
+    const url = imageUrl ?? characterUrl
+    const cached = processedGhostCache.get(url)
+    if (cached) {
+      ghostContext.clearRect(0, 0, GHOST_SIZE, GHOST_SIZE)
+      ghostContext.putImageData(cached, 0, 0)
+      readyRef.current = true
+      return
+    }
 
     const img = new Image()
 
@@ -267,6 +346,7 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
         }
       }
 
+      processedGhostCache.set(imageUrl ?? characterUrl, imageData)
       ghostContext.putImageData(imageData, 0, 0)
       // Mark ready AFTER the texture is fully written so the RAF loop
       // never reads a half-built ghost canvas.
