@@ -1245,3 +1245,71 @@ The `void-depth-mask` CSS overlay had a `radial-gradient(ellipse 34% 36% at 50% 
 - Updated `src/components/intro/CloudCluster.tsx` so cloud planes follow the camera instead of staying fixed in world space.
 - Cloud planes now derive camera travel from scroll progress and stay 10 units in front of the camera along the visible `-Z` direction, preventing them from disappearing as the camera advances.
 - Updated `src/components/intro/RetroRoom.tsx` so tunnel depth extends to `z = -200`, keeping tunnel geometry visible through the full scroll.
+
+---
+
+## 2026-05-20 GlassTunnel Fullscreen Replacement
+
+- Replaced the mounted app scene in `src/App.tsx` with only `src/components/intro/GlassTunnel.tsx`.
+- Temporarily removed the visible intro sequence, scroll track, and control room from the rendered app surface by no longer mounting `IntroSequence` or `ControlRoom`.
+- Upgraded `GlassTunnel.tsx` into a raw Three.js fixed fullscreen scene with constant camera auto-flight along `-Z`.
+- Added ACES tone mapping, black exponential fog, transparent physical glass panels, cyan/orange/blue emissive boxes, neon frame structures, point lights, a persistent center human silhouette, and additional drifting background silhouettes.
+- Added `EffectComposer`, `RenderPass`, and `UnrealBloomPass` for intense bloom.
+- Strengthened the Canvas2D chromatic/lens flare overlay with cyan, orange, and blue rings plus screen-blended cross flare.
+- Ensured the Three.js canvas and wrapper use fixed fullscreen sizing with `z-index: 0`.
+- Verified with production build and DOM inspection that the WebGL canvas is mounted by `GlassTunnel`.
+
+### Correction: keep original intro phases
+
+- Restored `src/App.tsx` to mount `IntroSequence` and `ControlRoom` inside `.app-shell`.
+- Kept the existing `ErrorScreen` and `BrokenLCD` components unchanged.
+- Updated `src/components/intro/IntroSequence.tsx` so the phase flow is `error -> glitch -> scene`.
+- Replaced only the old scene-phase tunnel with `GlassTunnel`; `GlassTunnel` now mounts where `SpaceScene`/`SceneCanvas` used to appear.
+- Added a `600vh` scroll track inside `GlassTunnel` so the fixed glass tunnel remains visible while scrolling toward `ControlRoom`.
+- `GlassTunnel` now combines constant auto-flight with scroll-based camera speed boost, and updates `--control-room-opacity` near the end of the scroll range so `ControlRoom` fades in.
+
+---
+
+## 2026-05-20 GlassTunnel Cyber-Space Rewrite
+
+- Replaced `src/components/intro/GlassTunnel.tsx` with a React Three Fiber implementation.
+- Kept `App.tsx`, `ErrorScreen.tsx`, `BrokenLCD.tsx`, and the intro phase logic untouched for this pass.
+- Changed the visual direction away from neon/synthwave tunnel aesthetics toward a dark, cinematic floating data-space.
+- Procedurally generates instanced transparent glass panels, translucent slabs, reflective metallic bars, rectangular frame structures, subtle cyan accent pieces, and atmospheric point particles.
+- Uses `MeshPhysicalMaterial` for glass, slabs, and reflective metal with restrained cyan/white/green lighting.
+- Added R3F-managed camera drift with slow forward motion, mouse parallax, scroll-boosted movement, and `--control-room-opacity` fade near scroll end.
+- Added Three example `EffectComposer` postprocessing with subtle bloom, chromatic aberration via `RGBShiftShader`, vignette, and very light film grain.
+- Preserved the `600vh` scroll track so the glass data-space remains the scene phase before `ControlRoom`.
+
+### Runtime fix
+
+- Fixed a browser-only crash in `GlassTunnel.tsx` caused by using obsolete `FilmShader` uniforms (`nIntensity`, `sIntensity`, `sCount`) that do not exist in the installed Three.js `0.163.0` shader.
+- Switched film grain setup to the available `FilmShader.uniforms.intensity` API.
+- Slightly raised glass/slab emissive visibility and removed unnecessary `gl.autoClear = false` so the scene does not appear as a blank black screen after the intro transition.
+- Verified production build and live dev-server DOM after the intro reaches `GlassTunnel`; the scene canvas and `.scroll-track` mount without the previous runtime crash.
+
+---
+
+## 2026-05-20 Cursed Retro Cyberspace Rewrite
+
+- Replaced `src/components/intro/GlassTunnel.tsx` again, keeping `App.tsx`, `ErrorScreen.tsx`, `BrokenLCD.tsx`, and phase wiring untouched.
+- Shifted the scene away from polished glass/luxury sci-fi into eerie PS1-era retro cyberspace: black void, toxic green wireframe, faint cyan ghosts, fog, analog noise, and low-fidelity distortion.
+- Added a procedurally warped infinite wireframe tunnel built from dynamic `LineSegments`; the tunnel bends, pulses, and follows camera depth.
+- Added neural-network-like strand geometry, floating wireframe panels, tetrahedral debris, cyan bars, and ghostly low-poly humanoid silhouettes.
+- Added unstable camera drift with mouse parallax, subtle shake, auto-forward motion, scroll-boosted speed, and end-scroll `--control-room-opacity` fade.
+- Added postprocessing with `EffectComposer`, `AfterimagePass` ghost trails, `UnrealBloomPass`, `RGBShiftShader`, `VignetteShader`, and `FilmShader`.
+- Added an in-component 2D analog overlay canvas for CRT scanlines, random speckle, horizontal tears, and dark monitor vignette.
+- Verified production build and live dev-server DOM after intro completion: two canvases mount successfully (`WebGL + analog overlay`) and `.scroll-track` is present.
+
+---
+
+## 2026-05-20 Green CRT ErrorScreen Rewrite
+
+- Replaced `src/components/intro/ErrorScreen.tsx` with a fullscreen Canvas2D retro crash screen.
+- Kept `BrokenLCD.tsx`, `GlassTunnel.tsx`, `App.tsx`, and phase wiring untouched for this pass.
+- Preserved the `onComplete()` callback behavior and set the error phase duration to about `5.2s` before handing off to `BrokenLCD`.
+- Visual direction changed from blue error text to cursed green monochrome CRT terminal: dense kernel panic logs, fake C/assembly snippets, memory dumps, virtual machine diagnostics, corrupted filesystem messages, and hexadecimal traces.
+- Added procedural text layers with independent scroll speeds, opacity flicker, phosphor glow, chromatic ghost offsets, corruption characters, and peak panic overlays.
+- Added analog artifacts: scanlines, tracking bar, static speckles, horizontal tearing, compression-like blocks, frame jitter, persistent ghost trails, and dark monitor vignette.
+- Added a timeout-based completion guard so the transition is reliable even if `requestAnimationFrame` is throttled.
+- Verified production build and live dev-server DOM: after about 7s, `ErrorScreen` unmounts and `BrokenLCD` canvas is active.

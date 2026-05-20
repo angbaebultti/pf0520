@@ -1,47 +1,22 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import ErrorScreen from './ErrorScreen'
-import BrokenLCD from './BrokenLCD'
-import SpaceScene from './SpaceScene'
-import SignalContamination from './SignalContamination'
+import GlassTunnel from './GlassTunnel'
 
-type Phase = 'error' | 'lcd' | 'space'
+type Phase = 'error' | 'tunnel'
 
 export default function IntroSequence() {
   const [phase, setPhase] = useState<Phase>('error')
-  const [showSpace, setShowSpace] = useState(false)
-  const [lcdRevealingSpace, setLcdRevealingSpace] = useState(false)
 
-  const startLcd = () => {
-    setPhase('lcd')
-    setShowSpace(false)
-    setLcdRevealingSpace(false)
-  }
-
-  const revealSpace = () => {
-    setShowSpace(true)
-    setLcdRevealingSpace(true)
-  }
-
-  const finishLcd = () => {
-    setPhase('space')
-    setShowSpace(true)
-    setLcdRevealingSpace(false)
-  }
-
-  const signalMode = phase === 'space' || showSpace ? 'space' : phase
+  useEffect(() => {
+    document.documentElement.style.setProperty('--control-room-opacity', '0')
+  }, [])
 
   return (
     <>
-      {(phase === 'space' || showSpace) && <SpaceScene isEmerging={lcdRevealingSpace} />}
-      {phase === 'error' && <ErrorScreen onComplete={startLcd} />}
-      {phase === 'lcd' && (
-        <BrokenLCD
-          onComplete={finishLcd}
-          onRevealSpace={revealSpace}
-          isRevealingSpace={lcdRevealingSpace}
-        />
+      {phase === 'error' && (
+        <ErrorScreen durationMs={3000} breakDurationMs={760} onComplete={() => setPhase('tunnel')} />
       )}
-      <SignalContamination mode={signalMode} lcdRevealingSpace={lcdRevealingSpace} />
+      {phase === 'tunnel' && <GlassTunnel />}
     </>
   )
 }

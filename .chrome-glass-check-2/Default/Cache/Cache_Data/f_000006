@@ -1,0 +1,284 @@
+import { createHotContext as __vite__createHotContext } from "/@vite/client";import.meta.hot = __vite__createHotContext("/src/components/ControlRoom.tsx");import __vite__cjsImport0_react_jsxDevRuntime from "/node_modules/.vite/deps/react_jsx-dev-runtime.js?v=6f03e898"; const jsxDEV = __vite__cjsImport0_react_jsxDevRuntime["jsxDEV"];
+import * as RefreshRuntime from "/@react-refresh";
+const inWebWorker = typeof WorkerGlobalScope !== "undefined" && self instanceof WorkerGlobalScope;
+let prevRefreshReg;
+let prevRefreshSig;
+if (import.meta.hot && !inWebWorker) {
+  if (!window.$RefreshReg$) {
+    throw new Error(
+      "@vitejs/plugin-react can't detect preamble. Something is wrong."
+    );
+  }
+  prevRefreshReg = window.$RefreshReg$;
+  prevRefreshSig = window.$RefreshSig$;
+  window.$RefreshReg$ = RefreshRuntime.getRefreshReg("C:/홍주희/pf0520/src/components/ControlRoom.tsx");
+  window.$RefreshSig$ = RefreshRuntime.createSignatureFunctionForTransform;
+}
+import CRTMonitor from "/src/components/CRTMonitor.tsx";
+import "/src/styles/controlroom.css";
+const monitors = [
+  { channel: "CH-01", title: "PROJECT SLOT" },
+  { channel: "CH-02", title: "PROJECT SLOT" },
+  { channel: "CH-03", title: "PROJECT SLOT" },
+  { channel: "CH-04", title: "PROJECT SLOT" },
+  { channel: "CH-05", title: "PROJECT SLOT" },
+  { channel: "CH-06", title: "PROJECT SLOT" },
+  { channel: "AUX-07", title: "NOISE BUS", variant: "static" },
+  { channel: "AUX-08", title: "DATA BUS", variant: "data" }
+];
+const coreButtons = ["01", "02", "03", "04", "05", "06", "07", "08"];
+const signalBlocks = Array.from({ length: 22 }, (_, index) => index);
+export default function ControlRoom() {
+  const handleMonitorSelect = (channel) => {
+    console.info(`Control room channel selected: ${channel}`);
+  };
+  return /* @__PURE__ */ jsxDEV("section", { className: "control-room", "aria-label": "Retro control room", children: /* @__PURE__ */ jsxDEV("div", { className: "control-room__inner", children: [
+    /* @__PURE__ */ jsxDEV("div", { className: "control-room__header", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsxDEV("span", { children: "CORE ARRAY / MONITOR WALL" }, void 0, false, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 46,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("span", { children: "STATUS: STABLE" }, void 0, false, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 47,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+      lineNumber: 45,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "control-room__grid", children: monitors.map(
+      (monitor) => /* @__PURE__ */ jsxDEV(
+        CRTMonitor,
+        {
+          channel: monitor.channel,
+          title: monitor.title,
+          variant: monitor.variant,
+          onSelect: handleMonitorSelect
+        },
+        monitor.channel,
+        false,
+        {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 52,
+          columnNumber: 11
+        },
+        this
+      )
+    ) }, void 0, false, {
+      fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+      lineNumber: 50,
+      columnNumber: 9
+    }, this),
+    /* @__PURE__ */ jsxDEV("div", { className: "control-bar", "aria-hidden": "true", children: [
+      /* @__PURE__ */ jsxDEV("div", { className: "control-module control-module--core", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "control-module__title", children: "CORE CONTROL" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 64,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "core-console", children: [
+          /* @__PURE__ */ jsxDEV("div", { className: "core-switches", children: coreButtons.map(
+            (button) => /* @__PURE__ */ jsxDEV("span", { className: "core-button", children: button }, button, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 68,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 66,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "core-lamps", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "lamp lamp--red" }, void 0, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 74,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "lamp lamp--amber" }, void 0, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 75,
+              columnNumber: 17
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "lamp lamp--green" }, void 0, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 76,
+              columnNumber: 17
+            }, this)
+          ] }, void 0, true, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 73,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 65,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 63,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "control-module control-module--channel", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "control-module__title", children: "ACTIVE CHANNEL" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 82,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "channel-readout", children: [
+          /* @__PURE__ */ jsxDEV("span", { children: "X-01  Y-27  Z-09" }, void 0, false, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 84,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { children: "SIGNAL LOCK" }, void 0, false, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 85,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("div", { className: "signal-lock", children: signalBlocks.map(
+            (block) => /* @__PURE__ */ jsxDEV("span", { className: block > 18 ? "signal-lock__peak" : "" }, block, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 88,
+              columnNumber: 17
+            }, this)
+          ) }, void 0, false, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 86,
+            columnNumber: 15
+          }, this),
+          /* @__PURE__ */ jsxDEV("span", { children: "VECTOR ALIGNMENT: 97%" }, void 0, false, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 91,
+            columnNumber: 15
+          }, this)
+        ] }, void 0, true, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 83,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 81,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "control-module control-module--freq", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "control-module__title", children: "FREQ ADJUST" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 96,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "faders", children: [72, 48, 64, 38].map(
+          (value, index) => /* @__PURE__ */ jsxDEV("span", { className: "fader", children: [
+            /* @__PURE__ */ jsxDEV("span", { className: "fader__track" }, void 0, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 100,
+              columnNumber: 19
+            }, this),
+            /* @__PURE__ */ jsxDEV("span", { className: "fader__thumb", style: { bottom: `${value}%` } }, void 0, false, {
+              fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+              lineNumber: 101,
+              columnNumber: 19
+            }, this)
+          ] }, `${value}-${index}`, true, {
+            fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+            lineNumber: 99,
+            columnNumber: 15
+          }, this)
+        ) }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 97,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 95,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "control-module control-module--override", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "control-module__title", children: "SYSTEM OVERRIDE" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 108,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "override-toggle", children: /* @__PURE__ */ jsxDEV("span", {}, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 110,
+          columnNumber: 15
+        }, this) }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 109,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("span", { className: "override-label", children: "ARMED" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 112,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 107,
+        columnNumber: 11
+      }, this),
+      /* @__PURE__ */ jsxDEV("div", { className: "control-module control-module--master", children: [
+        /* @__PURE__ */ jsxDEV("span", { className: "control-module__title", children: "MASTER CONTROL" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 116,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "master-knob", children: /* @__PURE__ */ jsxDEV("span", {}, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 118,
+          columnNumber: 15
+        }, this) }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 117,
+          columnNumber: 13
+        }, this),
+        /* @__PURE__ */ jsxDEV("div", { className: "master-scale" }, void 0, false, {
+          fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+          lineNumber: 120,
+          columnNumber: 13
+        }, this)
+      ] }, void 0, true, {
+        fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+        lineNumber: 115,
+        columnNumber: 11
+      }, this)
+    ] }, void 0, true, {
+      fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+      lineNumber: 62,
+      columnNumber: 9
+    }, this)
+  ] }, void 0, true, {
+    fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+    lineNumber: 44,
+    columnNumber: 7
+  }, this) }, void 0, false, {
+    fileName: "C:/홍주희/pf0520/src/components/ControlRoom.tsx",
+    lineNumber: 43,
+    columnNumber: 5
+  }, this);
+}
+_c = ControlRoom;
+var _c;
+$RefreshReg$(_c, "ControlRoom");
+if (import.meta.hot && !inWebWorker) {
+  window.$RefreshReg$ = prevRefreshReg;
+  window.$RefreshSig$ = prevRefreshSig;
+}
+if (import.meta.hot && !inWebWorker) {
+  RefreshRuntime.__hmr_import(import.meta.url).then((currentExports) => {
+    RefreshRuntime.registerExportsForReactRefresh("C:/홍주희/pf0520/src/components/ControlRoom.tsx", currentExports);
+    import.meta.hot.accept((nextExports) => {
+      if (!nextExports) return;
+      const invalidateMessage = RefreshRuntime.validateRefreshBoundaryAndEnqueueUpdate("C:/홍주희/pf0520/src/components/ControlRoom.tsx", currentExports, nextExports);
+      if (invalidateMessage) import.meta.hot.invalidate(invalidateMessage);
+    });
+  });
+}
+
+//# sourceMappingURL=data:application/json;base64,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TW9uaXRvciIsIm1vbml0b3JzIiwiY2hhbm5lbCIsInRpdGxlIiwidmFyaWFudCIsImNvcmVCdXR0b25zIiwic2lnbmFsQmxvY2tzIiwiQXJyYXkiLCJmcm9tIiwibGVuZ3RoIiwiXyIsImluZGV4IiwiQ29udHJvbFJvb20iLCJoYW5kbGVNb25pdG9yU2VsZWN0IiwiY29uc29sZSIsImluZm8iLCJtYXAiLCJtb25pdG9yIiwiYnV0dG9uIiwiYmxvY2siLCJ2YWx1ZSIsImJvdHRvbSIsIl9jIl0sImlnbm9yZUxpc3QiOltdLCJzb3VyY2VzIjpbIkNvbnRyb2xSb29tLnRzeCJdLCJzb3VyY2VzQ29udGVudCI6WyJpbXBvcnQgQ1JUTW9uaXRvciBmcm9tICcuL0NSVE1vbml0b3InXG5pbXBvcnQgJ0BzdHlsZXMvY29udHJvbHJvb20uY3NzJ1xuXG5jb25zdCBtb25pdG9ycyA9IFtcbiAgeyBjaGFubmVsOiAnQ0gtMDEnLCB0aXRsZTogJ1BST0pFQ1QgU0xPVCcgfSxcbiAgeyBjaGFubmVsOiAnQ0gtMDInLCB0aXRsZTogJ1BST0pFQ1QgU0xPVCcgfSxcbiAgeyBjaGFubmVsOiAnQ0gtMDMnLCB0aXRsZTogJ1BST0pFQ1QgU0xPVCcgfSxcbiAgeyBjaGFubmVsOiAnQ0gtMDQnLCB0aXRsZTogJ1BST0pFQ1QgU0xPVCcgfSxcbiAgeyBjaGFubmVsOiAnQ0gtMDUnLCB0aXRsZTogJ1BST0pFQ1QgU0xPVCcgfSxcbiAgeyBjaGFubmVsOiAnQ0gtMDYnLCB0aXRsZTogJ1BST0pFQ1QgU0xPVCcgfSxcbiAgeyBjaGFubmVsOiAnQVVYLTA3JywgdGl0bGU6ICdOT0lTRSBCVVMnLCB2YXJpYW50OiAnc3RhdGljJyBhcyBjb25zdCB9LFxuICB7IGNoYW5uZWw6ICdBVVgtMDgnLCB0aXRsZTogJ0RBVEEgQlVTJywgdmFyaWFudDogJ2RhdGEnIGFzIGNvbnN0IH0sXG5dXG5cbmNvbnN0IGNvcmVCdXR0b25zID0gWycwMScsICcwMicsICcwMycsICcwNCcsICcwNScsICcwNicsICcwNycsICcwOCddXG5jb25zdCBzaWduYWxCbG9ja3MgPSBBcnJheS5mcm9tKHsgbGVuZ3RoOiAyMiB9LCAoXywgaW5kZXgpID0+IGluZGV4KVxuXG5leHBvcnQgZGVmYXVsdCBmdW5jdGlvbiBDb250cm9sUm9vbSgpIHtcbiAgY29uc3QgaGFuZGxlTW9uaXRvclNlbGVjdCA9IChjaGFubmVsOiBzdHJpbmcpID0+IHtcbiAgICBjb25zb2xlLmluZm8oYENvbnRyb2wgcm9vbSBjaGFubmVsIHNlbGVjdGVkOiAke2NoYW5uZWx9YClcbiAgfVxuXG4gIHJldHVybiAoXG4gICAgPHNlY3Rpb24gY2xhc3NOYW1lPVwiY29udHJvbC1yb29tXCIgYXJpYS1sYWJlbD1cIlJldHJvIGNvbnRyb2wgcm9vbVwiPlxuICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250cm9sLXJvb21fX2lubmVyXCI+XG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29udHJvbC1yb29tX19oZWFkZXJcIiBhcmlhLWhpZGRlbj1cInRydWVcIj5cbiAgICAgICAgICA8c3Bhbj5DT1JFIEFSUkFZIC8gTU9OSVRPUiBXQUxMPC9zcGFuPlxuICAgICAgICAgIDxzcGFuPlNUQVRVUzogU1RBQkxFPC9zcGFuPlxuICAgICAgICA8L2Rpdj5cblxuICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRyb2wtcm9vbV9fZ3JpZFwiPlxuICAgICAgICAgIHttb25pdG9ycy5tYXAobW9uaXRvciA9PiAoXG4gICAgICAgICAgICA8Q1JUTW9uaXRvclxuICAgICAgICAgICAgICBrZXk9e21vbml0b3IuY2hhbm5lbH1cbiAgICAgICAgICAgICAgY2hhbm5lbD17bW9uaXRvci5jaGFubmVsfVxuICAgICAgICAgICAgICB0aXRsZT17bW9uaXRvci50aXRsZX1cbiAgICAgICAgICAgICAgdmFyaWFudD17bW9uaXRvci52YXJpYW50fVxuICAgICAgICAgICAgICBvblNlbGVjdD17aGFuZGxlTW9uaXRvclNlbGVjdH1cbiAgICAgICAgICAgIC8+XG4gICAgICAgICAgKSl9XG4gICAgICAgIDwvZGl2PlxuXG4gICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29udHJvbC1iYXJcIiBhcmlhLWhpZGRlbj1cInRydWVcIj5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRyb2wtbW9kdWxlIGNvbnRyb2wtbW9kdWxlLS1jb3JlXCI+XG4gICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJjb250cm9sLW1vZHVsZV9fdGl0bGVcIj5DT1JFIENPTlRST0w8L3NwYW4+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvcmUtY29uc29sZVwiPlxuICAgICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvcmUtc3dpdGNoZXNcIj5cbiAgICAgICAgICAgICAgICB7Y29yZUJ1dHRvbnMubWFwKGJ1dHRvbiA9PiAoXG4gICAgICAgICAgICAgICAgICA8c3BhbiBrZXk9e2J1dHRvbn0gY2xhc3NOYW1lPVwiY29yZS1idXR0b25cIj5cbiAgICAgICAgICAgICAgICAgICAge2J1dHRvbn1cbiAgICAgICAgICAgICAgICAgIDwvc3Bhbj5cbiAgICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29yZS1sYW1wc1wiPlxuICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImxhbXAgbGFtcC0tcmVkXCIgLz5cbiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJsYW1wIGxhbXAtLWFtYmVyXCIgLz5cbiAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJsYW1wIGxhbXAtLWdyZWVuXCIgLz5cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICA8L2Rpdj5cblxuICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwiY29udHJvbC1tb2R1bGUgY29udHJvbC1tb2R1bGUtLWNoYW5uZWxcIj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImNvbnRyb2wtbW9kdWxlX190aXRsZVwiPkFDVElWRSBDSEFOTkVMPC9zcGFuPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjaGFubmVsLXJlYWRvdXRcIj5cbiAgICAgICAgICAgICAgPHNwYW4+WC0wMSZuYnNwOyZuYnNwO1ktMjcmbmJzcDsmbmJzcDtaLTA5PC9zcGFuPlxuICAgICAgICAgICAgICA8c3Bhbj5TSUdOQUwgTE9DSzwvc3Bhbj5cbiAgICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJzaWduYWwtbG9ja1wiPlxuICAgICAgICAgICAgICAgIHtzaWduYWxCbG9ja3MubWFwKGJsb2NrID0+IChcbiAgICAgICAgICAgICAgICAgIDxzcGFuIGtleT17YmxvY2t9IGNsYXNzTmFtZT17YmxvY2sgPiAxOCA/ICdzaWduYWwtbG9ja19fcGVhaycgOiAnJ30gLz5cbiAgICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICAgIDxzcGFuPlZFQ1RPUiBBTElHTk1FTlQ6IDk3JTwvc3Bhbj5cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250cm9sLW1vZHVsZSBjb250cm9sLW1vZHVsZS0tZnJlcVwiPlxuICAgICAgICAgICAgPHNwYW4gY2xhc3NOYW1lPVwiY29udHJvbC1tb2R1bGVfX3RpdGxlXCI+RlJFUSBBREpVU1Q8L3NwYW4+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImZhZGVyc1wiPlxuICAgICAgICAgICAgICB7WzcyLCA0OCwgNjQsIDM4XS5tYXAoKHZhbHVlLCBpbmRleCkgPT4gKFxuICAgICAgICAgICAgICAgIDxzcGFuIGtleT17YCR7dmFsdWV9LSR7aW5kZXh9YH0gY2xhc3NOYW1lPVwiZmFkZXJcIj5cbiAgICAgICAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImZhZGVyX190cmFja1wiIC8+XG4gICAgICAgICAgICAgICAgICA8c3BhbiBjbGFzc05hbWU9XCJmYWRlcl9fdGh1bWJcIiBzdHlsZT17eyBib3R0b206IGAke3ZhbHVlfSVgIH19IC8+XG4gICAgICAgICAgICAgICAgPC9zcGFuPlxuICAgICAgICAgICAgICApKX1cbiAgICAgICAgICAgIDwvZGl2PlxuICAgICAgICAgIDwvZGl2PlxuXG4gICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJjb250cm9sLW1vZHVsZSBjb250cm9sLW1vZHVsZS0tb3ZlcnJpZGVcIj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImNvbnRyb2wtbW9kdWxlX190aXRsZVwiPlNZU1RFTSBPVkVSUklERTwvc3Bhbj5cbiAgICAgICAgICAgIDxkaXYgY2xhc3NOYW1lPVwib3ZlcnJpZGUtdG9nZ2xlXCI+XG4gICAgICAgICAgICAgIDxzcGFuIC8+XG4gICAgICAgICAgICA8L2Rpdj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cIm92ZXJyaWRlLWxhYmVsXCI+QVJNRUQ8L3NwYW4+XG4gICAgICAgICAgPC9kaXY+XG5cbiAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cImNvbnRyb2wtbW9kdWxlIGNvbnRyb2wtbW9kdWxlLS1tYXN0ZXJcIj5cbiAgICAgICAgICAgIDxzcGFuIGNsYXNzTmFtZT1cImNvbnRyb2wtbW9kdWxlX190aXRsZVwiPk1BU1RFUiBDT05UUk9MPC9zcGFuPlxuICAgICAgICAgICAgPGRpdiBjbGFzc05hbWU9XCJtYXN0ZXIta25vYlwiPlxuICAgICAgICAgICAgICA8c3BhbiAvPlxuICAgICAgICAgICAgPC9kaXY+XG4gICAgICAgICAgICA8ZGl2IGNsYXNzTmFtZT1cIm1hc3Rlci1zY2FsZVwiIC8+XG4gICAgICAgICAgPC9kaXY+XG4gICAgICAgIDwvZGl2PlxuICAgICAgPC9kaXY+XG4gICAgPC9zZWN0aW9uPlxuICApXG59XG4iXSwiZmlsZSI6IkM6L+2ZjeyjvO2drC9wZjA1MjAvc3JjL2NvbXBvbmVudHMvQ29udHJvbFJvb20udHN4In0=

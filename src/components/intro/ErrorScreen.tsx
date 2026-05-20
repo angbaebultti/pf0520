@@ -1,516 +1,422 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef } from 'react'
+import AnalogVHSOverlay from './AnalogVHSOverlay'
+import GhostEntityRenderer from './GhostEntityRenderer'
 
-type FailurePhase = 'typing' | 'stretch' | 'corrupt'
+const DURATION_MS = 3000
+const GLYPHS = '01ABCDEFabcdef[]{}()<>=_*#/\\|:;!?$%&+-~^'
+const HEX = '0123456789ABCDEF'
+const MAX_PIXEL_RATIO = 1.25
 
-const STATIC_LINES = [
-  '404 ERROR - PAGE NOT FOUND',
-  'AUTOSAVED // PAGE RETRIEVAL FAILURE',
-  'LOT ART: ATTEMPTED TO LOAD RESOURCE (/M PAGE)',
-  'SYSTEM TRACE:',
-  '0033 LOAD /HOME',
-  '0042 RUN /ABOUT',
-  '0051 RUN /WORKS',
-  'IF LOST == TRUE THEN',
-  '  PRINT "ART IS NEVER LOST - ONLY MISPLACED"',
-  'EXCEPTION MALLOC',
-  'HEAP MEMORY NOT ALLOCATED',
-  'REDIRECT PATH UNDEFINED',
-  '0091 ALLOCATE MEMORY BLOCK (PAGE_DATA)',
-  '0092 DATA STREAM EMPTY',
-  '0093 CONNECTION TIMEOUT (TIMEOUT)',
-  '009F CACHE FLUSHED BY ANON',
-  '00A5 ARTIFACT DETECTED',
-  'ERROR 4P41F: RESOURCE NOT FOUND',
-  'CAUSE: UNKNOWN',
-  'LEVEL: CRITICAL',
-  'PAGE CORRUPTED',
-  'RECOVERY STEPS:',
+const LOG_FRAGMENTS = [
+  'kernel panic: recursive node failure',
+  'memory violation at virtual frame 0x%HEX%',
+  'segmentation fault // neural_stack_overflow',
+  'signal recursion detected in /dev/sim0',
+  'simulation integrity lost',
+  'vm_fault: page not present, pte=%HEX%',
+  'panic(cpu 0 caller %HEX%): trap type 14',
+  'init: cannot mount corrupted filesystem',
+  'syscall_table[%NUM%] -> NULL_VECTOR',
+  'rdmsr 0x%HEX% ; illegal state transition',
+  'mov eax, [%HEX%] ; xor edx, edx ; int 0x80',
+  'struct vframe *vf = collapse(ptr->node)',
+  'if (memory->ghost) goto recursive_halt;',
+  '#define PG_TABLE_SIZE 0x%HEX%',
+  'warning: virtual frame collapse imminent',
+  'inode %NUM%: orphaned from root simulation',
+  'neural bus parity mismatch',
+  'STACK TRACE: %HEX% -> %HEX% -> %HEX%',
+  'fsck.vr: unrecoverable symbolic loop',
+  'fatal: forbidden terminal woke up',
+  'memcpy(void *dst, const void *src, %NUM%)',
+  'asm volatile("hlt"); // failed',
+  'node[%NUM%].child = node[%NUM%].parent',
+  'EIP=%HEX% ESP=%HEX% EFLAGS=00010246',
+  'VM DIAGNOSTIC: observer process detached',
+  'page fault in nonpaged simulation area',
+  'SIGRECURSE caught, dumping core image',
+  'lost carrier on ttyS%NUM%',
+  'execve("/bin/ghost", argv, envp) = -1',
+  'CRITICAL: human-readable layer decaying',
 ]
 
-const TYPING_LINES = ['TRY ABORT', 'TRY RETRY', 'TRY IGNORE → FAILED', 'SYSTEM HALT...']
-const TYPING_FULL = TYPING_LINES.join('\n')
-const CORRUPT_CHARS = [
-  '#',
-  '%',
-  '&',
-  '/',
-  '\\',
-  '|',
-  '!',
-  '0',
-  '1',
-  '2',
-  '7',
-  '?',
-  '=',
-  '+',
-  ':',
-  ';',
-  '[',
-  ']',
-]
-const BROKEN_SPACES = [' ', '.', '_', '  ', '']
+type TextBlock = {
+  x: number
+  y: number
+  width: number
+  fontSize: number
+  alpha: number
+  scrollSpeed: number
+  phase: number
+  lines: string[]
+}
 
-function corruptLine(line: string, seed: number, intensity: number) {
+function rand(min: number, max: number) {
+  return min + Math.random() * (max - min)
+}
+
+function pick<T>(items: T[]) {
+  return items[Math.floor(Math.random() * items.length)]
+}
+
+function pickChar(source: string) {
+  return source[Math.floor(Math.random() * source.length)]
+}
+
+function makeHex(length = 8) {
+  return Array.from({ length }, () => pickChar(HEX)).join('')
+}
+
+function makeCorruptToken(length: number) {
+  return Array.from({ length }, () => pickChar(GLYPHS)).join('')
+}
+
+function makeLine(index: number) {
+  const source = pick(LOG_FRAGMENTS)
+  const line = source
+    .replace(/%HEX%/g, makeHex(Math.random() > 0.58 ? 8 : 4))
+    .replace(/%NUM%/g, String(Math.floor(rand(0, 4096))).padStart(4, '0'))
+
+  if (index % 9 === 0) {
+    return `${makeHex(4)}:${makeHex(4)}  ${line}  ${makeCorruptToken(Math.floor(rand(4, 18)))}`
+  }
+
+  if (index % 13 === 0) {
+    return `${makeCorruptToken(Math.floor(rand(12, 34)))}   // BUS ERROR`
+  }
+
   return line
-    .split('')
-    .map((char, index) => {
-      if (char === ' ') {
-        const spaceNoise = Math.sin((index + seed) * 1.8) * 0.5 + 0.5
-        return spaceNoise < intensity ? BROKEN_SPACES[(index + seed) % BROKEN_SPACES.length] : char
-      }
-
-      const wave = Math.sin((index + 1) * 12.9898 + seed * 78.233) * 43758.5453
-      const noise = wave - Math.floor(wave)
-
-      if (noise < intensity) {
-        return CORRUPT_CHARS[(index + seed) % CORRUPT_CHARS.length]
-      }
-
-      if (noise > 1 - intensity * 0.28) {
-        return ''
-      }
-
-      if (noise > 1 - intensity * 0.62) {
-        return `${char}${CORRUPT_CHARS[(index * 3 + seed) % CORRUPT_CHARS.length]}`
-      }
-
-      return char
-    })
-    .join('')
 }
 
-function collapseLine(line: string, seed: number, intensity: number) {
-  const damaged = corruptLine(line, seed, intensity)
-  const targetLength = Math.max(line.length, 8)
+function corruptText(text: string, intensity: number, seed: number) {
+  let result = ''
 
-  if (damaged.length > targetLength + 4) {
-    return damaged.slice(0, targetLength + 4)
+  for (let i = 0; i < text.length; i += 1) {
+    const char = text[i]
+    const noise = Math.sin((i + 1) * 12.9898 + seed * 78.233) * 43758.5453
+    const sample = noise - Math.floor(noise)
+
+    if (sample < intensity * 0.11) {
+      result += pickChar(GLYPHS)
+    } else if (sample > 1 - intensity * 0.055) {
+      result += `${char}${pickChar(GLYPHS)}`
+    } else if (sample > 1 - intensity * 0.035) {
+      result += ''
+    } else {
+      result += char
+    }
   }
 
-  if (damaged.length < targetLength - 2) {
-    const fill = Array.from({ length: targetLength - damaged.length }, (_, index) => {
-      return CORRUPT_CHARS[(seed + index * 5) % CORRUPT_CHARS.length]
-    }).join('')
-    return `${damaged}${fill}`
-  }
-
-  return damaged
+  return result
 }
 
-function repeatedSmear(line: string, seed: number, repeats: number, intensity: number) {
-  const source = line.trim() || 'SYSTEM HALT'
-  return Array.from({ length: repeats }, (_, index) =>
-    collapseLine(source, seed + index * 7, intensity + index * 0.015)
-  ).join('\n')
+function buildBlocks(width: number, height: number) {
+  const blockCount = Math.max(8, Math.floor(width / 110))
+
+  return Array.from({ length: blockCount }, (_, blockIndex) => {
+    const fontSize = rand(10, 14)
+    const lineCount = Math.ceil(height / (fontSize * 1.24)) + Math.floor(rand(6, 16))
+
+    return {
+      x: rand(-width * 0.08, width * 0.94),
+      y: rand(-height * 0.28, height * 0.12),
+      width: rand(width * 0.2, width * 0.52),
+      fontSize,
+      alpha: rand(0.08, 0.32),
+      scrollSpeed: rand(3, 23) * (Math.random() > 0.24 ? 1 : -0.35),
+      phase: rand(0, Math.PI * 2),
+      lines: Array.from({ length: lineCount }, (_, lineIndex) => makeLine(blockIndex * 101 + lineIndex)),
+    }
+  })
 }
 
-interface Props {
-  onComplete: () => void
+interface ErrorScreenProps {
+  durationMs?: number
+  breakDurationMs?: number
+  onComplete?: () => void
 }
 
-export default function ErrorScreen({ onComplete }: Props) {
-  const [typedCount, setTypedCount] = useState(0)
-  const [cursorOn, setCursorOn] = useState(true)
-  const [failurePhase, setFailurePhase] = useState<FailurePhase>('typing')
-  const [corruptFrame, setCorruptFrame] = useState(0)
+export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs = 0, onComplete }: ErrorScreenProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null)
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
 
-  // Blinking cursor
   useEffect(() => {
-    const id = setInterval(() => setCursorOn(v => !v), 530)
-    return () => clearInterval(id)
-  }, [])
+    const canvas = canvasRef.current
+    const context = canvas?.getContext('2d')
 
-  // Typing animation, followed by stretch and corruption phases before BrokenLCD.
-  useEffect(() => {
-    if (typedCount >= TYPING_FULL.length) {
-      setFailurePhase('stretch')
-      const corruptId = setTimeout(() => setFailurePhase('corrupt'), 280)
-      const completeId = setTimeout(() => onCompleteRef.current(), 1120)
-      return () => {
-        clearTimeout(corruptId)
-        clearTimeout(completeId)
+    if (!canvas || !context) {
+      return
+    }
+
+    let animationFrame = 0
+    let width = window.innerWidth
+    let height = window.innerHeight
+    let pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
+    let startTime = performance.now()
+    let completeTimer = 0
+    let blocks = buildBlocks(width, height)
+    const feedbackCanvas = document.createElement('canvas')
+    const feedbackContext = feedbackCanvas.getContext('2d')
+
+    const resize = () => {
+      width = window.innerWidth
+      height = window.innerHeight
+      pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
+      canvas.width = Math.floor(width * pixelRatio)
+      canvas.height = Math.floor(height * pixelRatio)
+      canvas.style.width = `${width}px`
+      canvas.style.height = `${height}px`
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      context.fillStyle = '#000'
+      context.fillRect(0, 0, width, height)
+      feedbackCanvas.width = canvas.width
+      feedbackCanvas.height = canvas.height
+      blocks = buildBlocks(width, height)
+    }
+
+    const drawTextBlock = (block: TextBlock, elapsed: number, intensity: number, index: number) => {
+      const lineHeight = block.fontSize * 1.18
+      const scroll = (elapsed * 0.001 * block.scrollSpeed + Math.sin(elapsed * 0.001 + block.phase) * 14) % lineHeight
+      const jitter = intensity > 0.72 && (index + Math.floor(elapsed / 70)) % 5 === 0 ? rand(-8, 8) : 0
+
+      context.save()
+      context.translate(
+        block.x + Math.sin(elapsed * 0.00033 + block.phase) * 18 + jitter,
+        block.y + scroll,
+      )
+      context.beginPath()
+      context.rect(-20, -height * 0.4, block.width, height * 1.6)
+      context.clip()
+      context.font = `${block.fontSize}px "Courier New", Consolas, monospace`
+      context.textBaseline = 'top'
+      context.shadowColor = `rgba(73, 255, 55, ${0.16 + intensity * 0.22})`
+      context.shadowBlur = 4 + intensity * 9
+
+      block.lines.forEach((line, lineIndex) => {
+        const y = lineIndex * lineHeight
+        const rowPulse = Math.sin(elapsed * 0.006 + lineIndex * 1.7 + block.phase) * 0.5 + 0.5
+        const alpha = block.alpha * (0.38 + rowPulse * 0.48) * (0.72 + intensity * 0.28)
+        const damaged = intensity > 0.18 ? corruptText(line, intensity, lineIndex * 31 + index * 17 + Math.floor(elapsed / 48)) : line
+
+        context.globalAlpha = alpha
+        context.fillStyle = '#56ff40'
+        context.fillText(damaged, 0, y)
+
+        if (intensity > 0.35 && lineIndex % 6 === 0) {
+          context.globalAlpha = alpha * 0.18
+          context.fillStyle = '#8ffff4'
+          context.fillText(damaged, 1.5 + intensity * 4, y)
+          context.fillStyle = '#183f18'
+          context.fillText(damaged, -1.2 - intensity * 3, y)
+        }
+      })
+
+      context.restore()
+    }
+
+    const drawTears = (elapsed: number, intensity: number) => {
+      const tearCount = Math.floor(1 + intensity * 5)
+
+      for (let i = 0; i < tearCount; i += 1) {
+        const y = (Math.sin(elapsed * 0.0017 + i * 21.1) * 0.5 + 0.5) * height
+        const tearHeight = rand(1, 4 + intensity * 18)
+        const xOffset = rand(-80, 80) * intensity
+        context.globalAlpha = rand(0.025, 0.09) * intensity
+        context.fillStyle = i % 3 === 0 ? '#aaff9f' : '#1aff16'
+        context.fillRect(xOffset, y, width + Math.abs(xOffset), tearHeight)
+
+        if (intensity > 0.62) {
+          context.globalAlpha = rand(0.035, 0.075) * intensity
+          context.fillRect(rand(0, width * 0.86), y + tearHeight + rand(2, 18), rand(30, width * 0.38), rand(4, 28))
+        }
       }
     }
-    const id = setTimeout(() => setTypedCount(c => c + 1), 48)
-    return () => clearTimeout(id)
-  }, [typedCount])
 
-  // During failure the framebuffer keeps redrawing bad memory instead of freezing on one corruption pass.
-  useEffect(() => {
-    if (failurePhase === 'typing') return
+    const drawScanlines = (elapsed: number, intensity: number) => {
+      context.globalAlpha = 0.42
+      context.fillStyle = 'rgba(0, 0, 0, 0.48)'
+      for (let y = Math.floor(elapsed / 25) % 4; y < height; y += 4) {
+        context.fillRect(0, y, width, 1)
+      }
 
-    const id = setInterval(() => setCorruptFrame(frame => frame + 1), 42)
-    return () => clearInterval(id)
-  }, [failurePhase])
+      context.globalAlpha = 0.055 + intensity * 0.085
+      context.fillStyle = '#4aff36'
+      const trackingY = (elapsed * (0.06 + intensity * 0.28)) % height
+      context.fillRect(0, trackingY, width, 2 + intensity * 4)
+    }
 
-  const displayLines = TYPING_FULL.slice(0, typedCount).split('\n')
-  const allVisibleLines = [...STATIC_LINES, ...displayLines]
-  const isStretching = failurePhase === 'stretch' || failurePhase === 'corrupt'
-  const isCorrupting = failurePhase === 'corrupt'
-  const textIntensity = isCorrupting ? 0.56 : isStretching ? 0.19 : 0
+    const drawNoise = (intensity: number) => {
+      const amount = Math.floor(35 + intensity * 160)
 
-  const renderLine = (line: string, index: number) => {
-    if (!isStretching) return line
+      for (let i = 0; i < amount; i += 1) {
+        const alpha = rand(0.01, 0.045) * (0.35 + intensity)
+        context.globalAlpha = alpha
+        context.fillStyle = Math.random() > 0.82 ? '#d7ffd2' : '#39ff25'
+        context.fillRect(rand(0, width), rand(0, height), rand(0.6, 2.8 + intensity * 5), rand(0.6, 2.2))
+      }
+    }
 
-    const seed = corruptFrame * 13 + index * 29
-    const readableFlash = isCorrupting && (corruptFrame + index) % 7 === 0
-    const subtleHold = !isCorrupting && (corruptFrame + index) % 4 !== 0
+    const drawVignette = (intensity: number) => {
+      const gradient = context.createRadialGradient(width * 0.5, height * 0.48, height * 0.16, width * 0.5, height * 0.5, width * 0.78)
+      gradient.addColorStop(0, 'rgba(0, 0, 0, 0)')
+      gradient.addColorStop(0.5, 'rgba(0, 12, 0, 0.16)')
+      gradient.addColorStop(1, `rgba(0, 0, 0, ${0.78 + intensity * 0.12})`)
+      context.globalAlpha = 1
+      context.fillStyle = gradient
+      context.fillRect(0, 0, width, height)
+    }
 
-    if (readableFlash || subtleHold) return line
-    return collapseLine(line, seed, textIntensity + (index % 3) * 0.035)
-  }
+    const draw = (now: number) => {
+      const elapsed = now - startTime
+      const progress = Math.min(elapsed / durationMs, 1)
+      const breakProgress = breakDurationMs > 0 ? Math.min(Math.max((elapsed - durationMs) / breakDurationMs, 0), 1) : 0
+      const isBreaking = breakProgress > 0
+      const intensity = Math.min(1, progress * progress * 1.55)
+      const peak = Math.max(0, (progress - 0.72) / 0.28)
+      const rupture = Math.sin(breakProgress * Math.PI)
+      const frameJitterX =
+        Math.sin(elapsed * 0.03) * intensity * 2.2 +
+        (peak > 0 ? rand(-4, 4) * peak : 0) +
+        (isBreaking ? Math.sin(elapsed * 0.08) * rupture * 18 + rand(-8, 8) * rupture : 0)
+      const frameJitterY =
+        Math.cos(elapsed * 0.021) * intensity * 1.5 +
+        (peak > 0 ? rand(-3, 3) * peak : 0) +
+        (isBreaking ? Math.cos(elapsed * 0.063) * rupture * 6 : 0)
+
+      animationFrame = requestAnimationFrame(draw)
+
+      context.save()
+      context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
+      context.globalCompositeOperation = 'source-over'
+      context.globalAlpha = 1
+      context.fillStyle = `rgba(0, 0, 0, ${isBreaking ? 0.22 + breakProgress * 0.18 : 0.48 - intensity * 0.08})`
+      context.fillRect(0, 0, width, height)
+      if (isBreaking) {
+        const squeeze = 1 - rupture * 0.055
+        context.translate(width * 0.5, height * 0.5)
+        context.scale(1 + rupture * 0.018, squeeze)
+        context.translate(-width * 0.5, -height * 0.5)
+      }
+      context.translate(frameJitterX, frameJitterY)
+
+      context.globalCompositeOperation = 'source-over'
+      blocks.forEach((block, index) => drawTextBlock(block, elapsed, intensity, index))
+
+      context.globalCompositeOperation = 'screen'
+      drawTears(elapsed, intensity)
+      drawNoise(intensity)
+      drawScanlines(elapsed, intensity)
+
+      if (peak > 0.1 || isBreaking) {
+        context.globalAlpha = isBreaking ? rupture * 0.16 : peak * 0.1
+        context.fillStyle = '#73ff5d'
+        context.font = `${Math.max(18, width * 0.021)}px "Courier New", Consolas, monospace`
+        context.fillText(`PANIC: SIMULATION HEARTBEAT ${makeCorruptToken(12)}`, rand(-20, width * 0.42), height * rand(0.34, 0.68))
+      }
+
+      drawVignette(intensity)
+      context.restore()
+
+      if (isBreaking && feedbackContext) {
+        feedbackContext.drawImage(canvas, 0, 0)
+        context.save()
+        context.setTransform(1, 0, 0, 1, 0, 0)
+        context.globalCompositeOperation = 'source-over'
+        context.fillStyle = `rgba(0, 0, 0, ${0.08 + breakProgress * 0.12})`
+        context.fillRect(0, 0, canvas.width, canvas.height)
+
+        const bandCount = Math.floor(12 + rupture * 30)
+        for (let band = 0; band < bandCount; band += 1) {
+          const sourceY = Math.floor(rand(0, canvas.height))
+          const sourceHeight = Math.floor(rand(2, 18 + rupture * 46) * pixelRatio)
+          const wave = Math.sin(sourceY * 0.017 + elapsed * 0.026) * rupture
+          const shift = Math.floor((wave * 74 + rand(-28, 28) * rupture) * pixelRatio)
+          const crush = 1 + rand(-0.24, 0.28) * rupture
+          const destY = Math.max(0, Math.min(canvas.height - sourceHeight, sourceY + Math.floor(rand(-8, 8) * rupture * pixelRatio)))
+
+          context.globalAlpha = 0.72 + rupture * 0.28
+          context.drawImage(
+            feedbackCanvas,
+            0,
+            sourceY,
+            canvas.width,
+            sourceHeight,
+            shift,
+            destY,
+            canvas.width * crush,
+            sourceHeight,
+          )
+        }
+
+        context.globalCompositeOperation = 'screen'
+        context.globalAlpha = 0.12 + rupture * 0.34
+        context.fillStyle = '#e9ffe2'
+        for (let line = 0; line < 5; line += 1) {
+          const y = Math.floor((height * (0.18 + line * 0.17) + Math.sin(elapsed * 0.02 + line) * 16) * pixelRatio)
+          context.fillRect(0, y, canvas.width, Math.max(1, Math.floor((1 + rupture * 3) * pixelRatio)))
+        }
+
+        if (breakProgress > 0.68) {
+          context.globalCompositeOperation = 'source-over'
+          context.globalAlpha = (breakProgress - 0.68) / 0.32
+          context.fillStyle = '#000'
+          context.fillRect(0, 0, canvas.width, canvas.height)
+        }
+
+        context.restore()
+      }
+
+    }
+
+    resize()
+    startTime = performance.now()
+    completeTimer = window.setTimeout(() => onCompleteRef.current?.(), durationMs + breakDurationMs)
+    animationFrame = requestAnimationFrame(draw)
+    window.addEventListener('resize', resize)
+
+    return () => {
+      cancelAnimationFrame(animationFrame)
+      window.clearTimeout(completeTimer)
+      window.removeEventListener('resize', resize)
+    }
+  }, [breakDurationMs, durationMs])
 
   return (
     <div
-      className={`error-screen error-screen--${failurePhase}`}
+      aria-hidden="true"
       style={{
         position: 'fixed',
         inset: 0,
-        background: '#0000FF',
-        color: '#FFFFFF',
-        fontFamily: '"Courier New", Courier, monospace',
-        fontSize: 'clamp(10px, 1.4vw, 14px)',
-        lineHeight: 1.65,
-        padding: 'clamp(20px, 5vh, 60px) clamp(16px, 6vw, 80px)',
-        overflow: 'hidden',
         zIndex: 100,
+        overflow: 'hidden',
+        background: '#000',
+        pointerEvents: 'none',
       }}
     >
-      <style>{`
-        .error-screen {
-          text-shadow: 0 0 6px rgba(255, 255, 255, 0.45);
-          isolation: isolate;
-        }
-
-        .error-screen::before,
-        .error-screen::after {
-          position: fixed;
-          inset: 0;
-          z-index: 2;
-          content: '';
-          pointer-events: none;
-          opacity: 0;
-        }
-
-        .error-screen::before {
+      <canvas
+        ref={canvasRef}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+      filter: 'contrast(1.08) saturate(1.08) brightness(0.86)',
+        }}
+      />
+      <div
+        aria-hidden="true"
+        style={{
+          position: 'absolute',
+          inset: 0,
           background:
-            repeating-linear-gradient(
-              to bottom,
-              rgba(255, 255, 255, 0.18) 0,
-              rgba(255, 255, 255, 0.18) 1px,
-              transparent 1px,
-              transparent 5px
-            ),
-            linear-gradient(
-              90deg,
-              transparent 0 14%,
-              rgba(0, 255, 255, 0.18) 14% 14.7%,
-              transparent 14.7% 48%,
-              rgba(255, 0, 64, 0.2) 48% 49%,
-              transparent 49% 72%,
-              rgba(255, 255, 255, 0.16) 72% 72.5%,
-              transparent 72.5% 100%
-            );
-          mix-blend-mode: screen;
-        }
-
-        .error-screen::after {
-          background:
-            linear-gradient(
-              to bottom,
-              rgba(255, 255, 255, 0.08) 0 1%,
-              transparent 1% 9%,
-              rgba(0, 38, 255, 0.88) 9% 13%,
-              transparent 13% 23%,
-              rgba(0, 0, 120, 0.64) 23% 27%,
-              transparent 27% 36%,
-              rgba(24, 206, 255, 0.18) 36% 39%,
-              transparent 39% 48%,
-              rgba(0, 0, 94, 0.72) 48% 52%,
-              transparent 52% 61%,
-              rgba(255, 255, 255, 0.11) 61% 63%,
-              transparent 63% 72%,
-              rgba(0, 21, 255, 0.76) 72% 77%,
-              transparent 77% 86%,
-              rgba(0, 0, 84, 0.8) 86% 90%,
-              transparent 90% 100%
-            );
-          transform: translate3d(0, 0, 0);
-        }
-
-        .error-screen--stretch {
-          animation: error-blue-breath 0.12s steps(2, end) infinite;
-        }
-
-        .error-screen--stretch::before {
-          opacity: 0.22;
-        }
-
-        .error-screen--corrupt {
-          animation: error-screen-corrupt 0.09s steps(2, end) infinite;
-        }
-
-        .error-screen--corrupt::before {
-          opacity: 0.58;
-          animation: error-scan-tear 0.16s steps(3, end) infinite;
-        }
-
-        .error-screen--corrupt::after {
-          opacity: 0.82;
-          animation: error-row-tear 0.18s steps(2, end) infinite;
-        }
-
-        .error-screen__content {
-          position: relative;
-          z-index: 1;
-        }
-
-        .error-screen__line {
-          display: block;
-          white-space: pre;
-          transform-origin: 0 50%;
-        }
-
-        .error-screen--stretch .error-screen__line {
-          animation: error-line-precollapse 0.18s steps(2, end) infinite;
-        }
-
-        .error-screen--corrupt .error-screen__line {
-          animation: error-line-collapse 0.11s steps(2, end) infinite;
-        }
-
-        .error-screen--corrupt .error-screen__line:nth-child(3n + 1) {
-          transform: translateX(-0.45em) scaleX(1.035);
-        }
-
-        .error-screen--corrupt .error-screen__line:nth-child(3n + 2) {
-          transform: translateX(0.68em) scaleY(1.18);
-        }
-
-        .error-screen--corrupt .error-screen__line:nth-child(5n) {
-          transform: translateX(-1.1em) scaleX(1.08) scaleY(0.86);
-          filter: blur(0.35px);
-        }
-
-        .error-screen--corrupt .error-screen__content {
-          animation: error-text-rgb 0.08s steps(2, end) infinite;
-        }
-
-        .error-screen__collapse {
-          position: absolute;
-          inset: 0;
-          padding: inherit;
-          z-index: 3;
-          overflow: hidden;
-          white-space: pre;
-          pointer-events: none;
-          opacity: 0;
-          transform-origin: 50% 0;
-          filter: blur(0.2px);
-          text-shadow:
-            2px 0 rgba(255, 0, 60, 0.7),
-            -2px 0 rgba(0, 255, 255, 0.65),
-            0 0 8px rgba(255, 255, 255, 0.55);
-        }
-
-        .error-screen__collapse::before,
-        .error-screen__collapse::after {
-          position: absolute;
-          inset: 0;
-          content: '';
-          pointer-events: none;
-          mix-blend-mode: screen;
-        }
-
-        .error-screen__collapse::before {
-          background:
-            repeating-linear-gradient(
-              to bottom,
-              rgba(255, 255, 255, 0.11) 0,
-              rgba(255, 255, 255, 0.11) 1px,
-              transparent 1px,
-              transparent 3px
-            ),
-            linear-gradient(
-              90deg,
-              rgba(255, 0, 40, 0.15),
-              transparent 18%,
-              rgba(0, 255, 255, 0.16) 41%,
-              transparent 68%,
-              rgba(255, 255, 255, 0.12)
-            );
-        }
-
-        .error-screen__collapse::after {
-          background:
-            linear-gradient(to bottom, transparent 0 6%, rgba(255,255,255,0.18) 6% 7%, transparent 7% 18%),
-            linear-gradient(to bottom, transparent 0 31%, rgba(0,0,0,0.34) 31% 35%, transparent 35% 56%),
-            linear-gradient(to bottom, transparent 0 64%, rgba(255,255,255,0.12) 64% 67%, transparent 67% 100%);
-          animation: error-framebuffer-slice 0.13s steps(2, end) infinite;
-        }
-
-        .error-screen--stretch .error-screen__collapse {
-          opacity: 0.42;
-          animation: error-collapse-grow 0.28s cubic-bezier(0.12, 0.88, 0.26, 1) forwards;
-        }
-
-        .error-screen--corrupt .error-screen__collapse {
-          opacity: 1;
-          animation: error-collapse-break 0.1s steps(2, end) infinite;
-        }
-
-        .error-screen__collapse-line {
-          display: block;
-          height: 1.18em;
-          transform-origin: 0 0;
-        }
-
-        .error-screen__collapse-line:nth-child(3n + 1) {
-          transform: translateX(-0.45em) scaleY(1.35);
-        }
-
-        .error-screen__collapse-line:nth-child(3n + 2) {
-          transform: translateX(0.72em) scaleY(1.9);
-        }
-
-        .error-screen__collapse-line:nth-child(3n) {
-          transform: translateX(0.18em) scaleY(2.55);
-        }
-
-        .error-screen__collapse-line:nth-child(5n) {
-          transform: translateX(-1.2em) scaleY(3.1);
-        }
-
-        @keyframes error-blue-breath {
-          0% { background-color: #0000ff; }
-          50% { background-color: #001fff; }
-          100% { background-color: #0000db; }
-        }
-
-        @keyframes error-screen-corrupt {
-          0% {
-            background-color: #0000ff;
-            transform: translateX(0);
-            filter: saturate(1.4) contrast(1.2);
-          }
-          35% {
-            background-color: #0018df;
-            transform: translateX(-6px);
-            filter: saturate(2.1) contrast(1.45);
-          }
-          70% {
-            background-color: #0700ff;
-            transform: translateX(4px);
-            filter: saturate(1.65) contrast(1.75);
-          }
-          100% {
-            background-color: #0000a8;
-            transform: translateX(0);
-            filter: saturate(2.2) contrast(1.3);
-          }
-        }
-
-        @keyframes error-collapse-grow {
-          0% {
-            clip-path: inset(0 0 86% 0);
-            transform: translateY(-0.15em) scaleY(0.92);
-          }
-          100% {
-            clip-path: inset(0 0 0 0);
-            transform: translateY(0.24em) scaleY(1.18);
-          }
-        }
-
-        @keyframes error-collapse-break {
-          0% {
-            clip-path: inset(0 0 0 0);
-            transform: translate(-2px, 0.2em) scaleY(1.18) skewY(-0.4deg);
-          }
-          50% {
-            clip-path: inset(2% 0 4% 0);
-            transform: translate(10px, 0.5em) scaleY(1.58) skewY(0.7deg);
-          }
-          100% {
-            clip-path: inset(0 0 1% 0);
-            transform: translate(-7px, 0.1em) scaleY(1.34) skewY(-0.3deg);
-          }
-        }
-
-        @keyframes error-line-precollapse {
-          0% { transform: translateX(0); filter: none; }
-          100% { transform: translateX(0.18em); filter: blur(0.12px); }
-        }
-
-        @keyframes error-line-collapse {
-          0% { transform: translateX(-0.2em) scaleX(1.02); filter: blur(0.1px); }
-          45% { transform: translateX(0.75em) scaleX(0.96) scaleY(1.08); filter: blur(0.42px); }
-          100% { transform: translateX(-0.55em) scaleX(1.08) scaleY(0.92); filter: blur(0.18px); }
-        }
-
-        @keyframes error-text-rgb {
-          0% {
-            transform: translateX(0);
-            text-shadow:
-              3px 0 rgba(255, 0, 50, 0.74),
-              -3px 0 rgba(0, 255, 255, 0.72),
-              0 0 9px rgba(255, 255, 255, 0.55);
-          }
-          100% {
-            transform: translateX(5px);
-            text-shadow:
-              -4px 0 rgba(255, 0, 50, 0.76),
-              4px 0 rgba(0, 255, 255, 0.7),
-              0 0 12px rgba(255, 255, 255, 0.72);
-          }
-        }
-
-        @keyframes error-scan-tear {
-          0% { transform: translateY(-1%); }
-          40% { transform: translate(12px, 1%); }
-          100% { transform: translate(-8px, 0); }
-        }
-
-        @keyframes error-row-tear {
-          0% { transform: translateX(-10px) skewY(-1deg); }
-          50% { transform: translateX(16px) skewY(0.6deg); }
-          100% { transform: translateX(-4px) skewY(-0.4deg); }
-        }
-
-        @keyframes error-framebuffer-slice {
-          0% { transform: translateY(-3%) scaleY(1.15); opacity: 0.68; }
-          50% { transform: translate(18px, 2%) scaleY(1.45); opacity: 0.95; }
-          100% { transform: translate(-11px, 0) scaleY(1.24); opacity: 0.76; }
-        }
-      `}</style>
-      <div className="error-screen__content">
-        {STATIC_LINES.map((line, i) => (
-          <div key={i} className="error-screen__line">
-            {renderLine(line, i)}
-          </div>
-        ))}
-        {displayLines.map((line, i) => (
-          <div key={`t-${i}`} className="error-screen__line">
-            {renderLine(line, STATIC_LINES.length + i)}
-            {i === displayLines.length - 1 && typedCount < TYPING_FULL.length && (
-              <span style={{ opacity: cursorOn ? 1 : 0 }}>_</span>
-            )}
-          </div>
-        ))}
-      </div>
-      {isStretching && (
-        <div className="error-screen__collapse" aria-hidden="true">
-          {allVisibleLines.map((line, index) => (
-            <span key={`${line}-${index}`} className="error-screen__collapse-line">
-              {isCorrupting
-                ? repeatedSmear(line, corruptFrame * 19 + index + 17, 3, 0.5)
-                : repeatedSmear(line, corruptFrame * 7 + index + 5, 1, 0.22)}
-            </span>
-          ))}
-        </div>
-      )}
+            'linear-gradient(90deg, rgba(73,255,55,0.035), transparent 14%, rgba(0,255,210,0.025) 48%, transparent 84%, rgba(73,255,55,0.03)), repeating-linear-gradient(to bottom, rgba(170,255,150,0.055) 0, rgba(170,255,150,0.055) 1px, transparent 1px, transparent 5px)',
+          mixBlendMode: 'screen',
+          opacity: 0.38,
+        }}
+      />
+      <GhostEntityRenderer zIndex={101} />
+      <AnalogVHSOverlay zIndex={102} />
     </div>
   )
 }

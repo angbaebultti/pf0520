@@ -1,0 +1,213 @@
+{
+   "checksum": "cf3ac267ff7d8598e01b5e20d03e0282",
+   "roots": {
+      "bookmark_bar": {
+         "children": [ {
+            "date_added": "13328891224202504",
+            "date_last_used": "13333434492930078",
+            "guid": "a6514735-8482-4af0-87cc-70cdfb4ce089",
+            "id": "7",
+            "name": "Gmail",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://accounts.google.com/b/0/AddMailService",
+            "visit_count": 0
+         }, {
+            "date_added": "13328891224203369",
+            "date_last_used": "13410327283722220",
+            "guid": "8a394dd9-5379-4acf-9ad2-f763ae01a7ef",
+            "id": "8",
+            "name": "YouTube",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://youtube.com/",
+            "visit_count": 40
+         }, {
+            "date_added": "13407830520016155",
+            "date_last_used": "0",
+            "guid": "5cde1ef5-9206-42b6-81e3-12ffa1d730ad",
+            "id": "9",
+            "name": "유아이볼",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://uibowl.io/",
+            "visit_count": 0
+         }, {
+            "date_added": "13407830674673955",
+            "date_last_used": "13410236674539220",
+            "guid": "c762333d-4ed1-416a-9e07-133fab516184",
+            "id": "10",
+            "name": "ChatGPT",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://chatgpt.com/",
+            "visit_count": 38
+         }, {
+            "date_added": "13408081940125398",
+            "date_last_used": "0",
+            "guid": "d3b811f8-9b03-487d-be8a-9f9ef9bb8fa1",
+            "id": "11",
+            "name": "뤼튼",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://wrtn.ai/",
+            "visit_count": 1
+         }, {
+            "date_added": "13408441683207782",
+            "date_last_used": "0",
+            "guid": "db3d7523-8d7a-464c-86f0-317d8d567ab3",
+            "id": "12",
+            "name": "이젠아카데미DX교육센터",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://www.ezenac.co.kr/",
+            "visit_count": 1
+         }, {
+            "date_added": "13409621781923353",
+            "date_last_used": "13410615298318608",
+            "guid": "5b85a770-1286-488f-8103-3ad62746307d",
+            "id": "13",
+            "name": "FLOWUP",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://ezengn.flowup.co.kr/classroom/4479",
+            "visit_count": 10
+         }, {
+            "date_added": "13409621975131128",
+            "date_last_used": "0",
+            "guid": "004d4c47-6e14-4107-838a-011d065d60bd",
+            "id": "14",
+            "name": "프로덕트 디자인 마스터 클래스 (with 피그마)",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://tulip-paint-1f8.notion.site/202501",
+            "visit_count": 1
+         }, {
+            "date_added": "13409902071302978",
+            "date_last_used": "0",
+            "guid": "17b20ca4-cb24-46ec-b493-1b80e1a2b24d",
+            "id": "15",
+            "name": "폰트 어썸 아이콘",
+            "show_icon": false,
+            "source": "sync",
+            "type": "url",
+            "url": "https://fontawesome.com/v4/icons/",
+            "visit_count": 1
+         } ],
+         "date_added": "13423715315441303",
+         "date_last_used": "0",
+         "date_modified": "13409902071302978",
+         "guid": "0bc5d13f-2cba-5d74-951f-3f233fe6c908",
+         "id": "1",
+         "name": "즐겨찾기 모음",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "other": {
+         "children": [ {
+            "children": [  ],
+            "date_added": "13328889784653230",
+            "date_last_used": "0",
+            "date_modified": "13328889784653230",
+            "guid": "c07bd2f6-6c18-4124-b891-68401d2c50e6",
+            "id": "16",
+            "name": "Bookmark Bar",
+            "source": "unknown",
+            "type": "folder"
+         }, {
+            "children": [  ],
+            "date_added": "13328889784653774",
+            "date_last_used": "0",
+            "date_modified": "13328889784653774",
+            "guid": "028bd8ad-afd6-47ca-bbda-69310c7862ff",
+            "id": "17",
+            "name": "Other Bookmarks",
+            "source": "unknown",
+            "type": "folder"
+         }, {
+            "children": [ {
+               "date_added": "13328891024885710",
+               "date_last_used": "0",
+               "guid": "a2ed414f-0b07-47c2-bf2d-4b3c59db46dd",
+               "id": "19",
+               "name": "NAVER",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "https://www.naver.com/",
+               "visit_count": 0
+            }, {
+               "date_added": "13329731376072808",
+               "date_last_used": "0",
+               "guid": "228f4352-f65b-4948-b289-483ee8e3b5b7",
+               "id": "20",
+               "name": "세계태권도 연수원",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "http://wta.kukkiwon.or.kr/kr?lang=kr",
+               "visit_count": 0
+            }, {
+               "date_added": "13329817885222862",
+               "date_last_used": "0",
+               "guid": "df152aa6-9ecf-4e3b-996a-89336b53099c",
+               "id": "21",
+               "name": "삼성에듀",
+               "show_icon": false,
+               "source": "sync",
+               "type": "url",
+               "url": "https://www.samsungedu.com/",
+               "visit_count": 0
+            } ],
+            "date_added": "13328889784653822",
+            "date_last_used": "0",
+            "date_modified": "13329817885222862",
+            "guid": "0cf05543-32b0-4b9d-9740-83fe1b15ff92",
+            "id": "18",
+            "name": "Synced Bookmarks",
+            "source": "unknown",
+            "type": "folder"
+         } ],
+         "date_added": "13423715315441303",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "82b081ec-3dd3-529c-8475-ab6c344590dd",
+         "id": "2",
+         "name": "다른 즐겨찾기",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "synced": {
+         "children": [  ],
+         "date_added": "13423715315441303",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "4cf2e351-0e85-532b-bb37-df045d8f8d0f",
+         "id": "3",
+         "name": "모바일 즐겨찾기",
+         "source": "unknown",
+         "type": "folder"
+      },
+      "workspaces_v2": {
+         "children": [  ],
+         "date_added": "13423715315441303",
+         "date_last_used": "0",
+         "date_modified": "0",
+         "guid": "75aa6670-344f-549d-b742-660f029506ab",
+         "id": "5",
+         "name": "작업 영역",
+         "source": "unknown",
+         "type": "folder"
+      }
+   },
+   "sync_metadata": "CkEKHgiIgQISCE5yDUOeAQAAKg4QABgBIAAoBjAAOABAABIAKhhEdms3ZFQydXF5bDMxc0o5RmRnT2FnPT1IA6AGDBKtAQgVEqgBChxVbUZJUm9RcFFIZVQxWkNoNU84QWdjVHY2NlU9EiRkZjE1MmFhNi05ZWNmLTRlM2ItOTk2YS04OTMzNmI1MzA5OWMYACAAKAAw+/TjsoYxOJj147KGMUCY9eOyhjFKHENaQTVpcWdBa0JtQTFkZzhXZnRZTVpvVlo5ND1aHyIdsU9vUVJEUDIzZ2JiaFB5U0VvUTRXSmxQMDdaWT1lFOS4VMI+AmAFEq0BCBESqAEKHDd6ODRrYWVTSVJCRi96VTZubHAra2FNLzhYMD0SJDAyOGJkOGFkLWFmZDYtNDdjYS1iYmRhLTY5MzEwYzc4NjJmZhgAIAAoADD3kJ34gjE4npGd+IIxQJ6RnfiCMUocNGlPaEZTVFdtdkNWejhUWm4zYlJJcGZzc0xBPVofIh25QzBmRGIyR1BuaFJHdk02YlFtNEt1UWlEWkFrPWUAAAAAwj4CYAASrAEIEBKnAQocZVFscXhnS3JFT1diNVlGelpUancva00wMzRBPRIkYzA3YmQyZjYtNmMxOC00MTI0LWI4OTEtNjg0MDFkMmM1MGU2GAAgACgAMPmQnfiCMTjYkZ34gjFA2JGd+IIxShxnM1YyNlJFYzhIWmJmU3RvTWlxaTRzeGx1OTQ9Wh4iHHIzZDJuLzU4R3hJTXo4OHgvczBXLzhWV3NhOD1lAAAAAMI+AmAAEo4BCAISiQEKHFljU1RvbnZFU1B3cUNzNEwyY3JWaHY2OEw5OD0SJGVjYjhkNTk3LWExZDgtNWFkZS1hMjVjLTYzOGE0OWU5OGY2NxgAIAAoADCLwsfAqS44+7m2uYUwQPu5trmFMEocb1BWa2h3QlJiVjY1S0NXUjIrSU9OSFdvT3U4PVoAZQAAAADCPgJgABKuAQgPEqkBChxhY0E2TWtXKzg5dnA3WURqUWJsRU5meE9tclU9EiQxN2IyMGNhNC1jYjI0LTQ2ZWMtYjQ5My0xYjgwZTFhMmIyNGQYACAAKAAwhd3y3bAzOMbe8t2wM0DG3vLdsDNKHFFXYzZFcFY1NEc5VHF6a0tNRmxiTUhqRkE1ND1aICIe/+5PdnQ1bTVtQjNySUlPbkx1b3lHMngvK0tqQkE9ZaeHdNbCPgJgBRKuAQgOEqkBChxGWkhBdWNlU2hvOWJySkw5bzhvRnd5OXhJNUE9EiQwMDRkNGM0Ny02ZTE0LTQxMDctODM4YS0wMTFkMDY1ZDYwYmQYACAAKAAw3vWq2K8zOND3qtivM0DQ96rYrzNKHENSeFpkVUZTV3hOTktoMEllVEJDekRxbFBzND1aICIe/9xwU3NxZytacDBUN2pMTUlvcjk3T3Q3YWxlTlk9ZVWMSAPCPgJgBRKuAQgNEqkBChxKL1duK2pSK0Yybi95Z29ZK25MU1g5RWh3dzQ9EiQ1Yjg1YTc3MC0xMjg2LTQ4OGYtODEwMy0zYWQ2Mjc0NjMwN2QYACAAKAAwmdP+sbMzOLafn9ivM0C2n5/YrzNKHHpaeXBJVFRKMWV2Vy9rbnpieFdPUTBpbE85az1aICIe/7g4WE9jTFR0VnBjT2YxR095RUp3Zm1zQ1B0VlU9ZT2VCXfCPgJgBRKsAQgTEqcBChxMQWhxMVZCVVJQNy9aa1BsQnlvd3F4cHVoN289EiRhMmVkNDE0Zi0wYjA3LTQ3YzItYmYyZC00YjNjNTlkYjQ2ZGQYACAAKAAwx5S2loQxOL7s6PiCMUC+7Oj4gjFKHHV5allwd285NkF0UHRacFBONllHTFFTUEl2QT1aHiIcQkJYeGdDZ1F3RHhwWjZWMzFLaVZDUU1YdEZZPWXgD62Xwj4CYAUSrQEICBKoAQocNkxPUEJCREcvVVRvUkxvRko5RVU2VFV6dmNBPRIkOGEzOTRkZDktNTM3OS00YWNmLTlhZDItZjc2M2FlMDFhN2VmGAAgACgAMPXj06iyMzieh8f6iDFAnofH+ogxShxlNWt1M1Q0blp5UVpOcW9MaDBaZjVjV25oM289Wh8iHe1RYXRqRVdyUXBtQ1hITEpQNVE5SnZBaXg5QlU9ZUP4bYDCPgJgBRKOAQgBEokBChx5eEovNmZ2a2VjcjdrcDVFUXpCNHRXTHBkYkU9EiQwNGMxN2VjNS0xMzAzLTU0NTMtYmJjYS1iMWE3NGM4Nzc5OWIYACAAKAAwisLHwKkuOOy5trmFMEDsuba5hTBKHGFSQ1dMZ2hGOWI1SW5xS0lEdnVKL2p2UWtGYz1aAGUAAAAAwj4CYAASrQEICRKoAQocYzVNRlNSSng2a1A2eCtPS3dhOWt3VktRcDdZPRIkNWNkZTFlZjUtOTIwNi00MmI2LTgxZTMtMTJmZmExZDczMGFkGAAgACgAMJXGjYKpMziQq42CqTNAkKuNgqkzShw0NjVTWDllTUpIQlVhMzJxTXdtbUI4bFRJTU09Wh8iHftrU3VSSVFmSzIrSzNVZUFnNzR0M09RNFFvcms9ZcuoFjbCPgJgBRKtAQgMEqgBChxmb1J2a1gyWlIrTXFDR0RhZU1FUVFjT0JWQTg9EiRkYjNkNzUyMy04ZDdhLTQ2NGMtODZmMC0zMTdkOGQ1NjdhYjMYACAAKAAwstvDpaszOKLew6WrM0Ci3sOlqzNKHEpJYmthZHg3bzhxcmZtaEl6MStiQmZUUnVxUT1aHyId/3BGWExWbDZtcXF1eEdQTzhTVnhNcndvVGNnMD1le8K5n8I+AmAFEq0BCAsSqAEKHE9XYjJtNXBaMXhVbmlTYjZYTWVsQjcvNk4vaz0SJGQzYjgxMWY4LTliMDMtNDg3ZC1iZThhLTlmOWVmOWJiOGZhMRgAIAAoADCr4P75qTM41uP++akzQNbj/vmpM0ocS3hlaGswZkkzeGtQcUo0SlN6OXBhT1JsaEVBPVofIh3+Y2FDbUFQR2RydWlyaU9mNFVCWlNZQ2UxY0o4PWWfKIZJwj4CYAUSrAEIFBKnAQoceWgxbzZzK2UwVFJyOUhuVldTR0Rsck42T0IwPRIkMjI4ZjQzNTItZjY1Yi00OTQ4LWIyODktNDgzZWU4ZTNiNWI3GAAgACgAMNTrw4mGMTju68OJhjFA7uvDiYYxShxGeEZ0UkltQUZuaG1IcENEVzRhNEtoZFpIVHc9Wh4iHGNJcWdxQ3VEd2xFZzlweFNML2RBVmZoOWdnbz1l3TM6j8I+AmAFEq0BCAcSqAEKHFVua1h1cmZHWXJpZGc3QmowVzFyblpNajNMaz0SJGE2NTE0NzM1LTg0ODItNGFmMC04N2NjLTcwY2RmYjRjZTA4ORgAIAAoADCg3JqU1jE4gYfH+ogxQIGHx/qIMUoccWQxL0pQcTNBZi8wdTB3M28vayt3ZXdCMGxjPVofIh3aWE5yS1NXd2krVXdTK2Y4R245NXBQcmVtOXVZPWWLoIzRwj4CYAUSrQEIChKoAQocS25Yd3RFbWIrNHJWMmlaV2JVUGJWUW9aWEdJPRIkYzc2MjMzM2QtNGVkMS00MTZhLTllMDctMTMzZmFiNTE2MTg0GAAgACgAMIa8uf2xMzjv5paCqTNA7+aWgqkzShxudlJXL2E5RjFtOUFycFVNMytkdldMamFIUlU9Wh8iHf1QTHhvRGN3K3I0ZHlZYytKc3dic3NWUnlmdEE9ZaBJHdjCPgJgBRKOAQgFEokBChx3UkJyWkwrNlBBOWF2S2dqTlA3SlhETGNmdnM9EiQxYzI4NmViYy1mMTcwLTU3NGEtYWZiYS0yMWZiZTE2ZWYzODYYACAAKAAwooK5t6AzOIKDubegM0CCg7m3oDNKHG5teDY1c1FEdnhJOFRnRWV2K0ErbnR0b1NuND1aAGUAAAAAwj4CYAASrQEIEhKoAQocVVB6V2xVOG1HbDJ4THgyMTVKckJ1QXg4T0xzPRIkMGNmMDU1NDMtMzJiMC00YjlkLTk3NDAtODNmZTFiMTVmZjkyGAAgACgAMPiQnfiCMTi7kZ34gjFAu5Gd+IIxShwwMk1tczhzN2NoNXpIclgzZU4vL1l3bTZ1Rkk9Wh8iHdxPZ2xneTNTMlFjNCtZdlhPdm1Mby9yaG1rTWs9ZQAAAADCPgJgABKOAQgDEokBChxuamdEdTg4ZUNydlhwODZwRDdmSEdjcUZwODg9EiQxNGZiMjRkYi1kODg2LTUwNDAtYTZjOS02ZjEzNmZiOWZlYzkYACAAKAAwj8LHwKkuOMm6trmFMEDJura5hTBKHHl6TkIwMWNuNTRBN2NSVTB1VCsvUGdtVHRVbz1aAGUAAAAAwj4CYAAwADgA",
+   "version": 1
+}

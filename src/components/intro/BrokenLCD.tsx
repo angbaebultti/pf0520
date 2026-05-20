@@ -327,17 +327,17 @@ export default function BrokenLCD({ onComplete, onRevealSpace, isRevealingSpace 
     const source = document.createElement('canvas')
     source.width = width
     source.height = height
-    const sourceCtx = source.getContext('2d', { alpha: false })!
+    const sourceCtx = source.getContext('2d', { alpha: false, willReadFrequently: true })!
 
     const edge = document.createElement('canvas')
     edge.width = width
     edge.height = height
-    const edgeCtx = edge.getContext('2d')!
+    const edgeCtx = edge.getContext('2d', { willReadFrequently: true })!
 
     const frame = document.createElement('canvas')
     frame.width = width
     frame.height = height
-    const frameCtx = frame.getContext('2d', { alpha: false })!
+    const frameCtx = frame.getContext('2d', { alpha: false, willReadFrequently: true })!
 
     const scratch = document.createElement('canvas')
     scratch.width = width
