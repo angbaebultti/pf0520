@@ -1430,3 +1430,16 @@ The `void-depth-mask` CSS overlay had a `radial-gradient(ellipse 34% 36% at 50% 
 - `--control-room-opacity` CSS 변수(카메라 Z progress 기반)
 - fov 60, camera y=0, SAGE 색상(0x5b8e53)
 - cleanup: geo×4 + mat×2 + composer + renderer dispose
+
+---
+
+## 2026-05-20 GlassTunnel Canvas2D Binary Particle Rewrite
+
+- Replaced `src/components/intro/GlassTunnel.tsx` completely and removed the previous Three.js/WebGL tunnel implementation.
+- New implementation is a fixed fullscreen Canvas2D scene with `position: fixed; inset: 0`.
+- Particle system renders 370 binary string particles (`0`, `1`, `10`, `01`, `110`, `001`, etc.).
+- Particles spawn near the center vanishing point, move radially outward, grow with perspective, fade toward the edges, and reset after leaving the screen.
+- Scroll wheel interaction is preserved: scrolling down increases particle speed, scrolling up reduces it, and speed lerps back to the default.
+- Visual treatment uses cyan/blue binary text, intermittent pale white highlights, glow via `shadowBlur`/`shadowColor`, subtle center glow, faint grid, vignette, and scanlines.
+- Component keeps an optional `onComplete?()` prop for scene wiring compatibility, but the tunnel itself does not auto-complete.
+- Cleanup cancels `requestAnimationFrame` and removes `resize`/`wheel` listeners.
