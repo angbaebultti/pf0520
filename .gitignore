@@ -25,3 +25,9 @@ dist-ssr
 
 # Claude Code
 .claude
+
+.chrome-glass-check-2
+.chrome-runtime-check
+.chrome-screenshot-check
+.edge-glass-check
+.edge-runtime-check
