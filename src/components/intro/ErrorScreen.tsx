@@ -1,11 +1,12 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import charcter02Url from '@assets/charcter02.png'
 import AnalogVHSOverlay from './AnalogVHSOverlay'
 import GhostEntityRenderer from './GhostEntityRenderer'
 
 const DURATION_MS = 3000
 const GLYPHS = '01ABCDEFabcdef[]{}()<>=_*#/\\|:;!?$%&+-~^'
 const HEX = '0123456789ABCDEF'
-const MAX_PIXEL_RATIO = 1.25
+const MAX_PIXEL_RATIO = 2
 
 const LOG_FRAGMENTS = [
   'kernel panic: recursive node failure',
@@ -140,6 +141,15 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const onCompleteRef = useRef(onComplete)
   onCompleteRef.current = onComplete
+  const [isBreaking, setIsBreaking] = useState(false)
+  const [breakProgressState, setBreakProgressState] = useState(0)
+  const shouldShowBreakGhost = isBreaking || breakProgressState > 0
+
+  // Preload charcter02 immediately so it's in browser cache before the transition
+  useEffect(() => {
+    const img = new Image()
+    img.src = charcter02Url
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -155,6 +165,7 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
     let pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
     let startTime = performance.now()
     let completeTimer = 0
+    let lastBreakProgress = 0
     let blocks = buildBlocks(width, height)
     const feedbackCanvas = document.createElement('canvas')
     const feedbackContext = feedbackCanvas.getContext('2d')
@@ -272,6 +283,14 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
       const progress = Math.min(elapsed / durationMs, 1)
       const breakProgress = breakDurationMs > 0 ? Math.min(Math.max((elapsed - durationMs) / breakDurationMs, 0), 1) : 0
       const isBreaking = breakProgress > 0
+      if (
+        Math.abs(breakProgress - lastBreakProgress) > 0.015 ||
+        breakProgress === 0 ||
+        breakProgress === 1
+      ) {
+        lastBreakProgress = breakProgress
+        setBreakProgressState(breakProgress)
+      }
       const intensity = Math.min(1, progress * progress * 1.55)
       const peak = Math.max(0, (progress - 0.72) / 0.28)
       const rupture = Math.sin(breakProgress * Math.PI)
@@ -371,13 +390,17 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
 
     resize()
     startTime = performance.now()
+    setIsBreaking(false)
+    setBreakProgressState(0)
     completeTimer = window.setTimeout(() => onCompleteRef.current?.(), durationMs + breakDurationMs)
+    const breakTimer = window.setTimeout(() => setIsBreaking(true), durationMs)
     animationFrame = requestAnimationFrame(draw)
     window.addEventListener('resize', resize)
 
     return () => {
       cancelAnimationFrame(animationFrame)
       window.clearTimeout(completeTimer)
+      window.clearTimeout(breakTimer)
       window.removeEventListener('resize', resize)
     }
   }, [breakDurationMs, durationMs])
@@ -415,7 +438,13 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
           opacity: 0.38,
         }}
       />
-      <GhostEntityRenderer zIndex={101} />
+      <GhostEntityRenderer
+        zIndex={101}
+        imageUrl={shouldShowBreakGhost ? charcter02Url : undefined}
+        alphaBoost={shouldShowBreakGhost ? 1.6 : 1}
+        breakDurationMs={breakDurationMs}
+        breakProgress={breakProgressState}
+      />
       <AnalogVHSOverlay zIndex={102} />
     </div>
   )

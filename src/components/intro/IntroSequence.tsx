@@ -14,7 +14,7 @@ export default function IntroSequence() {
   return (
     <>
       {phase === 'error' && (
-        <ErrorScreen durationMs={3000} breakDurationMs={760} onComplete={() => setPhase('tunnel')} />
+        <ErrorScreen durationMs={3000} breakDurationMs={3000} onComplete={() => setPhase('tunnel')} />
       )}
       {phase === 'tunnel' && <GlassTunnel />}
     </>

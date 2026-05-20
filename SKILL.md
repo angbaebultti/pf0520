@@ -1303,6 +1303,69 @@ The `void-depth-mask` CSS overlay had a `radial-gradient(ellipse 34% 36% at 50% 
 
 ---
 
+## 2026-05-20 Tunnel Scene Redesign (scroll-wheel + sage green + bloom)
+
+- **그리드**: 가로 8등분(`GRID_CROSS=8`), 세로(깊이) 12등분(`GRID_DEPTH=12`). 터널 크기 width 8 × height 6 × length 80.
+- **색상**: `#00ff41` → `#5B8E53` (세이지 그린, hex `0x5b8e53`). 머티리얼·포인트라이트·폴백 CSS 모두 교체.
+- **카메라 이동 방식 변경**: 자동 전진 완전 제거. `wheel` 이벤트(`passive: false`, `preventDefault`)로 교체. `e.deltaY * 0.05` 누적 → `THREE.MathUtils.clamp([CAM_Z_MIN, 0])` → `currentZ`가 lerp 0.08로 추적. scroll-track div 제거 (더 이상 scroll 기반 카메라 불필요).
+- **`--control-room-opacity`**: scroll progress 대신 카메라 Z progress(`(-currentZ)/(TUNNEL_LENGTH-1)`) 기반으로 전환. 터널 90-100% 지점에서 컨트롤룸 페이드인.
+- **네온 글로우**: 각 면(floor/ceiling/left/right)에 동일 geometry 공유 메시를 두 개 생성. `matMain`(opacity 0.9 normal), `matGlow`(opacity 0.18, `AdditiveBlending`, `depthWrite:false`). 블렌딩으로 선 밝기 누적.
+- **bloom 후처리**: `EffectComposer` + `RenderPass` + `UnrealBloomPass(strength 0.4, radius 0.6, threshold 0.3)`. `composer.render()`로 렌더. resize 시 `composer.setSize()` 함께 호출.
+- **fog 제거**: `FogExp2` 삭제. far clip 200으로 축소.
+- **카메라**: fov 62, y=0 (정중앙), near 0.1.
+- **렌더러**: `antialias: true`, pixel ratio 최대 1.25.
+- **cleanup**: `composer.dispose()` + 4개 geometry + 2개 material + `renderer.dispose()` + `cancelAnimationFrame` + `wheel`·`resize` listener 제거.
+
+---
+
+## 2026-05-20 charcter02 Transition Fix (GhostEntityRenderer dual-effect refactor)
+
+**Bugs fixed:**
+1. charcter02 did not appear at all during the break period.
+2. CSS `filter: brightness(1.3)` on the canvas broke `mix-blend-mode: screen` due to `#root { isolation: isolate }` creating a stacking context boundary — the canvas composited normally (invisible on dark background) instead of screen-blending.
+
+**Root cause of bug 1:** Previous `useEffect([src])` approach restarted the entire animation (cancel RAF → restart → image load → `ready=false` blank frames) when `imageUrl` changed. With only a 760ms window, the blank period + image load timing made charcter02 either invisible or barely seen.
+
+**Fix — dual-effect pattern in `GhostEntityRenderer.tsx`:**
+- Effect 1 (`[]`): creates the shared off-screen ghost canvas, stores it in `ghostCanvasRef`/`ghostCtxRef`, runs the RAF animation loop forever. Never restarts.
+- Effect 2 (`[imageUrl]`): loads the image and rewrites the ghost canvas pixels in-place via `getImageData`/`putImageData`. Does NOT reset `readyRef` while loading — the animation keeps drawing the old texture until the new one is atomically written. `readyRef.current = true` is set only after `putImageData` completes.
+- On initial mount, Effect 1 runs first (declaration order guarantees), setting refs before Effect 2 reads them.
+- Removed `canvasFilter` prop entirely. brightness(1.3) baked into ghost texture pixel values (`bake = 1.3` multiplier on alpha and RGB channels for charcter02).
+
+**Fix — `ErrorScreen.tsx`:**
+- Added a dedicated preload `useEffect([])` that fires `new Image().src = charcter02Url` on mount, ensuring the image is in browser cache long before the 3000ms break timer fires.
+- Removed `canvasFilter` prop from `GhostEntityRenderer`.
+- Raised `alphaBoost` from 1.35 → 1.6 for the break phase (more visible, compensates for removed CSS filter).
+
+---
+
+## 2026-05-20 Error→Tunnel Transition: charcter02 Image Swap
+
+- Identified that `GhostEntityRenderer.tsx` renders `character.png` with glitch/CRT/scanline effects inside `ErrorScreen`. The "transition gap" is the `breakDurationMs={760}` period after the error animation ends before `onComplete` fires.
+- Added `imageUrl`, `alphaBoost`, `canvasFilter` props to `GhostEntityRenderer`. `alphaBoostRef` pattern (ref updated each render) lets the running `requestAnimationFrame` loop pick up the new multiplier without restarting. When `imageUrl` changes, `useEffect([src])` re-runs, reloading and rebuilding the ghost texture with the new image.
+- In `ErrorScreen`, added `useState(false)` (`isBreaking`) + `window.setTimeout(() => setIsBreaking(true), durationMs)` — fires exactly when the break period starts (3000ms mark). Cleanup calls `clearTimeout` on both the complete timer and the break timer.
+- During break phase (`isBreaking === true`): passes `imageUrl={charcter02Url}`, `alphaBoost={1.35}` (character ~51–100% vs original 38–76%), `canvasFilter="brightness(1.3)"` (eye-region emphasis). All glitch/CRT/scanline draw logic in `GhostEntityRenderer` remains unchanged.
+- Error scene (`isBreaking === false`): `character.png`, default alpha, no extra filter — untouched.
+- Tunnel scene (`GlassTunnel`): no character rendered — untouched.
+
+---
+
+## 2026-05-20 Rectangular Grid Corridor Tunnel Rewrite
+
+- Replaced `src/components/intro/GlassTunnel.tsx` with a vanilla Three.js (no R3F) rectangular corridor wireframe tunnel.
+- Dropped React Three Fiber `Canvas`; scene is now mounted via `useEffect` on a plain `<canvas>` element with manual `renderer.dispose()` and `cancelAnimationFrame` cleanup on unmount.
+- Tunnel structure: four `PlaneGeometry` faces (floor, ceiling, left wall, right wall) sharing one `MeshBasicMaterial` — wireframe, color `#00ff41`, opacity 0.85. Width 6, height 4, length 80. Grid: 20 cross-sections × 40 depth segments per face.
+- Camera: `PerspectiveCamera` fov 75, auto-advances at 3 units/sec along -Z; seamless loop — snaps back to z=0 when within 0.5 units of the far end.
+- Mouse parallax: lerp factor 0.05, max sway ±0.3 on X/Y axes.
+- Atmosphere: `FogExp2` density 0.03, black background, single `PointLight` `#00ff41` following 10 units ahead of camera.
+- Slow tunnel roll: `tunnelGroup.rotation.z += 0.0003` per frame (≈1°/sec at 60fps).
+- Scroll → `--control-room-opacity` fade logic preserved from previous pass (600vh scroll track, smoothstep 90%–100%).
+- Removed all previous scene elements: warped ring tunnel, neural strands, floating debris, ghost figures, `EffectComposer` postprocessing, `AnalogOverlay` canvas.
+- `TunnelFallback` updated to a simple CSS perspective green grid for no-WebGL environments.
+- No characters or silhouettes; `ErrorScreen` phase wiring in `IntroSequence.tsx` untouched.
+
+---
+
 ## 2026-05-20 Green CRT ErrorScreen Rewrite
 
 - Replaced `src/components/intro/ErrorScreen.tsx` with a fullscreen Canvas2D retro crash screen.
@@ -1313,3 +1376,57 @@ The `void-depth-mask` CSS overlay had a `radial-gradient(ellipse 34% 36% at 50% 
 - Added analog artifacts: scanlines, tracking bar, static speckles, horizontal tearing, compression-like blocks, frame jitter, persistent ghost trails, and dark monitor vignette.
 - Added a timeout-based completion guard so the transition is reliable even if `requestAnimationFrame` is throttled.
 - Verified production build and live dev-server DOM: after about 7s, `ErrorScreen` unmounts and `BrokenLCD` canvas is active.
+
+---
+
+## 2026-05-20 charcter02 Break Visibility Update
+
+- `IntroSequence.tsx` calls `ErrorScreen` with `breakDurationMs={3000}` so the transition ghost has a full three-second window before the tunnel phase.
+- `ErrorScreen.tsx` exposes a throttled `breakProgress` state from the Canvas2D loop and passes it into `GhostEntityRenderer`, instead of relying only on a boolean break flag.
+- `GhostEntityRenderer.tsx` uses `breakProgress` and `breakDurationMs` for charcter02 timing: 0.4s fade in, middle hold, final 0.5s fade out.
+- Desktop and mobile share the same ghost render path; `MAX_PIXEL_RATIO` is raised from `1.25` to `2` for sharper high-DPI desktop rendering.
+
+---
+
+## 2026-05-20 GlassTunnel Grid Method: PlaneGeometry → LineSegments
+
+- **문제**: `PlaneGeometry` + `wireframe: true` 방식은 쿼드를 삼각형 두 개로 분할하기 때문에 격자에 대각선이 나타남. 정사각형 타일 격자 구현이 불가.
+- **해결**: `THREE.LineSegments` + 수동으로 구성한 `THREE.BufferGeometry`로 완전 교체. 수평·수직 선분만 명시적으로 정의하여 대각선 원천 제거.
+
+### 그리드 빌더 함수
+
+**`buildHGrid(y)`** — 바닥(y=-3) / 천장(y=+3):
+- `(COLS+1)`개 깊이 선분(Z 방향, X 간격): 카메라 앞→끝까지 뻗는 세로줄
+- `(DEPTH+1)`개 크로스 선분(X 방향, Z 간격): 단면 가로줄
+- 각 선분: `(x, y, 0) → (x, y, -L)` 또는 `(xMin, y, z) → (xMax, y, z)`
+
+**`buildVGrid(x)`** — 좌벽(x=-4) / 우벽(x=+4):
+- `(ROWS+1)`개 깊이 선분(Z 방향, Y 간격)
+- `(DEPTH+1)`개 크로스 선분(Y 방향, Z 간격)
+
+### 파라미터
+
+| 상수 | 값 | 역할 |
+|------|-----|------|
+| `CELL` | 1 | 1 world unit = 정사각형 1칸 |
+| `W` | 8 | 터널 폭 (x: -4 → +4) |
+| `H` | 6 | 터널 높이 (y: -3 → +3) |
+| `L` | 80 | 터널 깊이 |
+| `COLS` | 8 | 바닥/천장 X 칸 수 |
+| `ROWS` | 6 | 벽 Y 칸 수 |
+| `DEPTH` | 80 | Z 단면 수 |
+
+### `addFace(geo)` 패턴
+
+동일 geometry를 두 `LineSegments`에 공유:
+- `matLine`: opacity 0.85, 일반 blending
+- `matGlow`: opacity 0.15, `AdditiveBlending`, `depthWrite: false`
+- 두 레이어 모두 `frustumCulled = false` — 선분이 카메라 위치를 가로질러 뻗어 있어 frustum culling이 오작동하는 것을 방지
+
+### 유지된 기능
+
+- 휠 스크롤 카메라(`targetZ` 누적, lerp 0.08, clamp)
+- `EffectComposer` + `UnrealBloomPass`(0.4 / 0.6 / 0.3)
+- `--control-room-opacity` CSS 변수(카메라 Z progress 기반)
+- fov 60, camera y=0, SAGE 색상(0x5b8e53)
+- cleanup: geo×4 + mat×2 + composer + renderer dispose
