@@ -2,7 +2,6 @@ import { useEffect, useRef, type FC } from 'react'
 import * as THREE from 'three'
 import character03Url from '@assets/charcter03.png'
 import character04Url from '@assets/charcter04.png'
-import meUrl from '@assets/me.jpeg'
 
 interface GlassTunnelProps {
   onComplete?: () => void
@@ -10,15 +9,14 @@ interface GlassTunnelProps {
 
 const TUNNEL_WIDTH = 9
 const TUNNEL_HEIGHT = 6
-const TUNNEL_LENGTH = 46
+const TUNNEL_LENGTH = 86
 const GRID_STEP = 2
 const CAMERA_START_Z = 2.2
 const CHARACTER_END_Z = -28
-const CAMERA_END_Z = -42
-const STAR_COUNT = 420
-const PHASE_TUNNEL_END = 0.7
-const PHASE_REVEAL_START = 0.8
-const ASCII_CHARS = '@#%XO+=:. '
+const CAMERA_END_Z = -72
+const STAR_COUNT = 500
+const STAR_NEAR_LIMIT_Z = -7
+const CONTROL_ROOM_REVEAL_START = 0.78
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 const smoothstep = (edge0: number, edge1: number, value: number) => {
@@ -69,11 +67,13 @@ const buildStarFieldGeometry = () => {
   const color = new THREE.Color()
 
   for (let i = 0; i < STAR_COUNT; i += 1) {
-    const sideBias = Math.random() < 0.72
-    const x = (Math.random() - 0.5) * (sideBias ? 26 : 16)
-    const y = (Math.random() - 0.5) * (sideBias ? 18 : 11)
-    const z = -Math.random() * (TUNNEL_LENGTH + 18) + 5
-    const brightness = 0.35 + Math.random() * 0.65
+    const depth = Math.random()
+    const sideBias = Math.random() < 0.68
+    const z = STAR_NEAR_LIMIT_Z - depth * (TUNNEL_LENGTH + 26)
+    const depthSpread = 1 + depth * 2.15
+    const x = (Math.random() - 0.5) * (sideBias ? 26 : 17) * depthSpread
+    const y = (Math.random() - 0.5) * (sideBias ? 18 : 12) * depthSpread
+    const brightness = 0.34 + Math.random() * 0.62
 
     positions.push(x, y, z)
     color.setRGB(0.72 * brightness, 0.86 * brightness, brightness)
@@ -118,13 +118,10 @@ const drawCanvasFallback = (canvas: HTMLCanvasElement) => {
 
 const GlassTunnel: FC<GlassTunnelProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const portraitCanvasRef = useRef<HTMLCanvasElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
-    const portraitCanvas = portraitCanvasRef.current
-    const portraitContext = portraitCanvas?.getContext('2d')
-    if (!canvas || !portraitCanvas || !portraitContext) return
+    if (!canvas) return
 
     let renderer: THREE.WebGLRenderer
     try {
@@ -174,11 +171,11 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
 
     const starGeometry = buildStarFieldGeometry()
     const starMaterial = new THREE.PointsMaterial({
-      size: 0.045,
-      sizeAttenuation: true,
+      size: 1.75,
+      sizeAttenuation: false,
       vertexColors: true,
       transparent: true,
-      opacity: 0.72,
+      opacity: 0.78,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
@@ -229,56 +226,15 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     let currentZ = CAMERA_START_Z
     let animationId = 0
     let isAnimating = false
-    const meImage = new Image()
-    let isMeLoaded = false
-    const asciiCanvas = document.createElement('canvas')
-    const asciiContext = asciiCanvas.getContext('2d', { willReadFrequently: true })
-    let asciiGlyphs: Array<{ char: string; brightness: number }> = []
-    let asciiCols = 0
-    let asciiRows = 0
-
-    const buildAsciiGlyphs = () => {
-      if (!asciiContext || !meImage.naturalWidth || !meImage.naturalHeight) return
-
-      asciiCols = 64
-      asciiRows = Math.max(1, Math.round(asciiCols * (meImage.naturalHeight / meImage.naturalWidth) * 0.52))
-      asciiCanvas.width = asciiCols
-      asciiCanvas.height = asciiRows
-      asciiContext.clearRect(0, 0, asciiCols, asciiRows)
-      asciiContext.drawImage(meImage, 0, 0, asciiCols, asciiRows)
-
-      const imageData = asciiContext.getImageData(0, 0, asciiCols, asciiRows).data
-      asciiGlyphs = Array.from({ length: asciiCols * asciiRows }, (_, index) => {
-        const pixelIndex = index * 4
-        const brightness =
-          (imageData[pixelIndex] * 0.2126 + imageData[pixelIndex + 1] * 0.7152 + imageData[pixelIndex + 2] * 0.0722) / 255
-        const charIndex = clamp(Math.floor(brightness * (ASCII_CHARS.length - 1)), 0, ASCII_CHARS.length - 1)
-        return { char: ASCII_CHARS[charIndex], brightness }
-      })
-    }
-
-    meImage.src = meUrl
-    meImage.onload = () => {
-      isMeLoaded = true
-      buildAsciiGlyphs()
-      render()
-    }
 
     const getSequenceProgress = () => clamp((CAMERA_START_Z - currentZ) / (CAMERA_START_Z - CAMERA_END_Z), 0, 1)
 
     const resizeCanvases = () => {
       const rendererPixelRatio = Math.min(window.devicePixelRatio || 1, 1.25)
-      const portraitPixelRatio = 1
       renderer.setPixelRatio(rendererPixelRatio)
       renderer.setSize(window.innerWidth, window.innerHeight, false)
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
-
-      portraitCanvas.width = Math.max(1, Math.floor(window.innerWidth * portraitPixelRatio))
-      portraitCanvas.height = Math.max(1, Math.floor(window.innerHeight * portraitPixelRatio))
-      portraitCanvas.style.width = `${window.innerWidth}px`
-      portraitCanvas.style.height = `${window.innerHeight}px`
-      portraitContext.setTransform(portraitPixelRatio, 0, 0, portraitPixelRatio, 0, 0)
     }
 
     const updateCharacter = () => {
@@ -330,108 +286,6 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       })
     }
 
-    const drawPortraitReveal = () => {
-      const width = window.innerWidth
-      const height = window.innerHeight
-      const sequenceProgress = getSequenceProgress()
-      const arrivalProgress = clamp((sequenceProgress - PHASE_TUNNEL_END) / (1 - PHASE_TUNNEL_END), 0, 1)
-      const revealProgress = clamp((sequenceProgress - PHASE_REVEAL_START) / (1 - PHASE_REVEAL_START), 0, 1)
-      const reveal = smoothstep(0.08, 1, revealProgress)
-
-      portraitContext.clearRect(0, 0, width, height)
-      if (!isMeLoaded || sequenceProgress < PHASE_TUNNEL_END) {
-        portraitCanvas.style.opacity = '0'
-        return
-      }
-
-      portraitContext.globalCompositeOperation = 'source-over'
-      portraitContext.fillStyle = `rgba(4, 8, 18, ${0.18 + reveal * 0.16})`
-      portraitContext.fillRect(0, 0, width, height)
-
-      const imageRatio = meImage.naturalWidth / meImage.naturalHeight
-      const targetHeight = Math.min(height * 0.78, width * 0.92 / imageRatio)
-      const targetWidth = targetHeight * imageRatio
-      const x = (width - targetWidth) * 0.5
-      const y = (height - targetHeight) * 0.5
-      const clarity = smoothstep(0.16, 1, reveal)
-      const readable = smoothstep(0.32, 1, reveal)
-      const asciiShift = targetHeight * 1.18 * revealProgress
-      const asciiOpacity = 1 - smoothstep(0.72, 1, revealProgress) * 0.92
-
-      portraitContext.save()
-      portraitContext.globalAlpha = 0.06 + readable * 0.18
-      portraitContext.filter = `grayscale(1) blur(${18 - clarity * 10}px) brightness(${0.62 + clarity * 0.18}) contrast(${0.62 + clarity * 0.16})`
-      portraitContext.drawImage(
-        meImage,
-        x - targetWidth * 0.015,
-        y - targetHeight * 0.015,
-        targetWidth * 1.03,
-        targetHeight * 1.03,
-      )
-      portraitContext.restore()
-
-      portraitContext.save()
-      portraitContext.globalAlpha = 0.04 + readable * 0.92
-      portraitContext.filter = `grayscale(${0.98 - clarity * 0.18}) blur(${12 - clarity * 12}px) contrast(${0.5 + clarity * 0.62}) brightness(${0.62 + clarity * 0.42}) saturate(${0.32 + clarity * 0.4})`
-      portraitContext.drawImage(meImage, x, y, targetWidth, targetHeight)
-      portraitContext.restore()
-
-      if (asciiGlyphs.length > 0 && asciiCols > 0 && asciiRows > 0) {
-        const cellX = targetWidth / asciiCols
-        const cellY = targetHeight / asciiRows
-        const fontSize = clamp(cellY * 0.92, 6, 12)
-        portraitContext.save()
-        portraitContext.beginPath()
-        portraitContext.rect(x, y, targetWidth, targetHeight)
-        portraitContext.clip()
-        portraitContext.globalCompositeOperation = 'screen'
-        portraitContext.font = `${fontSize}px Consolas, 'Courier New', monospace`
-        portraitContext.textAlign = 'center'
-        portraitContext.textBaseline = 'middle'
-        portraitContext.shadowColor = 'rgba(210, 235, 255, 0.5)'
-        portraitContext.shadowBlur = 3
-
-        for (let row = 0; row < asciiRows; row += 1) {
-          const py = y + row * cellY + cellY * 0.5 + asciiShift
-          if (py < y - cellY || py > y + targetHeight + cellY) continue
-
-          const rowFade = clamp((y + targetHeight - py) / (targetHeight * 0.24), 0, 1)
-          const slideFade = clamp((py - y + cellY * 2) / (targetHeight * 0.18), 0, 1)
-          const lineAlpha = asciiOpacity * rowFade * slideFade
-          if (lineAlpha <= 0.01) continue
-
-          for (let col = 0; col < asciiCols; col += 1) {
-            const { char, brightness } = asciiGlyphs[row * asciiCols + col]
-            if (char === ' ') continue
-
-            const noise = Math.sin((row + 1) * 18.31 + (col + 1) * 4.79 + arrivalProgress * 9.4)
-            const px = x + col * cellX + cellX * 0.5 + noise * 0.45 * (1 - clarity)
-            const ink = 0.32 + (1 - brightness) * 0.58
-            portraitContext.fillStyle = `rgba(225, 238, 248, ${lineAlpha * ink})`
-            portraitContext.fillText(char, px, py)
-          }
-        }
-        portraitContext.restore()
-      }
-
-      const grainWidth = Math.max(1, Math.floor(targetWidth))
-      const grainHeight = Math.max(1, Math.floor(targetHeight))
-      portraitContext.fillStyle = `rgba(210, 226, 255, ${0.014 * (1 - reveal) + 0.008})`
-      for (let grain = 0; grain < 140; grain += 1) {
-        const px = x + ((grain * 97) % grainWidth)
-        const py = y + ((grain * 193) % grainHeight)
-        portraitContext.fillRect(px, py, 1, 1)
-      }
-
-      portraitContext.globalAlpha = 0.055 * (1 - reveal) + 0.025
-      portraitContext.fillStyle = '#000'
-      for (let sy = 0; sy < height; sy += 4) {
-        portraitContext.fillRect(0, sy, width, 1)
-      }
-      portraitContext.globalAlpha = 1
-      portraitCanvas.style.opacity = String(smoothstep(0, 0.16, arrivalProgress) * 0.96)
-    }
-
     const render = () => {
       if (renderer.getContext().isContextLost()) {
         drawCanvasFallback(canvas)
@@ -439,15 +293,16 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       }
 
       const sequenceProgress = getSequenceProgress()
-      const tunnelProgress = clamp(sequenceProgress / PHASE_TUNNEL_END, 0, 1)
-      const cameraZ = CAMERA_START_Z + (CHARACTER_END_Z - CAMERA_START_Z) * tunnelProgress
+      const cameraZ = CAMERA_START_Z + (CAMERA_END_Z - CAMERA_START_Z) * sequenceProgress
+      const controlRoomOpacity = smoothstep(CONTROL_ROOM_REVEAL_START, 1, sequenceProgress)
 
       camera.position.z = cameraZ
       camera.lookAt(0, 0, cameraZ - 28)
       stars.position.z = (CAMERA_START_Z - cameraZ) * 0.18
       updateCharacter()
       renderer.render(scene, camera)
-      drawPortraitReveal()
+      canvas.style.opacity = String(1 - controlRoomOpacity * 0.92)
+      document.documentElement.style.setProperty('--control-room-opacity', String(controlRoomOpacity))
     }
 
     const animateToTarget = () => {
@@ -491,6 +346,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
 
     return () => {
       cancelAnimationFrame(animationId)
+      document.documentElement.style.setProperty('--control-room-opacity', '0')
       canvas.removeEventListener('webglcontextlost', onContextLost)
       window.removeEventListener('resize', onResize)
       window.removeEventListener('wheel', onWheel)
@@ -523,20 +379,6 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
           pointerEvents: 'none',
           background: '#000',
           display: 'block',
-        }}
-      />
-      <canvas
-        ref={portraitCanvasRef}
-        aria-hidden="true"
-        style={{
-          position: 'fixed',
-          inset: 0,
-          width: '100vw',
-          height: '100vh',
-          zIndex: 1,
-          pointerEvents: 'none',
-          opacity: 0,
-          mixBlendMode: 'normal',
         }}
       />
     </>
