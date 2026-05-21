@@ -5,20 +5,18 @@
   z-index: 7;
   min-height: 100vh;
   overflow: hidden;
-  pointer-events: none;
-  color: #f2f0ed;
+  color: #f4f2ef;
   font-family:
     Arial Black,
     Impact,
     system-ui,
     sans-serif;
   background:
-    radial-gradient(ellipse at 50% 58%, rgba(19, 210, 178, 0.24), transparent 34%),
-    linear-gradient(180deg, #071216 0%, #031a1d 42%, #00090c 100%);
+    radial-gradient(ellipse at 50% 42%, rgba(205, 219, 188, 0.1), transparent 30%),
+    linear-gradient(180deg, #171918 0%, #090b0b 52%, #020303 100%);
   opacity: var(--room-opacity);
-  transform: scale(calc(1.04 - var(--room-opacity) * 0.04));
-  filter: brightness(calc(0.58 + var(--room-opacity) * 0.42)) saturate(calc(0.76 + var(--room-opacity) * 0.44))
-    blur(calc((1 - var(--room-opacity)) * 1.6px));
+  transform: scale(calc(1.035 - var(--room-opacity) * 0.035));
+  filter: brightness(calc(0.62 + var(--room-opacity) * 0.38)) blur(calc((1 - var(--room-opacity)) * 1.4px));
   transition:
     opacity 0.18s linear,
     transform 0.18s linear,
@@ -34,327 +32,187 @@
 }
 
 .control-room::before {
-  z-index: 8;
+  z-index: 4;
   background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.7), transparent 18%, transparent 72%, rgba(0, 0, 0, 0.54)),
-    radial-gradient(ellipse at 50% 48%, transparent 0 45%, rgba(0, 0, 0, 0.72) 100%);
+    linear-gradient(90deg, rgba(0, 0, 0, 0.76), transparent 24% 74%, rgba(0, 0, 0, 0.72)),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.58), transparent 18% 68%, rgba(0, 0, 0, 0.82)),
+    radial-gradient(ellipse at 50% 43%, transparent 0 27%, rgba(0, 0, 0, 0.34) 62%, rgba(0, 0, 0, 0.76) 100%);
 }
 
 .control-room::after {
-  z-index: 9;
+  z-index: 7;
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(91, 229, 255, 0.045) 0,
-      rgba(91, 229, 255, 0.045) 1px,
+      rgba(255, 255, 255, 0.035) 0,
+      rgba(255, 255, 255, 0.035) 1px,
       transparent 1px,
-      transparent 5px
+      transparent 4px
     ),
-    linear-gradient(90deg, rgba(0, 205, 255, 0.1), transparent 18% 82%, rgba(35, 255, 177, 0.1));
-  mix-blend-mode: screen;
-  opacity: 0.5;
+    radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(0, 0, 0, 0.52) 100%);
+  mix-blend-mode: overlay;
+  opacity: 0.56;
 }
 
-.control-room__stars {
+.control-room__header {
   position: absolute;
-  inset: -10%;
-  z-index: 1;
-  background:
-    radial-gradient(circle at 6% 11%, #38caff 0 1.5px, transparent 2px),
-    radial-gradient(circle at 22% 14%, #20d6bd 0 1px, transparent 1.5px),
-    radial-gradient(circle at 48% 8%, #52e7ff 0 1.5px, transparent 2px),
-    radial-gradient(circle at 76% 13%, #2ee6b8 0 1.5px, transparent 2px),
-    radial-gradient(circle at 92% 10%, #38caff 0 1px, transparent 1.5px),
-    radial-gradient(circle at 15% 34%, #1d7f9a 0 1px, transparent 1.5px),
-    radial-gradient(circle at 85% 31%, #167f67 0 1px, transparent 1.5px);
-  background-size: 110px 92px;
-  opacity: 0.72;
+  top: clamp(24px, 3.2vw, 54px);
+  left: clamp(24px, 4vw, 78px);
+  right: clamp(24px, 4vw, 78px);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: auto;
 }
 
 .control-room__nav {
-  position: absolute;
-  top: clamp(16px, 2.5vw, 34px);
-  left: 50%;
-  z-index: 12;
   display: flex;
   align-items: center;
-  gap: clamp(14px, 1.8vw, 28px);
-  width: min(188px, 56vw);
-  height: 44px;
-  padding: 0 14px;
-  background: rgba(22, 22, 22, 0.86);
-  border-radius: 5px;
-  box-shadow:
-    inset 0 0 0 1px rgba(255, 255, 255, 0.035),
-    0 12px 28px rgba(0, 0, 0, 0.38);
-  transform: translateX(-50%);
-}
-
-.control-room__brand {
-  color: #f4f0ec;
-  font-size: 22px;
-  font-weight: 950;
-  line-height: 1;
-  letter-spacing: 0;
-}
-
-.control-room__brand span {
-  color: #38e6c6;
-}
-
-.control-room__nav a,
-.control-room__nav button {
-  color: rgba(240, 238, 234, 0.68);
+  gap: clamp(14px, 1.5vw, 24px);
+  color: rgba(255, 255, 255, 0.76);
   font-family: Arial, system-ui, sans-serif;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: clamp(13px, 0.95vw, 17px);
+  font-weight: 800;
+}
+
+.control-room__nav a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.control-room__nav a[aria-current='page'] {
+  color: #fff;
+  text-decoration: underline;
+  text-underline-offset: 4px;
 }
 
 .control-room__nav button {
-  margin-left: auto;
-  cursor: default;
-}
-
-.cockpit {
-  position: absolute;
-  inset: 0;
-  z-index: 3;
-  overflow: hidden;
-  perspective: 1200px;
-  background:
-    linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0 13%, transparent 34%),
-    radial-gradient(ellipse at 50% 85%, rgba(0, 0, 0, 0.92), transparent 30%);
-}
-
-.cockpit__ceiling {
-  position: absolute;
-  top: 7%;
-  left: 34%;
-  width: 32%;
-  height: 16%;
-  border: 2px solid rgba(18, 8, 5, 0.92);
-  border-top: 0;
-  border-radius: 0 0 24px 24px;
+  min-width: clamp(96px, 7vw, 134px);
+  height: clamp(40px, 3vw, 54px);
+  padding: 0 24px;
+  color: #f8f7f3;
+  font: inherit;
+  border: 2px solid rgba(255, 255, 255, 0.54);
+  border-radius: 999px;
   box-shadow:
-    inset 0 -22px 34px rgba(0, 0, 0, 0.42),
-    0 20px 54px rgba(0, 0, 0, 0.52);
-  transform: perspective(420px) rotateX(56deg);
+    inset 0 0 18px rgba(255, 255, 255, 0.06),
+    0 0 22px rgba(209, 255, 177, 0.08);
 }
 
-.cockpit__window-belt {
-  position: absolute;
-  top: clamp(116px, 17vh, 180px);
-  left: 0;
-  z-index: 5;
-  width: 100%;
-  height: clamp(330px, 52vh, 560px);
-  overflow: hidden;
-  transform: rotate(-1.2deg);
-}
-
-.cockpit__window-track {
-  display: flex;
-  width: max-content;
-  height: 100%;
-  gap: clamp(34px, 4vw, 78px);
-  padding-inline: clamp(20px, 5vw, 96px);
-  animation: cockpit-window-belt 26s linear infinite;
-  will-change: transform;
-}
-
-.cockpit__window {
-  --window-shape: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
-  position: relative;
-  flex: 0 0 min(25vw, 500px);
-  display: grid;
-  height: 100%;
-  padding: clamp(7px, 0.8vw, 13px);
-  place-items: stretch;
-  background:
-    linear-gradient(180deg, rgba(8, 22, 22, 0.98), rgba(2, 8, 10, 0.98)),
-    linear-gradient(135deg, rgba(57, 226, 207, 0.42), rgba(13, 101, 130, 0.18));
-  clip-path: var(--window-shape);
-  box-shadow:
-    0 0 0 1px rgba(57, 226, 207, 0.24),
-    0 28px 46px rgba(0, 0, 0, 0.72),
-    0 0 34px rgba(0, 0, 0, 0.6),
-    inset 0 0 28px rgba(0, 0, 0, 0.82);
-  transform-origin: center;
-}
-
-.cockpit__window::before {
-  position: absolute;
-  inset: clamp(7px, 0.8vw, 13px);
-  z-index: 0;
-  content: '';
-  background:
-    radial-gradient(ellipse at 50% 42%, rgba(83, 226, 255, 0.24), transparent 54%),
-    linear-gradient(180deg, #1397b7, #075067 86%);
-  clip-path: var(--window-shape);
-  box-shadow: inset 0 0 34px rgba(76, 229, 255, 0.24);
-}
-
-.cockpit__window::after {
+.control-room__hero {
   position: absolute;
   inset: 0;
   z-index: 2;
-  content: '';
-  pointer-events: none;
-  background:
-    repeating-linear-gradient(to bottom, rgba(130, 245, 255, 0.045) 0, rgba(130, 245, 255, 0.045) 1px, transparent 1px, transparent 5px),
-    linear-gradient(90deg, rgba(0, 0, 0, 0.26), transparent 18% 82%, rgba(0, 0, 0, 0.22));
-  mix-blend-mode: screen;
-  opacity: 0.5;
-}
-
-.cockpit__window img {
-  position: absolute;
-  inset: clamp(7px, 0.8vw, 13px);
-  z-index: 1;
-  width: auto;
-  height: auto;
-  min-width: 0;
-  min-height: 0;
-  object-fit: cover;
-  clip-path: var(--window-shape);
-  filter: saturate(0.82) contrast(1.1) brightness(0.86);
-  opacity: 0.92;
-}
-
-@keyframes cockpit-window-belt {
-  from {
-    transform: translateX(0);
-  }
-
-  to {
-    transform: translateX(calc(-50% - clamp(17px, 2vw, 39px)));
-  }
-}
-
-.cockpit__console {
-  position: absolute;
-  bottom: 7%;
-  height: 26%;
-  background:
-    linear-gradient(180deg, rgba(4, 30, 34, 0.92), rgba(1, 6, 8, 0.98)),
-    repeating-linear-gradient(90deg, transparent 0 34px, rgba(38, 220, 185, 0.08) 35px 36px);
-  border-top: 2px solid rgba(58, 231, 202, 0.2);
-  box-shadow: inset 0 24px 48px rgba(16, 184, 219, 0.1);
-}
-
-.cockpit__console--left {
-  left: 22%;
-  width: 22%;
-  transform: skewY(-10deg);
-}
-
-.cockpit__console--center {
-  left: 45.5%;
   display: grid;
-  width: 9%;
-  min-width: 112px;
-  place-items: center;
-  color: rgba(75, 233, 205, 0.62);
-  font-size: clamp(20px, 2.5vw, 44px);
-  font-weight: 950;
-  line-height: 0.8;
-  text-align: center;
-  text-shadow: 0 0 14px rgba(39, 222, 255, 0.34);
+  place-items: end center;
+  overflow: hidden;
 }
 
-.cockpit__console--right {
-  right: 22%;
-  width: 22%;
-  transform: skewY(10deg);
-}
-
-.cockpit__seat {
+.control-room__backdrop {
   position: absolute;
-  bottom: -8%;
-  width: 21%;
-  height: 25%;
-  background: linear-gradient(180deg, rgba(31, 9, 4, 0.96), rgba(4, 1, 0, 1));
-  border-radius: 44% 44% 0 0;
-  box-shadow: 0 -20px 32px rgba(0, 0, 0, 0.48);
+  inset: -2%;
+  z-index: 0;
+  width: 104%;
+  height: 104%;
+  object-fit: cover;
+  object-position: center center;
+  filter: blur(8px) grayscale(0.55) brightness(0.34) contrast(1.24) saturate(0.64);
+  opacity: 0.78;
+  transform: scale(1.04);
 }
 
-.cockpit__seat--left {
-  left: 8%;
-}
-
-.cockpit__seat--right {
-  right: 8%;
-}
-
-.control-room__title {
+.control-room__hero::before {
   position: absolute;
-  top: 34%;
-  left: 50%;
-  z-index: 11;
-  width: 132vw;
-  margin: 0;
-  color: rgba(242, 240, 237, 0.95);
-  font-size: clamp(76px, 12vw, 220px);
-  font-weight: 950;
-  line-height: 0.72;
+  inset: -10%;
+  z-index: 1;
+  content: '';
+  background:
+    radial-gradient(circle at 14% 18%, rgba(255, 255, 255, 0.08) 0 1px, transparent 2px),
+    radial-gradient(circle at 72% 28%, rgba(207, 244, 164, 0.1) 0 1px, transparent 2px),
+    radial-gradient(circle at 38% 76%, rgba(255, 255, 255, 0.07) 0 1px, transparent 2px),
+    repeating-linear-gradient(90deg, transparent 0 58px, rgba(255, 255, 255, 0.022) 59px 60px);
+  background-size: 170px 150px, 210px 190px, 150px 130px, auto;
+  opacity: 0.42;
+}
+
+.control-room__character {
+  position: relative;
+  z-index: 2;
+  width: min(112vw, 138vh);
+  height: 100vh;
+  object-fit: contain;
+  object-position: center center;
+  filter: grayscale(0.36) contrast(1.12) brightness(0.8) saturate(0.82);
+  opacity: 0.96;
+}
+
+.control-room__intro {
+  position: absolute;
+  left: clamp(24px, 6vw, 120px);
+  bottom: clamp(46px, 9vh, 110px);
+  z-index: 10;
+  width: min(620px, 46vw);
+  max-width: calc(100vw - 48px);
+  pointer-events: none;
+  text-shadow: 0 10px 30px rgba(0, 0, 0, 0.72);
+}
+
+.control-room__intro p {
+  margin: 0 0 10px;
+  color: rgba(255, 255, 255, 0.68);
+  font-family: Arial, system-ui, sans-serif;
+  font-size: clamp(12px, 0.9vw, 16px);
+  font-weight: 800;
   letter-spacing: 0;
-  text-align: center;
-  white-space: nowrap;
+}
+
+.control-room__intro h1 {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.94);
+  font-size: clamp(48px, 6.4vw, 124px);
+  font-weight: 950;
+  line-height: 0.86;
+  letter-spacing: 0;
   text-transform: uppercase;
-  transform: translate(-50%, -50%);
-  opacity: calc(0.72 + var(--room-opacity) * 0.28);
-  transition:
-    opacity 0.72s ease,
-    transform 0.72s ease,
-    filter 0.72s ease;
-}
-
-.control-room__title span {
-  display: block;
-}
-
-.control-room--title-hidden .control-room__title {
-  opacity: 0;
-  filter: blur(10px);
-  transform: translate(-50%, -54%) scale(0.96);
-}
-
-.control-room__terminal {
-  position: absolute;
-  bottom: clamp(30px, 6vw, 72px);
-  left: clamp(18px, 3vw, 42px);
-  z-index: 12;
-  display: flex;
-  flex-direction: column;
-  gap: 3px;
-  width: min(240px, 38vw);
-  padding: 16px 18px;
-  color: rgba(106, 239, 213, 0.74);
-  font-family: 'Courier New', Consolas, monospace;
-  font-size: clamp(9px, 0.78vw, 12px);
-  line-height: 1.25;
-  background: rgba(3, 52, 58, 0.24);
-  border: 1px solid rgba(57, 226, 207, 0.88);
-  clip-path: polygon(0 0, 49% 0, 54% 10px, 100% 10px, 100% 100%, 0 100%);
-  text-shadow: 0 0 8px rgba(44, 224, 255, 0.52);
+  white-space: nowrap;
 }
 
 @media (max-width: 760px) {
-  .control-room__title {
-    top: 39%;
-    font-size: clamp(54px, 18vw, 108px);
+  .control-room__header {
+    top: 20px;
+    left: 18px;
+    right: 18px;
   }
 
-  .control-room__terminal {
-    width: min(230px, 72vw);
+  .control-room__nav {
+    gap: 10px;
+    font-size: 12px;
   }
 
-  .cockpit__window {
-    flex-basis: min(48vw, 310px);
-    padding: 24px 18px 42px;
+  .control-room__nav button {
+    min-width: 72px;
+    height: 36px;
+    padding: 0 14px;
+    border-width: 1px;
   }
 
-  .cockpit__window-belt {
-    height: clamp(260px, 48vh, 430px);
+  .control-room__character {
+    width: min(154vw, 94vh);
+    height: 100vh;
+    object-position: center center;
+  }
+
+  .control-room__intro {
+    left: 18px;
+    right: 18px;
+    bottom: 34px;
+    width: calc(100vw - 36px);
+    max-width: none;
+  }
+
+  .control-room__intro h1 {
+    font-size: clamp(42px, 16vw, 86px);
+    white-space: normal;
   }
 }
