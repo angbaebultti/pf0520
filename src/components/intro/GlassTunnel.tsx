@@ -326,6 +326,14 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     }
 
     const onWheel = (event: WheelEvent) => {
+      const sequenceProgress = getSequenceProgress()
+      const controlRoomOpacity = smoothstep(CONTROL_ROOM_REVEAL_START, CONTROL_ROOM_REVEAL_END, sequenceProgress)
+
+      if (controlRoomOpacity < 0.98) {
+        event.preventDefault()
+        window.scrollTo(0, 0)
+      }
+
       targetZ = clamp(targetZ - event.deltaY * 0.052, CAMERA_END_Z, CAMERA_START_Z)
       requestMotion()
     }
@@ -343,7 +351,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     render()
     canvas.addEventListener('webglcontextlost', onContextLost)
     window.addEventListener('resize', onResize)
-    window.addEventListener('wheel', onWheel, { passive: true })
+    window.addEventListener('wheel', onWheel, { passive: false })
 
     return () => {
       cancelAnimationFrame(animationId)

@@ -17,6 +17,7 @@ export default function IntroSequence() {
 
   return (
     <>
+      <GlassTunnel />
       {phase === 'error' && (
         <>
           <ErrorScreen durationMs={3000} breakDurationMs={3000} onComplete={goToTunnel} />
@@ -25,7 +26,6 @@ export default function IntroSequence() {
           </button>
         </>
       )}
-      {phase === 'tunnel' && <GlassTunnel />}
     </>
   )
 }
