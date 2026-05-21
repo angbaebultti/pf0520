@@ -446,6 +446,11 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
         breakDurationMs={breakDurationMs}
         breakProgress={breakProgressState}
       />
+      <div className="signal-lost-panel" aria-hidden="true">
+        <span>-- SIGNAL LOST</span>
+        <span>{shouldShowBreakGhost ? '[00:00:03]' : '[00:00:01]'}</span>
+        <span>CONNECTION LOST</span>
+      </div>
       <AnalogVHSOverlay zIndex={102} />
     </div>
   )

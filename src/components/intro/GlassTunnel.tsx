@@ -18,6 +18,14 @@ const STAR_COUNT = 500
 const STAR_NEAR_LIMIT_Z = -7
 const CONTROL_ROOM_REVEAL_START = 0.34
 const CONTROL_ROOM_REVEAL_END = 0.43
+const ENTITY_PANEL_REVEAL_START = -0.02
+const ENTITY_PANEL_REVEAL_END = 0
+const ENTITY_PANEL_FADE_START = 0.31
+const ENTITY_PANEL_FADE_END = 0.37
+const ENTITY_SIGNAL_FOUND_PROGRESS = 0.055
+const SIGNAL_SYNC_START = 0.055
+const SIGNAL_SYNC_FULL = 0.18
+const WHEEL_TRAVEL_SPEED = 0.014
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 const smoothstep = (edge0: number, edge1: number, value: number) => {
@@ -87,6 +95,68 @@ const buildStarFieldGeometry = () => {
   return geometry
 }
 
+const buildRadarRingGeometry = () => {
+  const points: number[] = []
+  const segments = 96
+
+  for (let i = 0; i < segments; i += 1) {
+    const angle = (i / segments) * Math.PI * 2
+    points.push(Math.cos(angle), Math.sin(angle), 0)
+  }
+
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3))
+  return geometry
+}
+
+const makeCleanCharacterTexture = (sourceTexture: THREE.Texture) => {
+  const image = sourceTexture.image as HTMLImageElement | HTMLCanvasElement | ImageBitmap | undefined
+  const width = image?.width ?? 0
+  const height = image?.height ?? 0
+
+  if (!image || width === 0 || height === 0) {
+    return sourceTexture
+  }
+
+  const canvas = document.createElement('canvas')
+  const context = canvas.getContext('2d', { willReadFrequently: true })
+
+  if (!context) {
+    return sourceTexture
+  }
+
+  canvas.width = width
+  canvas.height = height
+  context.drawImage(image, 0, 0, width, height)
+
+  const imageData = context.getImageData(0, 0, width, height)
+  const data = imageData.data
+
+  for (let index = 0; index < data.length; index += 4) {
+    const red = data[index]
+    const green = data[index + 1]
+    const blue = data[index + 2]
+    const luminance = red * 0.2126 + green * 0.7152 + blue * 0.0722
+    const alpha = clamp((luminance - 44) / 74, 0, 1)
+    const value = Math.min(255, luminance * 1.34)
+
+    data[index] = value * 0.78
+    data[index + 1] = value * 0.9
+    data[index + 2] = value
+    data[index + 3] = Math.round(alpha * alpha * 255)
+  }
+
+  context.putImageData(imageData, 0, 0)
+
+  const cleanTexture = new THREE.CanvasTexture(canvas)
+  cleanTexture.colorSpace = THREE.SRGBColorSpace
+  cleanTexture.minFilter = THREE.LinearFilter
+  cleanTexture.magFilter = THREE.LinearFilter
+  cleanTexture.needsUpdate = true
+
+  return cleanTexture
+}
+
 const drawCanvasFallback = (canvas: HTMLCanvasElement) => {
   const context = canvas.getContext('2d')
   if (!context) return
@@ -119,6 +189,7 @@ const drawCanvasFallback = (canvas: HTMLCanvasElement) => {
 
 const GlassTunnel: FC<GlassTunnelProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
+  const entityPanelRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -151,12 +222,12 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     const material = new THREE.LineBasicMaterial({
       color: 0x00b8ff,
       transparent: true,
-      opacity: 0.88,
+      opacity: 0.58,
     })
     const glowMaterial = new THREE.LineBasicMaterial({
       color: 0x008cff,
       transparent: true,
-      opacity: 0.22,
+      opacity: 0.14,
       blending: THREE.AdditiveBlending,
       depthWrite: false,
     })
@@ -169,6 +240,24 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     tunnelGlow.frustumCulled = false
     tunnelGlow.scale.set(1.01, 1.01, 1)
     scene.add(tunnelGlow)
+
+    const radarRingGeometry = buildRadarRingGeometry()
+    const apertureRingMaterials = [0, 1, 2, 3].map(
+      () =>
+        new THREE.LineBasicMaterial({
+          color: 0x00d9ff,
+          transparent: true,
+          opacity: 0,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false,
+        }),
+    )
+    const apertureRings = apertureRingMaterials.map((apertureMaterial) => {
+      const ring = new THREE.LineLoop(radarRingGeometry, apertureMaterial)
+      ring.frustumCulled = false
+      scene.add(ring)
+      return ring
+    })
 
     const starGeometry = buildStarFieldGeometry()
     const starMaterial = new THREE.PointsMaterial({
@@ -185,8 +274,19 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     scene.add(stars)
 
     const textureLoader = new THREE.TextureLoader()
-    const character03Texture = textureLoader.load(character03Url, () => render())
-    const character04Texture = textureLoader.load(character04Url, () => render())
+    const characterTexturesToDispose: THREE.Texture[] = []
+    let character03Material: THREE.MeshBasicMaterial
+    let character04Material: THREE.MeshBasicMaterial
+    const applyCleanTexture = (material: THREE.MeshBasicMaterial, sourceTexture: THREE.Texture) => {
+      const cleanTexture = makeCleanCharacterTexture(sourceTexture)
+      characterTexturesToDispose.push(cleanTexture)
+      material.map = cleanTexture
+      material.needsUpdate = true
+      render()
+    }
+    const character03Texture = textureLoader.load(character03Url, (texture) => applyCleanTexture(character03Material, texture))
+    const character04Texture = textureLoader.load(character04Url, (texture) => applyCleanTexture(character04Material, texture))
+    characterTexturesToDispose.push(character03Texture, character04Texture)
     character03Texture.colorSpace = THREE.SRGBColorSpace
     character04Texture.colorSpace = THREE.SRGBColorSpace
     character03Texture.minFilter = THREE.LinearFilter
@@ -203,25 +303,14 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         side: THREE.DoubleSide,
       })
 
-    const character03Material = createCharacterMaterial(character03Texture, 0.9)
-    const character04Material = createCharacterMaterial(character04Texture, 0)
+    character03Material = createCharacterMaterial(character03Texture, 0.9)
+    character04Material = createCharacterMaterial(character04Texture, 0)
     const character03 = new THREE.Mesh(characterGeometry, character03Material)
     const character04 = new THREE.Mesh(characterGeometry, character04Material)
     const characterGroup = new THREE.Group()
     characterGroup.add(character03, character04)
     characterGroup.renderOrder = 10
     scene.add(characterGroup)
-
-    const trailMaterials = [0.18, 0.11, 0.07].flatMap((opacity) => [
-      createCharacterMaterial(character03Texture, opacity),
-      createCharacterMaterial(character04Texture, 0),
-    ])
-    const trails = trailMaterials.map((trailMaterial, index) => {
-      const trail = new THREE.Mesh(characterGeometry, trailMaterial)
-      trail.renderOrder = 9 - index
-      scene.add(trail)
-      return trail
-    })
 
     let targetZ = CAMERA_START_Z
     let currentZ = CAMERA_START_Z
@@ -268,23 +357,6 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
 
       character03Material.opacity = (1 - morph) * opacity * 0.88
       character04Material.opacity = morph * opacity * 1.12
-
-      trails.forEach((trail, index) => {
-        const pairIndex = Math.floor(index / 2)
-        const isSecondCharacter = index % 2 === 1
-        const lag = (pairIndex + 1) * (0.36 + suction * 1.05)
-        const trailOpacity = opacity * (transformationPull * 0.08 + finalPull * 0.18) * (1 - pairIndex * 0.25)
-        const material = trail.material as THREE.MeshBasicMaterial
-
-        trail.position.set(x - suction * 0.11 * (pairIndex + 1), y, z + lag)
-        trail.rotation.copy(characterGroup.rotation)
-        trail.scale.set(
-          baseScale * character04ScaleBoost * (1 + suction * 0.1 * (pairIndex + 1)),
-          baseScale * character04ScaleBoost * (1 + suction * 0.52 + pairIndex * 0.22),
-          baseScale * character04ScaleBoost,
-        )
-        material.opacity = trailOpacity * (isSecondCharacter ? morph * 1.16 : 1 - morph)
-      })
     }
 
     const render = () => {
@@ -296,13 +368,38 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       const sequenceProgress = getSequenceProgress()
       const cameraZ = CAMERA_START_Z + (CAMERA_END_Z - CAMERA_START_Z) * sequenceProgress
       const controlRoomOpacity = smoothstep(CONTROL_ROOM_REVEAL_START, CONTROL_ROOM_REVEAL_END, sequenceProgress)
+      const entityReveal = smoothstep(ENTITY_PANEL_REVEAL_START, ENTITY_PANEL_REVEAL_END, sequenceProgress)
+      const entityFade = smoothstep(ENTITY_PANEL_FADE_START, ENTITY_PANEL_FADE_END, sequenceProgress)
+      const entityOpacity = Math.min(1, entityReveal * (1 - entityFade) * 1.35)
+      const syncProgress = smoothstep(SIGNAL_SYNC_START, SIGNAL_SYNC_FULL, sequenceProgress)
+      const syncExit = smoothstep(CONTROL_ROOM_REVEAL_START, CONTROL_ROOM_REVEAL_END, sequenceProgress)
+      const signalSync = syncProgress * (1 - syncExit)
 
       camera.position.z = cameraZ
       camera.lookAt(0, 0, cameraZ - 28)
       stars.position.z = (CAMERA_START_Z - cameraZ) * 0.18
+      apertureRings.forEach((ring, index) => {
+        const phase = (performance.now() * 0.00028 + index * 0.18) % 1
+        const eased = smoothstep(0, 1, phase)
+        const scale = 0.72 + eased * 4.6
+        const material = apertureRingMaterials[index]
+
+        ring.position.set(0, 0, cameraZ - 20 - index * 2.4)
+        ring.rotation.z = performance.now() * 0.00025 * (index % 2 === 0 ? 1 : -1)
+        ring.scale.set(scale * 1.15, scale * 0.72, 1)
+        material.opacity = signalSync * (1 - phase) ** 1.7 * 0.26
+      })
       updateCharacter()
       renderer.render(scene, camera)
       canvas.style.opacity = String(1 - controlRoomOpacity * 0.92)
+      canvas.style.filter = `contrast(${1.04 + signalSync * 0.12}) saturate(${1 + signalSync * 0.18}) brightness(${0.96 + signalSync * 0.06})`
+      if (entityPanelRef.current) {
+        entityPanelRef.current.style.setProperty('--entity-panel-opacity', String(entityOpacity))
+        entityPanelRef.current.style.setProperty('--entity-panel-progress', String(entityReveal))
+        entityPanelRef.current.style.setProperty('--entity-signal-sync', String(signalSync))
+        entityPanelRef.current.classList.toggle('entity-ident-panel--active', entityOpacity > 0.04)
+        entityPanelRef.current.classList.toggle('entity-ident-panel--found', sequenceProgress >= ENTITY_SIGNAL_FOUND_PROGRESS)
+      }
       document.documentElement.style.setProperty('--control-room-opacity', String(controlRoomOpacity))
     }
 
@@ -334,7 +431,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         window.scrollTo(0, 0)
       }
 
-      targetZ = clamp(targetZ - event.deltaY * 0.052, CAMERA_END_Z, CAMERA_START_Z)
+      targetZ = clamp(targetZ - event.deltaY * WHEEL_TRAVEL_SPEED, CAMERA_END_Z, CAMERA_START_Z)
       requestMotion()
     }
 
@@ -359,17 +456,23 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       canvas.removeEventListener('webglcontextlost', onContextLost)
       window.removeEventListener('resize', onResize)
       window.removeEventListener('wheel', onWheel)
+      if (entityPanelRef.current) {
+        entityPanelRef.current.style.setProperty('--entity-panel-opacity', '0')
+        entityPanelRef.current.style.setProperty('--entity-panel-progress', '0')
+        entityPanelRef.current.classList.remove('entity-ident-panel--active')
+        entityPanelRef.current.classList.remove('entity-ident-panel--found')
+      }
       geometry.dispose()
       starGeometry.dispose()
       material.dispose()
       glowMaterial.dispose()
+      radarRingGeometry.dispose()
+      apertureRingMaterials.forEach((apertureMaterial) => apertureMaterial.dispose())
       starMaterial.dispose()
-      character03Texture.dispose()
-      character04Texture.dispose()
+      characterTexturesToDispose.forEach((texture) => texture.dispose())
       characterGeometry.dispose()
       character03Material.dispose()
       character04Material.dispose()
-      trailMaterials.forEach((trailMaterial) => trailMaterial.dispose())
       renderer.dispose()
     }
   }, [])
@@ -390,6 +493,23 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
           display: 'block',
         }}
       />
+      <div ref={entityPanelRef} className="entity-ident-panel" aria-hidden="true">
+        <div className="entity-ident-panel__inner">
+          <div className="entity-ident-panel__header">-- SEARCHING</div>
+          <div className="entity-ident-panel__time">
+            <span className="entity-ident-panel__search-state">[00:00:05]</span>
+            <span className="entity-ident-panel__found-state">[00:00:07]</span>
+          </div>
+          <div className="entity-ident-panel__rows">
+            <span className="entity-ident-panel__search-state">PATH UPDATE...</span>
+            <span className="entity-ident-panel__found-state">&gt;&gt; SIGNAL DETECTED</span>
+          </div>
+          <div className="entity-ident-panel__access">
+            <span className="entity-ident-panel__search-state">&gt;&gt; SCANNING SIGNAL</span>
+            <span className="entity-ident-panel__found-state">&gt;&gt; WELCOME to my world</span>
+          </div>
+        </div>
+      </div>
     </>
   )
 }
