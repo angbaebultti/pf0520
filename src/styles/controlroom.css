@@ -13,8 +13,8 @@
     system-ui,
     sans-serif;
   background:
-    radial-gradient(ellipse at 50% 58%, rgba(255, 74, 16, 0.26), transparent 34%),
-    linear-gradient(180deg, #101010 0%, #170704 42%, #090000 100%);
+    radial-gradient(ellipse at 50% 58%, rgba(19, 210, 178, 0.24), transparent 34%),
+    linear-gradient(180deg, #071216 0%, #031a1d 42%, #00090c 100%);
   opacity: var(--room-opacity);
   transform: scale(calc(1.04 - var(--room-opacity) * 0.04));
   filter: brightness(calc(0.58 + var(--room-opacity) * 0.42)) saturate(calc(0.76 + var(--room-opacity) * 0.44))
@@ -45,12 +45,12 @@
   background:
     repeating-linear-gradient(
       to bottom,
-      rgba(255, 130, 74, 0.045) 0,
-      rgba(255, 130, 74, 0.045) 1px,
+      rgba(91, 229, 255, 0.045) 0,
+      rgba(91, 229, 255, 0.045) 1px,
       transparent 1px,
       transparent 5px
     ),
-    linear-gradient(90deg, rgba(255, 40, 0, 0.11), transparent 18% 82%, rgba(255, 40, 0, 0.1));
+    linear-gradient(90deg, rgba(0, 205, 255, 0.1), transparent 18% 82%, rgba(35, 255, 177, 0.1));
   mix-blend-mode: screen;
   opacity: 0.5;
 }
@@ -60,13 +60,13 @@
   inset: -10%;
   z-index: 1;
   background:
-    radial-gradient(circle at 6% 11%, #b73219 0 1.5px, transparent 2px),
-    radial-gradient(circle at 22% 14%, #a83218 0 1px, transparent 1.5px),
-    radial-gradient(circle at 48% 8%, #b83218 0 1.5px, transparent 2px),
-    radial-gradient(circle at 76% 13%, #b83218 0 1.5px, transparent 2px),
-    radial-gradient(circle at 92% 10%, #a83218 0 1px, transparent 1.5px),
-    radial-gradient(circle at 15% 34%, #812212 0 1px, transparent 1.5px),
-    radial-gradient(circle at 85% 31%, #812212 0 1px, transparent 1.5px);
+    radial-gradient(circle at 6% 11%, #38caff 0 1.5px, transparent 2px),
+    radial-gradient(circle at 22% 14%, #20d6bd 0 1px, transparent 1.5px),
+    radial-gradient(circle at 48% 8%, #52e7ff 0 1.5px, transparent 2px),
+    radial-gradient(circle at 76% 13%, #2ee6b8 0 1.5px, transparent 2px),
+    radial-gradient(circle at 92% 10%, #38caff 0 1px, transparent 1.5px),
+    radial-gradient(circle at 15% 34%, #1d7f9a 0 1px, transparent 1.5px),
+    radial-gradient(circle at 85% 31%, #167f67 0 1px, transparent 1.5px);
   background-size: 110px 92px;
   opacity: 0.72;
 }
@@ -99,7 +99,7 @@
 }
 
 .control-room__brand span {
-  color: #ff3a12;
+  color: #38e6c6;
 }
 
 .control-room__nav a,
@@ -120,6 +120,7 @@
   inset: 0;
   z-index: 3;
   overflow: hidden;
+  perspective: 1200px;
   background:
     linear-gradient(180deg, rgba(0, 0, 0, 0.78) 0 13%, transparent 34%),
     radial-gradient(ellipse at 50% 85%, rgba(0, 0, 0, 0.92), transparent 30%);
@@ -140,38 +141,94 @@
   transform: perspective(420px) rotateX(56deg);
 }
 
-.cockpit__window {
+.cockpit__window-belt {
   position: absolute;
-  top: 23%;
-  height: 43%;
+  top: clamp(116px, 17vh, 180px);
+  left: 0;
+  z-index: 5;
+  width: 100%;
+  height: clamp(330px, 52vh, 560px);
+  overflow: hidden;
+  transform: rotate(-1.2deg);
+}
+
+.cockpit__window-track {
+  display: flex;
+  width: max-content;
+  height: 100%;
+  gap: clamp(34px, 4vw, 78px);
+  padding-inline: clamp(20px, 5vw, 96px);
+  animation: cockpit-window-belt 26s linear infinite;
+  will-change: transform;
+}
+
+.cockpit__window {
+  --window-shape: polygon(7% 0, 93% 0, 100% 100%, 0 100%);
+  position: relative;
+  flex: 0 0 min(25vw, 500px);
+  display: grid;
+  height: 100%;
+  padding: clamp(7px, 0.8vw, 13px);
+  place-items: stretch;
   background:
-    radial-gradient(ellipse at 50% 42%, rgba(255, 91, 33, 0.22), transparent 54%),
-    linear-gradient(180deg, #c43212, #7e1207 86%);
-  border: 11px solid rgba(18, 8, 5, 0.96);
+    linear-gradient(180deg, rgba(8, 22, 22, 0.98), rgba(2, 8, 10, 0.98)),
+    linear-gradient(135deg, rgba(57, 226, 207, 0.42), rgba(13, 101, 130, 0.18));
+  clip-path: var(--window-shape);
   box-shadow:
-    inset 0 0 34px rgba(255, 94, 29, 0.24),
-    0 0 34px rgba(0, 0, 0, 0.6);
+    0 0 0 1px rgba(57, 226, 207, 0.24),
+    0 28px 46px rgba(0, 0, 0, 0.72),
+    0 0 34px rgba(0, 0, 0, 0.6),
+    inset 0 0 28px rgba(0, 0, 0, 0.82);
+  transform-origin: center;
 }
 
-.cockpit__window--left {
-  left: -6%;
-  width: 31%;
-  clip-path: polygon(0 0, 86% 10%, 100% 92%, 17% 100%);
-  transform: rotate(6deg);
+.cockpit__window::before {
+  position: absolute;
+  inset: clamp(7px, 0.8vw, 13px);
+  z-index: 0;
+  content: '';
+  background:
+    radial-gradient(ellipse at 50% 42%, rgba(83, 226, 255, 0.24), transparent 54%),
+    linear-gradient(180deg, #1397b7, #075067 86%);
+  clip-path: var(--window-shape);
+  box-shadow: inset 0 0 34px rgba(76, 229, 255, 0.24);
 }
 
-.cockpit__window--center {
-  left: 39%;
-  width: 22%;
-  border-width: 8px;
-  border-radius: 18px;
+.cockpit__window::after {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  content: '';
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgba(130, 245, 255, 0.045) 0, rgba(130, 245, 255, 0.045) 1px, transparent 1px, transparent 5px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.26), transparent 18% 82%, rgba(0, 0, 0, 0.22));
+  mix-blend-mode: screen;
+  opacity: 0.5;
 }
 
-.cockpit__window--right {
-  right: -6%;
-  width: 31%;
-  clip-path: polygon(14% 10%, 100% 0, 83% 100%, 0 92%);
-  transform: rotate(-6deg);
+.cockpit__window img {
+  position: absolute;
+  inset: clamp(7px, 0.8vw, 13px);
+  z-index: 1;
+  width: auto;
+  height: auto;
+  min-width: 0;
+  min-height: 0;
+  object-fit: cover;
+  clip-path: var(--window-shape);
+  filter: saturate(0.82) contrast(1.1) brightness(0.86);
+  opacity: 0.92;
+}
+
+@keyframes cockpit-window-belt {
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(calc(-50% - clamp(17px, 2vw, 39px)));
+  }
 }
 
 .cockpit__console {
@@ -179,10 +236,10 @@
   bottom: 7%;
   height: 26%;
   background:
-    linear-gradient(180deg, rgba(39, 12, 5, 0.9), rgba(4, 2, 1, 0.98)),
-    repeating-linear-gradient(90deg, transparent 0 34px, rgba(255, 82, 20, 0.08) 35px 36px);
-  border-top: 2px solid rgba(255, 68, 18, 0.18);
-  box-shadow: inset 0 24px 48px rgba(255, 55, 10, 0.09);
+    linear-gradient(180deg, rgba(4, 30, 34, 0.92), rgba(1, 6, 8, 0.98)),
+    repeating-linear-gradient(90deg, transparent 0 34px, rgba(38, 220, 185, 0.08) 35px 36px);
+  border-top: 2px solid rgba(58, 231, 202, 0.2);
+  box-shadow: inset 0 24px 48px rgba(16, 184, 219, 0.1);
 }
 
 .cockpit__console--left {
@@ -197,12 +254,12 @@
   width: 9%;
   min-width: 112px;
   place-items: center;
-  color: rgba(255, 88, 24, 0.58);
+  color: rgba(75, 233, 205, 0.62);
   font-size: clamp(20px, 2.5vw, 44px);
   font-weight: 950;
   line-height: 0.8;
   text-align: center;
-  text-shadow: 0 0 14px rgba(255, 48, 10, 0.3);
+  text-shadow: 0 0 14px rgba(39, 222, 255, 0.34);
 }
 
 .cockpit__console--right {
@@ -246,10 +303,20 @@
   text-transform: uppercase;
   transform: translate(-50%, -50%);
   opacity: calc(0.72 + var(--room-opacity) * 0.28);
+  transition:
+    opacity 0.72s ease,
+    transform 0.72s ease,
+    filter 0.72s ease;
 }
 
 .control-room__title span {
   display: block;
+}
+
+.control-room--title-hidden .control-room__title {
+  opacity: 0;
+  filter: blur(10px);
+  transform: translate(-50%, -54%) scale(0.96);
 }
 
 .control-room__terminal {
@@ -262,14 +329,14 @@
   gap: 3px;
   width: min(240px, 38vw);
   padding: 16px 18px;
-  color: rgba(255, 102, 34, 0.72);
+  color: rgba(106, 239, 213, 0.74);
   font-family: 'Courier New', Consolas, monospace;
   font-size: clamp(9px, 0.78vw, 12px);
   line-height: 1.25;
-  background: rgba(58, 10, 2, 0.22);
-  border: 1px solid rgba(255, 76, 16, 0.88);
+  background: rgba(3, 52, 58, 0.24);
+  border: 1px solid rgba(57, 226, 207, 0.88);
   clip-path: polygon(0 0, 49% 0, 54% 10px, 100% 10px, 100% 100%, 0 100%);
-  text-shadow: 0 0 8px rgba(255, 64, 12, 0.52);
+  text-shadow: 0 0 8px rgba(44, 224, 255, 0.52);
 }
 
 @media (max-width: 760px) {
@@ -282,8 +349,12 @@
     width: min(230px, 72vw);
   }
 
-  .cockpit__window--center {
-    left: 34%;
-    width: 32%;
+  .cockpit__window {
+    flex-basis: min(48vw, 310px);
+    padding: 24px 18px 42px;
+  }
+
+  .cockpit__window-belt {
+    height: clamp(260px, 48vh, 430px);
   }
 }

@@ -16,7 +16,8 @@ const CHARACTER_END_Z = -28
 const CAMERA_END_Z = -72
 const STAR_COUNT = 500
 const STAR_NEAR_LIMIT_Z = -7
-const CONTROL_ROOM_REVEAL_START = 0.78
+const CONTROL_ROOM_REVEAL_START = 0.34
+const CONTROL_ROOM_REVEAL_END = 0.43
 
 const clamp = (value: number, min: number, max: number) => Math.max(min, Math.min(max, value))
 const smoothstep = (edge0: number, edge1: number, value: number) => {
@@ -294,7 +295,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
 
       const sequenceProgress = getSequenceProgress()
       const cameraZ = CAMERA_START_Z + (CAMERA_END_Z - CAMERA_START_Z) * sequenceProgress
-      const controlRoomOpacity = smoothstep(CONTROL_ROOM_REVEAL_START, 1, sequenceProgress)
+      const controlRoomOpacity = smoothstep(CONTROL_ROOM_REVEAL_START, CONTROL_ROOM_REVEAL_END, sequenceProgress)
 
       camera.position.z = cameraZ
       camera.lookAt(0, 0, cameraZ - 28)
