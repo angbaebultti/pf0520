@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import character07ProfileSrc from '@assets/character07_profile.jpg'
 import character06Src from '@assets/charcter06.png'
-import character06ProfileSrc from '@assets/character06_profile.jpg'
 import catArchiveSrc from '@assets/cat_archive.jpg'
 import flowerArchiveSrc from '@assets/flower_archive.jpg'
 import juhee2ArchiveSrc from '@assets/juhee2_archive.jpg'
@@ -83,7 +82,7 @@ const signalArchive = [
   { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2ArchiveSrc },
 ]
 
-const profilePreloadAssets = [character07ProfileSrc, character06ProfileSrc, ...signalArchive.map((item) => item.image)]
+const profilePreloadAssets = [character07ProfileSrc, ...signalArchive.map((item) => item.image)]
 
 export default function ControlRoom() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -355,10 +354,10 @@ export default function ControlRoom() {
             <span>02</span>
             <b>K-BRAND CONTENTS<br />WEB/MOBILE UX/UI<br />PROJECT</b>
             <div>
-              <strong>MMCA.EXE</strong>
+              <strong>MMCA</strong>
               <em>STATUS : ACTIVE</em>
               <em>YEAR : 2025</em>
-              <em>TYPE : WEB / UXUI</em>
+              <em>TYPE : TEAM</em>
               <i>&gt; ACCESS LIVE</i>
               <em>&gt; OPEN ARCHIVE</em>
             </div>
@@ -441,8 +440,8 @@ export default function ControlRoom() {
             <header className="control-room__analysis-header">
               <div className="control-room__analysis-boot">
                 <p style={{ '--typing-steps': 31, '--typing-delay': '0s' } as React.CSSProperties}>&gt;&gt; ACCESSING IDENTITY MODULE...</p>
-                <p style={{ '--typing-steps': 16, '--typing-delay': '0.55s' } as React.CSSProperties}>[ 00:00:12:07 ]</p>
-                <p style={{ '--typing-steps': 22, '--typing-delay': '2.6s' } as React.CSSProperties}>&gt;&gt; CONNECTION STABLE</p>
+                <p style={{ '--typing-steps': 16, '--typing-delay': '0.8s' } as React.CSSProperties}>[ 00:00:12:07 ]</p>
+                <p style={{ '--typing-steps': 22, '--typing-delay': '4.45s' } as React.CSSProperties}>&gt;&gt; CONNECTION STABLE</p>
               </div>
               <h2>IDENTITY ANALYSIS SYSTEM</h2>
               <div>
@@ -475,7 +474,7 @@ export default function ControlRoom() {
             <main className="control-room__analysis-panel control-room__analysis-panel--core">
               <h3>IDENTITY CORE</h3>
               <div className="control-room__analysis-core-frame">
-                <img src={character06ProfileSrc} alt="" loading="eager" decoding="async" />
+                <img src={character06Src} alt="" loading="eager" decoding="async" />
                 <div className="control-room__analysis-status">
                   <span>STATUS</span>
                   <b>ACTIVE</b>

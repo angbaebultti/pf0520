@@ -1000,32 +1000,32 @@
 }
 
 .control-room__profile--open .control-room__analysis-panel--visual {
-  animation: control-panel-activate 0.52s steps(5, end) 0.95s forwards;
+  animation: control-panel-activate 0.72s steps(5, end) 1.2s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--log {
-  animation: control-panel-activate 0.45s steps(4, end) 0.68s forwards;
+  animation: control-panel-activate 0.58s steps(4, end) 0.85s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--core {
-  animation: control-panel-activate 0.55s steps(5, end) 1.35s forwards;
+  animation: control-panel-activate 0.8s steps(5, end) 1.95s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--scan {
-  animation: control-panel-activate 0.52s steps(5, end) 2.05s forwards;
+  animation: control-panel-activate 0.72s steps(5, end) 3.05s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--data {
-  animation: control-panel-activate 0.52s steps(5, end) 2.35s forwards;
+  animation: control-panel-activate 0.72s steps(5, end) 3.35s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--archive {
-  animation: control-panel-activate 0.52s steps(5, end) 2.6s forwards;
+  animation: control-panel-activate 0.72s steps(5, end) 3.85s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--actions,
 .control-room__profile--open .control-room__analysis-input {
-  animation: control-panel-activate 0.45s steps(4, end) 3.05s forwards;
+  animation: control-panel-activate 0.58s steps(4, end) 4.7s forwards;
 }
 
 .control-room__analysis-panel--visual {
@@ -1107,7 +1107,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-portrait {
-  animation: control-portrait-sync 1.7s steps(8, end) 0.95s forwards;
+  animation: control-portrait-sync 2.25s steps(8, end) 1.2s forwards;
 }
 
 .control-room__analysis-portrait::before,
@@ -1151,8 +1151,8 @@
 
 .control-room__profile--open .control-room__analysis-portrait img {
   animation:
-    control-image-sync 0.62s steps(5, end) 1.2s forwards,
-    control-voice-glitch 0.3s steps(2, end) 1.9s 1;
+    control-image-sync 0.85s steps(5, end) 1.65s forwards,
+    control-voice-glitch 0.34s steps(2, end) 2.55s 1;
 }
 
 .control-room__analysis-portrait span {
@@ -1187,7 +1187,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-core-frame img {
-  animation: control-core-sync 0.68s steps(6, end) 2.35s forwards;
+  animation: control-core-sync 0.95s steps(6, end) 3s forwards;
 }
 
 .control-room__analysis-core-frame::after {
@@ -1250,11 +1250,11 @@
 }
 
 .control-room__profile--open .control-room__analysis-status {
-  animation: control-status-lock 0.5s steps(4, end) 2.55s forwards;
+  animation: control-status-lock 0.62s steps(4, end) 3.55s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-status b::before {
-  animation: control-status-text 0.5s steps(2, end) 2.55s forwards;
+  animation: control-status-text 0.62s steps(2, end) 3.55s forwards;
 }
 
 .control-room__analysis-wave {
@@ -1274,7 +1274,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-wave {
-  animation: control-signal-rise 0.62s steps(7, end) 2.35s forwards;
+  animation: control-signal-rise 0.85s steps(7, end) 3.05s forwards;
 }
 
 .control-room__analysis-wave::before,
@@ -1351,7 +1351,7 @@
 .control-room__profile--open .control-room__analysis-wave-line {
   animation:
     control-wave-pulse 2.2s ease-in-out infinite,
-    control-wave-activate 0.62s steps(6, end) 2.35s forwards;
+    control-wave-activate 0.85s steps(6, end) 3.05s forwards;
 }
 
 .control-room__analysis-wave b {
@@ -1391,7 +1391,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-wave b {
-  animation: control-signal-text 0.62s steps(3, end) 2.35s forwards;
+  animation: control-signal-text 0.85s steps(3, end) 3.05s forwards;
 }
 
 .control-room__numeric-digits,
@@ -1426,31 +1426,31 @@
 
 .control-room__profile--open .control-room__analysis-data div,
 .control-room__profile--open .control-room__analysis-panel--data>p {
-  animation: control-data-reveal 0.36s steps(4, end) forwards;
+  animation: control-data-reveal 0.48s steps(4, end) forwards;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(1) {
-  animation-delay: 2.45s;
+  animation-delay: 3.55s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(2) {
-  animation-delay: 2.6s;
+  animation-delay: 3.75s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(3) {
-  animation-delay: 2.75s;
+  animation-delay: 3.95s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(4) {
-  animation-delay: 2.9s;
+  animation-delay: 4.15s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(5) {
-  animation-delay: 3.05s;
+  animation-delay: 4.35s;
 }
 
 .control-room__profile--open .control-room__analysis-panel--data>p {
-  animation-delay: 3.22s;
+  animation-delay: 4.58s;
 }
 
 .control-room__analysis-data div {
@@ -1538,35 +1538,35 @@
 
 .control-room__profile--open .control-room__analysis-panel--log p,
 .control-room__profile--open .control-room__analysis-panel--log b {
-  animation: control-log-reveal 0.3s steps(3, end) var(--log-delay) forwards;
+  animation: control-log-reveal 0.42s steps(3, end) var(--log-delay) forwards;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(1) {
-  --log-delay: 0.95s;
+  --log-delay: 1.15s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(2) {
-  --log-delay: 1.25s;
-}
-
-.control-room__analysis-panel--log p:nth-of-type(3) {
   --log-delay: 1.55s;
 }
 
+.control-room__analysis-panel--log p:nth-of-type(3) {
+  --log-delay: 1.95s;
+}
+
 .control-room__analysis-panel--log p:nth-of-type(4) {
-  --log-delay: 1.85s;
+  --log-delay: 2.35s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(5) {
-  --log-delay: 2.15s;
+  --log-delay: 2.75s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(6) {
-  --log-delay: 2.45s;
+  --log-delay: 3.15s;
 }
 
 .control-room__analysis-panel--log b {
-  --log-delay: 2.8s;
+  --log-delay: 3.65s;
 }
 
 .control-room__analysis-capability {
@@ -1600,31 +1600,31 @@
 }
 
 .control-room__profile--open .control-room__analysis-capability b {
-  animation: control-bar-load 0.52s steps(12, end) forwards;
+  animation: control-bar-load 0.72s steps(12, end) forwards;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(1) b {
-  animation-delay: 2.18s;
+  animation-delay: 3.35s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(2) b {
-  animation-delay: 2.32s;
+  animation-delay: 3.55s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(3) b {
-  animation-delay: 2.46s;
+  animation-delay: 3.75s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(4) b {
-  animation-delay: 2.6s;
+  animation-delay: 3.95s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(5) b {
-  animation-delay: 2.74s;
+  animation-delay: 4.15s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(6) b {
-  animation-delay: 2.88s;
+  animation-delay: 4.35s;
 }
 
 .control-room__analysis-capability strong {
@@ -1717,7 +1717,7 @@
 }
 
 .control-room__profile--open .control-room__archive-card figcaption {
-  animation: control-data-reveal 0.36s steps(4, end) 3s forwards;
+  animation: control-data-reveal 0.48s steps(4, end) 4.55s forwards;
 }
 
 .control-room__archive-card img {
