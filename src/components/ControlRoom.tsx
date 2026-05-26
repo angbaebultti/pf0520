@@ -21,30 +21,35 @@ const projectDetails = {
     status: 'ACTIVE',
     year: '2025',
     type: 'PERSONAL',
-    primaryAction: 'VIEW PROFILE',
+    primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
+     primaryUrl: 'https://angbaebultti.github.io/kukde/',
   },
   '02': {
     fileName: 'MMCA.EXE',
     status: 'ACTIVE',
     year: '2026',
-    type: 'WEB / UXUI',
+    type: 'TEAM',
     primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
+    primaryUrl: 'https://angbaebultti.github.io/mmca02/',
+    secondaryUrl: 'https://www.figma.com/deck/ZXh2NGrYdXA2vKlNkcS0iO',
   },
   '03': {
     fileName: 'JIBSA_LIFE.APP',
     status: 'ACTIVE',
     year: '2026',
-    type: 'MOBILE / UXUI',
+    type: 'TEAM',
     primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
+    primaryUrl: 'https://new-jibsalife.vercel.app',
+    secondaryUrl: 'https://www.figma.com/deck/twdFcOofR67TXZqo25bhVL',
   },
   '04': {
     fileName: 'BUBBLOO.SYS',
     status: 'DEVELOPMENT',
     year: '2026',
-    type: 'APP / UXUI',
+    type: 'PERSONAL',
     primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
   },
@@ -373,14 +378,28 @@ export default function ControlRoom() {
               </div>
             </dl>
             <div className="control-room__connection-options">
-              <button type="button">
-                <span>01</span>
-                &gt; {selectedProjectDetails.primaryAction} SYSTEM
-              </button>
-              <button type="button">
-                <span>02</span>
-                &gt; {selectedProjectDetails.secondaryAction} FILE
-              </button>
+              {'primaryUrl' in selectedProjectDetails ? (
+                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer">
+                  <span>01</span>
+                  &gt; {selectedProjectDetails.primaryAction} SYSTEM
+                </a>
+              ) : (
+                <button type="button">
+                  <span>01</span>
+                  &gt; {selectedProjectDetails.primaryAction} SYSTEM
+                </button>
+              )}
+              {'secondaryUrl' in selectedProjectDetails ? (
+                <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer">
+                  <span>02</span>
+                  &gt; {selectedProjectDetails.secondaryAction} FILE
+                </a>
+              ) : (
+                <button type="button">
+                  <span>02</span>
+                  &gt; {selectedProjectDetails.secondaryAction} FILE
+                </button>
+              )}
             </div>
        
           </div>
