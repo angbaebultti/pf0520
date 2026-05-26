@@ -23,7 +23,7 @@ const projectDetails = {
     type: 'PERSONAL',
     primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
-     primaryUrl: 'https://angbaebultti.github.io/kukde/',
+    primaryUrl: 'https://angbaebultti.github.io/kukde/',
   },
   '02': {
     fileName: 'MMCA.EXE',
@@ -56,11 +56,11 @@ const projectDetails = {
 } as const
 
 const capabilities = [
-  { label: 'HTML/CSS', value: 85 },
-  { label: 'JS', value: 70 },
+  { label: 'HTML/CSS', value: 95 },
+  { label: 'JS', value: 80 },
   { label: 'GSAP', value: 80 },
-  { label: 'FIGMA', value: 90 },
-  { label: 'UI DESIGN', value: 75 },
+  { label: 'FIGMA', value: 95 },
+  { label: 'UI DESIGN', value: 85 },
 ]
 
 export default function ControlRoom() {
@@ -412,7 +412,7 @@ export default function ControlRoom() {
               <div className="control-room__analysis-boot">
                 <p style={{ '--typing-steps': 31, '--typing-delay': '0s' } as React.CSSProperties}>&gt;&gt; ACCESSING IDENTITY MODULE...</p>
                 <p style={{ '--typing-steps': 16, '--typing-delay': '1.45s' } as React.CSSProperties}>[ 00:00:12:07 ]</p>
-                <p style={{ '--typing-steps': 22, '--typing-delay': '2.3s' } as React.CSSProperties}>&gt;&gt; CONNECTION STABLE</p>
+                <p style={{ '--typing-steps': 22, '--typing-delay': '8.7s' } as React.CSSProperties}>&gt;&gt; CONNECTION STABLE</p>
               </div>
               <h2>IDENTITY ANALYSIS SYSTEM</h2>
               <div>
@@ -522,155 +522,6 @@ export default function ControlRoom() {
             </footer>
           </div>
 
-          <div className="control-room__terminal-bar">
-            <span />
-            <span />
-            <span />
-            <p>juhee@portfolio ~ /profile</p>
-          </div>
-
-          <div className="control-room__terminal-body">
-            <pre className="control-room__terminal-title" aria-label="HONG JUHEE">
-██╗  ██╗ ██████╗ ███╗   ██╗ ██████╗
-██║  ██║██╔═══██╗████╗  ██║██╔════╝
-███████║██║   ██║██╔██╗ ██║██║  ███╗
-██╔══██║██║   ██║██║╚██╗██║██║   ██║
-██║  ██║╚██████╔╝██║ ╚████║╚██████╔╝
-╚═╝  ╚═╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝
-            </pre>
-
-            <div className="control-room__terminal-grid">
-              <section className="control-room__terminal-card control-room__terminal-card--intro">
-                <h2>Welcome, visitor.</h2>
-                <div className="control-room__terminal-photo" aria-hidden="true">
-                  <span />
-                </div>
-                <p>UIUX Designer · Seoul</p>
-                <a href="mailto:103juhee@naver.com">103juhee@naver.com</a>
-              </section>
-
-              <section className="control-room__terminal-card control-room__terminal-card--data">
-                <h2>User Data</h2>
-                <dl className="control-room__terminal-data">
-                  <div>
-                    <dt>Education</dt>
-                    <dd>공군사관학교(자퇴)</dd>
-                  </div>
-                  <div>
-                    <dt>Type</dt>
-                    <dd>ISTP</dd>
-                  </div>
-                  <div>
-                    <dt>Blood</dt>
-                    <dd>O</dd>
-                  </div>
-                  <div>
-                    <dt>Signal</dt>
-                    <dd>JPOP, animation, night view</dd>
-                  </div>
-                </dl>
-              </section>
-
-              <section className="control-room__terminal-card control-room__terminal-card--capability">
-                <h2>Capabilities</h2>
-                <div className="control-room__capability-list">
-                  {capabilities.map((capability) => (
-                    <div className="control-room__capability" key={`terminal-${capability.label}`}>
-                      <span>{capability.label}</span>
-                      <span className="control-room__capability-track">
-                        <span style={{ width: `${capability.value}%` }} />
-                      </span>
-                      <b>{capability.value}%</b>
-                    </div>
-                  ))}
-                </div>
-              </section>
-
-              <section className="control-room__terminal-card control-room__terminal-card--nav">
-                <h2>Navigation</h2>
-                <nav aria-label="Profile navigation">
-                  <a href="#identity">/identity</a>
-                  <a href="#work">/work</a>
-                  <a href="#contact">/contact</a>
-                  <a href="#skills">/skills</a>
-                </nav>
-                <p>... /help for all commands</p>
-              </section>
-            </div>
-
-            <p className="control-room__terminal-cookie">[system] This profile window is a temporary visual shell. Photo slot can be replaced later.</p>
-            <div className="control-room__terminal-command" aria-hidden="true">
-              <span>&gt;</span>
-              <p>Type a command... try "/help"</p>
-            </div>
-          </div>
-
-          <button className="control-room__profile-close" type="button" onClick={() => setIsProfileOpen(false)}>
-            RETURN
-          </button>
-
-          <section className="control-room__profile-panel control-room__profile-panel--user">
-            <h2>&gt; USER DATA</h2>
-            <dl className="control-room__profile-data">
-              <div>
-                <dt>EDUCATION</dt>
-                <dd>공군사관학교(자퇴)</dd>
-              </div>
-              <div>
-                <dt>TYPE</dt>
-                <dd>ISTP</dd>
-              </div>
-              <div>
-                <dt>LOCATION</dt>
-                <dd>서울</dd>
-              </div>
-              <div>
-                <dt>BLOOD TYPE</dt>
-                <dd>O</dd>
-              </div>
-            </dl>
-            <div className="control-room__profile-globe" aria-hidden="true">
-              <span />
-            </div>
-          </section>
-
-          <section className="control-room__profile-panel control-room__profile-panel--capability">
-            <h2>&gt; CAPABILITY</h2>
-            <div className="control-room__capability-list">
-              {capabilities.map((capability) => (
-                <div className="control-room__capability" key={capability.label}>
-                  <span>{capability.label}</span>
-                  <span className="control-room__capability-track">
-                    <span style={{ width: `${capability.value}%` }} />
-                  </span>
-                  <b>{capability.value}%</b>
-                </div>
-              ))}
-            </div>
-            <p className="control-room__signal-label">( SIGNAL STRENGTH )</p>
-          </section>
-
-          <section className="control-room__profile-panel control-room__profile-panel--team">
-            <h2>&gt; TEAM</h2>
-            <p>PHOTO / EXTERNAL WORK<br />COOPERATION<br />POSSIBLE PEOPLE</p>
-            <div className="control-room__team-strip" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-              <span />
-              <b>+5</b>
-            </div>
-          </section>
-
-          <section className="control-room__profile-panel control-room__profile-panel--signal">
-            <h2>&gt; PERSONAL SIGNAL</h2>
-            <p>JPOP / ANIMATION /<br />NIGHT VIEW<br />TRAVEL / MUSIC</p>
-            <div className="control-room__signal-strip" aria-hidden="true">
-              <span />
-              <span />
-              <span />
-            </div>
-          </section>
         </div>
       </div>
       <div ref={clickCueRef} className="control-room__click-cue" aria-hidden="true">
