@@ -335,7 +335,7 @@
 
 .control-room__project:hover .control-room__project-preview {
   min-height: clamp(132px, 15vw, 260px);
-  border: 1controlpx solid #08ff2f;
+  border: 1px solid #08ff2f;
   border-color: #08ff2f;
   border-radius: 16px;
   background:
@@ -845,6 +845,7 @@
   grid-template-rows: 1fr;
   width: min(1510px, calc(100vw - 28px));
   height: min(974px, calc(100dvh - 28px));
+  max-height: calc(100dvh - 28px);
   min-height: 0;
   margin: auto;
   overflow: hidden;
@@ -866,8 +867,8 @@
 .control-room__analysis {
   position: relative;
   display: grid;
-  grid-template-columns: 0.9fr 1.08fr 0.9fr 1.12fr;
-  grid-template-rows: 124px minmax(345px, 0.96fr) minmax(360px, 1.04fr) 96px;
+  grid-template-columns: 0.9fr 1.08fr 1.1fr 0.9fr;
+  grid-template-rows: minmax(96px, 124px) minmax(0, 0.96fr) minmax(0, 1.04fr) minmax(76px, 96px);
   width: 100%;
   height: 100%;
   min-height: 0;
@@ -1012,6 +1013,7 @@
 .control-room__analysis-panel--log {
   grid-column: 1;
   grid-row: 3;
+  padding-inline: clamp(12px, 1.05vw, 18px);
 }
 
 .control-room__analysis-panel--core {
@@ -1144,9 +1146,9 @@
 }
 
 .control-room__analysis-core-frame img {
-  width: 92%;
-  height: 96%;
-  object-fit: contain;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
   object-position: center center;
   opacity: 0.22;
   filter: grayscale(1) sepia(0.35) hue-rotate(50deg) saturate(1.1) contrast(0.9) brightness(0.58);
@@ -1170,34 +1172,37 @@
   z-index: 1;
 }
 
-.control-room__analysis-core-frame img,
-.control-room__analysis-status {
+.control-room__analysis-core-frame img {
   position: relative;
   z-index: 2;
 }
 
 .control-room__analysis-status {
   position: absolute;
-  top: 26px;
-  right: 30px;
+  top: clamp(34px, 3vw, 48px);
+  right: clamp(46px, 5.2vw, 84px);
+  z-index: 4;
   display: grid;
-  gap: 8px;
+  gap: 12px;
   color: rgba(205, 214, 198, 0.42);
-  font-weight: 800;
+  font-weight: 700;
+  text-align: left;
 }
 
 .control-room__analysis-status span {
-  font-size: 13px;
+  font-size: 12px;
+  font-weight: 700;
 }
 
 .control-room__analysis-status b {
   color: rgba(205, 214, 198, 0);
-  font-size: 18px;
+  font-size: clamp(18px, 1.45vw, 24px);
+  font-weight: 700;
 }
 
 .control-room__analysis-status b::before {
   color: rgba(205, 214, 198, 0.46);
-  content: 'UNKNOWN';
+  content: ': UNKNOWN';
 }
 
 .control-room__profile--open .control-room__analysis-status {
@@ -1254,8 +1259,8 @@
   position: relative;
   z-index: 2;
   display: block;
-  font-size: 13px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
 }
 
 .control-room__analysis-wave svg {
@@ -1300,12 +1305,13 @@
 
 .control-room__analysis-wave b {
   position: absolute;
-  right: 22px;
-  top: 16px;
+  top: 24px;
+  right: clamp(34px, 5vw, 72px);
+  bottom: auto;
   z-index: 3;
   font-family: Arial, system-ui, sans-serif;
-  font-size: 28px;
-  font-weight: 900;
+  font-size: clamp(22px, 1.9vw, 32px);
+  font-weight: 700;
   line-height: 1;
   color: rgba(143, 207, 97, 0);
   text-shadow: 0 0 10px rgba(143, 207, 97, 0);
@@ -1406,6 +1412,12 @@
   overflow: hidden;
   white-space: nowrap;
   opacity: 0;
+}
+
+.control-room__analysis-panel--log p,
+.control-room__analysis-panel--log b {
+  font-size: clamp(11px, 0.72vw, 13px);
+  line-height: 1.55;
 }
 
 .control-room__profile--open .control-room__analysis-panel--log p,
@@ -1837,13 +1849,13 @@
   0%,
   49% {
     color: rgba(205, 214, 198, 0.46);
-    content: 'UNKNOWN';
+    content: ': UNKNOWN';
   }
 
   50%,
   100% {
     color: #98d36a;
-    content: 'ACTIVE';
+    content: ': ACTIVE';
     text-shadow: 0 0 14px rgba(152, 211, 106, 0.38);
   }
 }

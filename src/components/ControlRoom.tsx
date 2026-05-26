@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import character07Src from '@assets/character07.png'
-import character06Src from '@assets/gun_cha.png'
+import character06Src from '@assets/charcter06.png'
 import '@styles/controlroom.css'
 
 const projects = [
@@ -329,7 +329,7 @@ export default function ControlRoom() {
             ×
           </button>
           <h2>HOW TO USE</h2>
-          <p>각 프로젝트 카드에 마우스를 올리면 해당 채널의 접근 메뉴가 터미널처럼 나타납니다.</p>
+          <p>각 프로젝트 카드 및 캐릭터에 마우스를 올리면 해당 채널의 접근 메뉴가 나타납니다.</p>
           <div className="control-room__guide-demo" aria-hidden="true">
             <span>02</span>
             <b>K-BRAND CONTENTS<br />WEB/MOBILE UX/UI<br />PROJECT</b>
