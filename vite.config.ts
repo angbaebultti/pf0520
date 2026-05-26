@@ -3,7 +3,6 @@ import react from '@vitejs/plugin-react'
 import path from 'path'
 
 export default defineConfig({
-  base: '/pf0520/',
   plugins: [react()],
   server: {
     host: 'localhost',

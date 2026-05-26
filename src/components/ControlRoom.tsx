@@ -63,6 +63,15 @@ const capabilities = [
   { label: 'UI DESIGN', value: 85 },
 ]
 
+const signalArchive = [
+  { label: 'NIGHT VIEW', tone: 'city' },
+  { label: 'INTERFACE', tone: 'terminal' },
+  { label: 'SILENT MODE', tone: 'coffee' },
+  { label: 'ANIMATION', tone: 'portrait' },
+  { label: 'CODE SIGNAL', tone: 'code' },
+  { label: 'DEEP FOCUS', tone: 'cloud' },
+]
+
 export default function ControlRoom() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
@@ -225,7 +234,7 @@ export default function ControlRoom() {
     const bodyWidth = document.body.style.width
 
     const blockScroll = (event: Event) => {
-      if (event.target instanceof Node && profileRef.current?.contains(event.target)) {
+      if (!(event.target instanceof Node) || !profileRef.current?.contains(event.target)) {
         event.preventDefault()
       }
     }
@@ -510,6 +519,28 @@ export default function ControlRoom() {
                 </i>
                 <strong>75%</strong>
               </div>
+            </section>
+
+            <section className="control-room__analysis-panel control-room__analysis-panel--archive">
+              <h3>PERSONAL SIGNAL ARCHIVE</h3>
+              <div className="control-room__archive-grid" aria-label="Personal signal archive">
+                {signalArchive.map((item) => (
+                  <figure className={`control-room__archive-card control-room__archive-card--${item.tone}`} key={item.label}>
+                    {item.tone === 'portrait' && <img src={character07Src} alt="" />}
+                    <figcaption>{item.label}</figcaption>
+                  </figure>
+                ))}
+              </div>
+              <dl className="control-room__archive-status">
+                <div>
+                  <dt>ARCHIVE STATUS</dt>
+                  <dd>STABLE</dd>
+                </div>
+                <div>
+                  <dt>SIGNAL QUALITY</dt>
+                  <dd>89%</dd>
+                </div>
+              </dl>
             </section>
 
             <nav className="control-room__analysis-panel control-room__analysis-panel--actions" aria-label="Profile actions">
