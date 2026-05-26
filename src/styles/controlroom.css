@@ -230,7 +230,7 @@
   pointer-events: auto;
   text-shadow: 0 8px 22px rgba(0, 0, 0, 0.72);
   cursor: pointer;
-  transform-origin: center;
+  transform-origin: top center;
   transition:
     transform 0.24s ease,
     z-index 0.24s ease;
@@ -305,14 +305,6 @@
   background: radial-gradient(circle at 50% 50%, transparent 0 48%, rgba(0, 0, 0, 0.54) 100%);
 }
 
-.control-room__project-preview span {
-  position: relative;
-  z-index: 1;
-  font-size: clamp(11px, 0.84vw, 14px);
-  font-weight: 800;
-  line-height: 1.25;
-}
-
 .control-room__project-preview img {
   position: absolute;
   inset: 0;
@@ -324,18 +316,13 @@
   filter: saturate(0.9) contrast(0.94) brightness(0.72);
 }
 
-.control-room__project-preview img + span {
-  color: rgba(255, 255, 255, 0.86);
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.84);
-}
-
 .control-room__project--identity {
   top: 22%;
   left: clamp(112px, 12vw, 240px);
 }
 
 .control-room__project--mmca {
-  top: 56%;
+  top: 52%;
   left: clamp(112px, 12vw, 240px);
 }
 
@@ -345,12 +332,12 @@
 }
 
 .control-room__project--app {
-  top: 56%;
+  top: 52%;
   right: clamp(112px, 12vw, 240px);
 }
 
 .control-room__project:hover .control-room__project-preview {
-  min-height: clamp(132px, 15vw, 260px);
+  min-height: clamp(118px, 11vw, 190px);
   border: 1px solid #08ff2f;
   border-color: #08ff2f;
   border-radius: 16px;
@@ -366,7 +353,7 @@
 
 .control-room__project:hover {
   z-index: 20;
-  transform: scale(1.12);
+  transform: scale(1.06);
 }
 
 .control-room__project-terminal {
@@ -376,9 +363,7 @@
   display: grid;
   gap: 7px;
   width: clamp(170px, 13vw, 238px);
-  max-height: 0;
-  padding: 0 clamp(14px, 1.25vw, 20px);
-  overflow: hidden;
+  padding: clamp(14px, 1.25vw, 20px);
   color: rgba(222, 226, 216, 0.74);
   font-family: 'Courier New', Consolas, monospace;
   font-size: clamp(11px, 0.82vw, 14px);
@@ -399,30 +384,29 @@
     0 18px 38px rgba(0, 0, 0, 0.42);
   opacity: 0;
   pointer-events: none;
-  transform: translateX(-10px);
+  transform: translate3d(-10px, 0, 0) scale(0.98);
+  transform-origin: left center;
   transition:
-    max-height 0.18s steps(4, end),
-    padding 0.18s steps(4, end),
-    border-color 0.18s steps(4, end),
-    opacity 0.12s steps(3, end),
-    transform 0.16s steps(3, end);
+    border-color 0.18s ease,
+    opacity 0.18s ease,
+    transform 0.22s ease;
+  will-change: opacity, transform;
 }
 
 .control-room__project--fandom .control-room__project-terminal,
 .control-room__project--app .control-room__project-terminal {
   right: calc(100% + 14px);
   left: auto;
-  transform: translateX(10px);
+  transform: translate3d(10px, 0, 0) scale(0.98);
+  transform-origin: right center;
 }
 
 .control-room__project:hover .control-room__project-terminal,
 .control-room__project:focus-visible .control-room__project-terminal {
-  max-height: 220px;
-  padding: clamp(14px, 1.25vw, 20px);
   border-width: 1px;
   border-color: rgba(126, 171, 83, 0.42);
   opacity: 1;
-  transform: translateX(0);
+  transform: translate3d(0, 0, 0) scale(1);
 }
 
 .control-room__project-file {

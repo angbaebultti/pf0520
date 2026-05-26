@@ -9,23 +9,25 @@ import mmcaSrc from '@assets/mmca.png'
 import nightviewSrc from '@assets/nightview.jpeg'
 import oceanSrc from '@assets/ocean.jpeg'
 import bubblooSrc from '@assets/bubbloo.png'
+import jibsaLifeSrc from '@assets/jibsa_life.png'
+import kukdeSrc from '@assets/kukde.png'
 import '@styles/controlroom.css'
 
 const projects = [
-  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', hoverLabel: 'kukde', position: 'identity' },
-  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', hoverLabel: 'MMCA', position: 'mmca', thumbnail: mmcaSrc },
+  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', position: 'identity', thumbnail: kukdeSrc },
+  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', position: 'mmca', thumbnail: mmcaSrc },
   {
     id: '03',
     title: 'AI Chatbot Support Fandom Community Mobile UX/UI Project',
-    hoverLabel: '집사인생',
     position: 'fandom',
+    thumbnail: jibsaLifeSrc,
   },
-  { id: '04', title: 'Personal App Project', hoverLabel: 'bubbloo', position: 'app', thumbnail: bubblooSrc },
+  { id: '04', title: 'Personal App Project', position: 'app', thumbnail: bubblooSrc },
 ]
 
 const projectDetails = {
   '01': {
-    fileName: 'KUKDE.SYS',
+    fileName: '국대떡볶이 사이트 리디자인',
     status: 'ACTIVE',
     year: '2025',
     type: 'PERSONAL',
@@ -34,7 +36,7 @@ const projectDetails = {
     primaryUrl: 'https://angbaebultti.github.io/kukde/',
   },
   '02': {
-    fileName: 'MMCA.EXE',
+    fileName: '국립현대미술관 영문 사이트 리디자인',
     status: 'ACTIVE',
     year: '2026',
     type: 'TEAM',
@@ -44,7 +46,7 @@ const projectDetails = {
     secondaryUrl: 'https://www.figma.com/deck/ZXh2NGrYdXA2vKlNkcS0iO',
   },
   '03': {
-    fileName: 'JIBSA_LIFE.APP',
+    fileName: '집사인생',
     status: 'ACTIVE',
     year: '2026',
     type: 'TEAM',
@@ -54,7 +56,7 @@ const projectDetails = {
     secondaryUrl: 'https://www.figma.com/deck/twdFcOofR67TXZqo25bhVL',
   },
   '04': {
-    fileName: 'BUBBLOO.SYS',
+    fileName: 'BUBBLOO',
     status: 'DEVELOPMENT',
     year: '2026',
     type: 'PERSONAL',
@@ -311,7 +313,6 @@ export default function ControlRoom() {
                 <span className="control-room__project-title">{project.title}</span>
                 <span className="control-room__project-preview" aria-hidden="true">
                   {'thumbnail' in project && <img src={project.thumbnail} alt="" />}
-                  <span>{project.hoverLabel}</span>
                 </span>
                 <span className="control-room__project-terminal" aria-hidden="true">
                   <span className="control-room__project-file">{details.fileName}</span>
