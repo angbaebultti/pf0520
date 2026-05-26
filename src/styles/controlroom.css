@@ -51,13 +51,11 @@
 .control-room__stage::after {
   z-index: 7;
   background:
-    repeating-linear-gradient(
-      to bottom,
+    repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.035) 0,
       rgba(255, 255, 255, 0.035) 1px,
       transparent 1px,
-      transparent 4px
-    ),
+      transparent 4px),
     radial-gradient(circle at 50% 50%, transparent 0 58%, rgba(0, 0, 0, 0.52) 100%);
   mix-blend-mode: overlay;
   opacity: 0.56;
@@ -270,9 +268,8 @@
   box-shadow:
     inset 0 0 22px rgba(255, 255, 255, 0.035),
     0 18px 34px rgba(0, 0, 0, 0.38);
-  backdrop-filter: blur(4px);
+  contain: paint;
   transition:
-    min-height 0.24s ease,
     border-color 0.24s ease,
     background 0.24s ease,
     box-shadow 0.24s ease,
@@ -289,13 +286,11 @@
 
 .control-room__project-preview::before {
   background:
-    repeating-linear-gradient(
-      to bottom,
+    repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.035) 0,
       rgba(255, 255, 255, 0.035) 1px,
       transparent 1px,
-      transparent 5px
-    ),
+      transparent 5px),
     linear-gradient(90deg, rgba(195, 255, 147, 0.12), transparent 32% 72%, rgba(255, 255, 255, 0.06));
   mix-blend-mode: screen;
   opacity: 0.54;
@@ -312,8 +307,9 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 0.82;
-  filter: saturate(0.9) contrast(0.94) brightness(0.72);
+  opacity: 0.76;
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 .control-room__project--identity {
@@ -336,8 +332,19 @@
   right: clamp(112px, 12vw, 240px);
 }
 
+.control-room__project--app .control-room__project-preview {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.12), transparent 36%),
+    radial-gradient(ellipse at 50% 46%, rgba(142, 139, 216, 0.28), transparent 58%),
+    #22223f;
+}
+
+.control-room__project--app .control-room__project-preview img {
+  object-fit: cover;
+  object-position: center 37%;
+}
+
 .control-room__project:hover .control-room__project-preview {
-  min-height: clamp(118px, 11vw, 190px);
   border: 1px solid #08ff2f;
   border-color: #08ff2f;
   border-radius: 16px;
@@ -370,13 +377,11 @@
   font-weight: 800;
   line-height: 1.2;
   background:
-    repeating-linear-gradient(
-      to bottom,
+    repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.04) 0,
       rgba(255, 255, 255, 0.04) 1px,
       transparent 1px,
-      transparent 5px
-    ),
+      transparent 5px),
     rgba(3, 6, 5, 0.9);
   border: 0 solid rgba(126, 171, 83, 0);
   box-shadow:
@@ -534,7 +539,7 @@
   margin-left: 9%;
 }
 
-.control-room__guide-demo > span {
+.control-room__guide-demo>span {
   color: #8fc35d;
   font-size: 12px;
   font-weight: 800;
@@ -731,13 +736,11 @@
   content: '';
   pointer-events: none;
   background:
-    repeating-linear-gradient(
-      to bottom,
+    repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.022) 0,
       rgba(255, 255, 255, 0.022) 1px,
       transparent 1px,
-      transparent 5px
-    ),
+      transparent 5px),
     linear-gradient(90deg, rgba(8, 255, 47, 0.04), transparent 18% 82%, rgba(8, 255, 47, 0.03));
   mix-blend-mode: screen;
   opacity: 0.44;
@@ -754,7 +757,7 @@
 
 .control-room__contact-copy {
   margin: 0;
-  color: #08ff2f;
+  color: rgba(205, 244, 164, 0.76);
   font-size: clamp(13px, 0.95vw, 16px);
   font-weight: 800;
   line-height: 1.4;
@@ -801,7 +804,7 @@
     radial-gradient(ellipse at 50% 8%, rgba(205, 244, 164, 0.08), transparent 34%),
     rgba(1, 3, 2, 0.92);
   opacity: 0;
-  transition: opacity 0.18s steps(4, end);
+  transition: opacity 0.12s ease;
 }
 
 .control-room__profile::before,
@@ -814,13 +817,11 @@
 
 .control-room__profile::before {
   background:
-    repeating-linear-gradient(
-      to bottom,
+    repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.035) 0,
       rgba(255, 255, 255, 0.035) 1px,
       transparent 1px,
-      transparent 5px
-    ),
+      transparent 5px),
     repeating-linear-gradient(90deg, transparent 0 42px, rgba(205, 244, 164, 0.025) 43px 44px);
   mix-blend-mode: screen;
   opacity: 0.5;
@@ -842,7 +843,7 @@
   --numeric-font: 'IBM Plex Mono', 'OCR A Std', 'OCR-A', 'Courier New', Consolas, monospace;
   --phosphor-green: #8fd267;
   --phosphor-dim: rgba(174, 211, 155, 0.66);
-  --phosphor-muted: rgba(166, 194, 151, 0.52);
+  --phosphor-muted: rgba(190, 216, 176, 0.74);
   position: relative;
   z-index: 1;
   display: grid;
@@ -899,7 +900,7 @@
     repeating-linear-gradient(90deg, transparent 0 2px, rgba(123, 180, 87, 0.012) 3px 4px),
     radial-gradient(circle at 50% 50%, transparent 0 60%, rgba(0, 0, 0, 0.55) 100%);
   mix-blend-mode: screen;
-  opacity: 0.62;
+  opacity: 0.44;
 }
 
 .control-room__analysis::after {
@@ -913,13 +914,13 @@
 }
 
 .control-room__profile--open .control-room__analysis::before {
-  animation: control-noise-stabilize 8.8s steps(8, end) forwards;
+  animation: control-noise-stabilize 3s steps(8, end) forwards;
 }
 
 .control-room__profile--open .control-room__analysis::after {
   animation:
     control-analysis-scan 5s linear infinite,
-    control-scan-stabilize 8.8s steps(8, end) forwards;
+    control-scan-stabilize 3s steps(8, end) forwards;
 }
 
 .control-room__analysis-header {
@@ -945,10 +946,9 @@
   letter-spacing: 0.035em;
   text-transform: uppercase;
   text-shadow:
-    0 0 1px rgba(232, 255, 214, 0.36),
-    0 0 7px rgba(143, 210, 103, 0.22),
-    0 0 16px rgba(116, 184, 87, 0.12);
-  filter: blur(0.08px);
+    0 0 1px rgba(232, 255, 214, 0.28),
+    0 0 5px rgba(143, 210, 103, 0.16);
+  filter: none;
 }
 
 .control-room__analysis-header p {
@@ -972,8 +972,8 @@
 
 .control-room__profile--open .control-room__analysis-boot p {
   animation:
-    control-type-line 0.9s steps(var(--typing-steps), end) var(--typing-delay) forwards,
-    control-type-caret 0.8s steps(2, end) var(--typing-delay) 2;
+    control-type-line 0.45s steps(var(--typing-steps), end) var(--typing-delay) forwards,
+    control-type-caret 0.42s steps(2, end) var(--typing-delay) 1;
 }
 
 .control-room__analysis-header div:last-child {
@@ -1000,32 +1000,32 @@
 }
 
 .control-room__profile--open .control-room__analysis-panel--visual {
-  animation: control-panel-activate 0.9s steps(5, end) 2.55s forwards;
+  animation: control-panel-activate 0.52s steps(5, end) 0.95s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--log {
-  animation: control-panel-activate 0.7s steps(4, end) 1.9s forwards;
+  animation: control-panel-activate 0.45s steps(4, end) 0.68s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--core {
-  animation: control-panel-activate 1s steps(5, end) 3.7s forwards;
+  animation: control-panel-activate 0.55s steps(5, end) 1.35s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--scan {
-  animation: control-panel-activate 0.9s steps(5, end) 5.35s forwards;
+  animation: control-panel-activate 0.52s steps(5, end) 2.05s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--data {
-  animation: control-panel-activate 0.9s steps(5, end) 6.85s forwards;
+  animation: control-panel-activate 0.52s steps(5, end) 2.35s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--archive {
-  animation: control-panel-activate 0.9s steps(5, end) 7.35s forwards;
+  animation: control-panel-activate 0.52s steps(5, end) 2.6s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-panel--actions,
 .control-room__profile--open .control-room__analysis-input {
-  animation: control-panel-activate 0.8s steps(4, end) 8.1s forwards;
+  animation: control-panel-activate 0.45s steps(4, end) 3.05s forwards;
 }
 
 .control-room__analysis-panel--visual {
@@ -1107,7 +1107,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-portrait {
-  animation: control-portrait-sync 4.8s steps(8, end) 2.55s forwards;
+  animation: control-portrait-sync 1.7s steps(8, end) 0.95s forwards;
 }
 
 .control-room__analysis-portrait::before,
@@ -1151,8 +1151,8 @@
 
 .control-room__profile--open .control-room__analysis-portrait img {
   animation:
-    control-image-sync 0.9s steps(5, end) 3.35s forwards,
-    control-voice-glitch 0.42s steps(2, end) 4.65s 1;
+    control-image-sync 0.62s steps(5, end) 1.2s forwards,
+    control-voice-glitch 0.3s steps(2, end) 1.9s 1;
 }
 
 .control-room__analysis-portrait span {
@@ -1187,7 +1187,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-core-frame img {
-  animation: control-core-sync 1s steps(6, end) 7.65s forwards;
+  animation: control-core-sync 0.68s steps(6, end) 2.35s forwards;
 }
 
 .control-room__analysis-core-frame::after {
@@ -1250,11 +1250,11 @@
 }
 
 .control-room__profile--open .control-room__analysis-status {
-  animation: control-status-lock 0.8s steps(4, end) 7.85s forwards;
+  animation: control-status-lock 0.5s steps(4, end) 2.55s forwards;
 }
 
 .control-room__profile--open .control-room__analysis-status b::before {
-  animation: control-status-text 0.8s steps(2, end) 7.85s forwards;
+  animation: control-status-text 0.5s steps(2, end) 2.55s forwards;
 }
 
 .control-room__analysis-wave {
@@ -1274,7 +1274,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-wave {
-  animation: control-signal-rise 1.2s steps(7, end) 7.65s forwards;
+  animation: control-signal-rise 0.62s steps(7, end) 2.35s forwards;
 }
 
 .control-room__analysis-wave::before,
@@ -1351,7 +1351,7 @@
 .control-room__profile--open .control-room__analysis-wave-line {
   animation:
     control-wave-pulse 2.2s ease-in-out infinite,
-    control-wave-activate 1.2s steps(6, end) 7.65s forwards;
+    control-wave-activate 0.62s steps(6, end) 2.35s forwards;
 }
 
 .control-room__analysis-wave b {
@@ -1391,7 +1391,7 @@
 }
 
 .control-room__profile--open .control-room__analysis-wave b {
-  animation: control-signal-text 1.2s steps(3, end) 7.65s forwards;
+  animation: control-signal-text 0.62s steps(3, end) 2.35s forwards;
 }
 
 .control-room__numeric-digits,
@@ -1419,38 +1419,38 @@
 }
 
 .control-room__analysis-data div,
-.control-room__analysis-panel--data > p {
+.control-room__analysis-panel--data>p {
   opacity: 0;
   transform: translateY(5px);
 }
 
 .control-room__profile--open .control-room__analysis-data div,
-.control-room__profile--open .control-room__analysis-panel--data > p {
-  animation: control-data-reveal 0.42s steps(4, end) forwards;
+.control-room__profile--open .control-room__analysis-panel--data>p {
+  animation: control-data-reveal 0.36s steps(4, end) forwards;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(1) {
-  animation-delay: 6.95s;
+  animation-delay: 2.45s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(2) {
-  animation-delay: 7.08s;
+  animation-delay: 2.6s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(3) {
-  animation-delay: 7.21s;
+  animation-delay: 2.75s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(4) {
-  animation-delay: 7.34s;
+  animation-delay: 2.9s;
 }
 
 .control-room__profile--open .control-room__analysis-data div:nth-child(5) {
-  animation-delay: 7.47s;
+  animation-delay: 3.05s;
 }
 
-.control-room__profile--open .control-room__analysis-panel--data > p {
-  animation-delay: 7.62s;
+.control-room__profile--open .control-room__analysis-panel--data>p {
+  animation-delay: 3.22s;
 }
 
 .control-room__analysis-data div {
@@ -1469,9 +1469,15 @@
   font-weight: 650;
   line-height: 1.55;
   letter-spacing: 0.014em;
-  text-shadow:
-    0 0 1px rgba(225, 255, 204, 0.16),
-    0 0 7px rgba(143, 210, 103, 0.08);
+  text-shadow: 0 0 1px rgba(225, 255, 204, 0.14);
+}
+
+.control-room__analysis-data dt,
+.control-room__analysis-data dd,
+.control-room__analysis-panel--data > p {
+  color: rgba(206, 229, 193, 0.82);
+  font-weight: 760;
+  text-shadow: 0 0 1px rgba(232, 255, 214, 0.1);
 }
 
 .control-room__analysis-data dd::before {
@@ -1491,8 +1497,7 @@
 }
 
 .control-room__analysis-panel--log b {
-  width: 0;
-  overflow: hidden;
+  width: 100%;
   margin-top: 4px;
   color: var(--phosphor-green);
   font-family: var(--terminal-font);
@@ -1509,10 +1514,10 @@
 }
 
 .control-room__analysis-panel--log p {
-  width: 0;
-  overflow: hidden;
+  width: 100%;
   white-space: nowrap;
   opacity: 0;
+  transform: translateY(4px);
 }
 
 .control-room__analysis-panel--log p,
@@ -1533,44 +1538,35 @@
 
 .control-room__profile--open .control-room__analysis-panel--log p,
 .control-room__profile--open .control-room__analysis-panel--log b {
-  animation:
-    control-log-type 0.72s steps(var(--log-steps), end) var(--log-delay) forwards,
-    control-log-fade 0.12s steps(1, end) var(--log-delay) forwards;
+  animation: control-log-reveal 0.3s steps(3, end) var(--log-delay) forwards;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(1) {
-  --log-delay: 2.2s;
-  --log-steps: 28;
+  --log-delay: 0.95s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(2) {
-  --log-delay: 3.35s;
-  --log-steps: 46;
+  --log-delay: 1.25s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(3) {
-  --log-delay: 4.5s;
-  --log-steps: 42;
+  --log-delay: 1.55s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(4) {
-  --log-delay: 5.42s;
-  --log-steps: 46;
+  --log-delay: 1.85s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(5) {
-  --log-delay: 6.78s;
-  --log-steps: 46;
+  --log-delay: 2.15s;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(6) {
-  --log-delay: 7.75s;
-  --log-steps: 40;
+  --log-delay: 2.45s;
 }
 
 .control-room__analysis-panel--log b {
-  --log-delay: 8.55s;
-  --log-steps: 26;
+  --log-delay: 2.8s;
 }
 
 .control-room__analysis-capability {
@@ -1604,31 +1600,31 @@
 }
 
 .control-room__profile--open .control-room__analysis-capability b {
-  animation: control-bar-load 0.9s steps(12, end) forwards;
+  animation: control-bar-load 0.52s steps(12, end) forwards;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(1) b {
-  animation-delay: 5.65s;
+  animation-delay: 2.18s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(2) b {
-  animation-delay: 5.82s;
+  animation-delay: 2.32s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(3) b {
-  animation-delay: 5.99s;
+  animation-delay: 2.46s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(4) b {
-  animation-delay: 6.16s;
+  animation-delay: 2.6s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(5) b {
-  animation-delay: 6.33s;
+  animation-delay: 2.74s;
 }
 
 .control-room__profile--open .control-room__analysis-capability:nth-of-type(6) b {
-  animation-delay: 6.5s;
+  animation-delay: 2.88s;
 }
 
 .control-room__analysis-capability strong {
@@ -1721,7 +1717,7 @@
 }
 
 .control-room__profile--open .control-room__archive-card figcaption {
-  animation: control-data-reveal 0.42s steps(4, end) 8s forwards;
+  animation: control-data-reveal 0.36s steps(4, end) 3s forwards;
 }
 
 .control-room__archive-card img {
@@ -1940,6 +1936,7 @@
 }
 
 @keyframes control-crt-flicker {
+
   0%,
   100% {
     filter: brightness(0.96) blur(0);
@@ -1959,6 +1956,7 @@
 }
 
 @keyframes control-text-flicker {
+
   0%,
   100% {
     opacity: 1;
@@ -1977,6 +1975,7 @@
 }
 
 @keyframes control-noise-stabilize {
+
   0%,
   55% {
     opacity: 0.62;
@@ -1992,6 +1991,7 @@
 }
 
 @keyframes control-scan-stabilize {
+
   0%,
   45% {
     opacity: 0.32;
@@ -2062,6 +2062,7 @@
 }
 
 @keyframes control-voice-glitch {
+
   0%,
   100% {
     transform: translate(0, 0);
@@ -2078,15 +2079,10 @@
   }
 }
 
-@keyframes control-log-type {
-  to {
-    width: calc(var(--log-steps) * 1ch);
-  }
-}
-
-@keyframes control-log-fade {
+@keyframes control-log-reveal {
   to {
     opacity: 1;
+    transform: translateY(0);
   }
 }
 
@@ -2114,6 +2110,7 @@
 }
 
 @keyframes control-status-text {
+
   0%,
   49% {
     color: rgba(205, 232, 188, 0.5);
@@ -2140,6 +2137,7 @@
 }
 
 @keyframes control-signal-text {
+
   0%,
   32% {
     color: rgba(151, 215, 106, 0.68);
@@ -2182,6 +2180,7 @@
 }
 
 @keyframes control-eye-blink {
+
   0%,
   38%,
   44%,
@@ -2208,6 +2207,7 @@
 }
 
 @keyframes control-wave-pulse {
+
   0%,
   100% {
     opacity: 0.58;
@@ -2244,13 +2244,11 @@
     1px 0 rgba(0, 184, 255, 0.2);
   pointer-events: none;
   background:
-    repeating-linear-gradient(
-      to bottom,
+    repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.11) 0,
       rgba(255, 255, 255, 0.11) 1px,
       transparent 1px,
-      transparent 4px
-    ),
+      transparent 4px),
     rgba(2, 5, 4, 0.62);
   border: 1px solid rgba(205, 244, 164, 0.34);
   box-shadow:
@@ -2294,6 +2292,7 @@
 }
 
 @keyframes control-click-cue-flicker {
+
   0%,
   100% {
     clip-path: inset(0);
@@ -2443,7 +2442,6 @@
   }
 
   .control-room__project:hover .control-room__project-preview {
-    min-height: 88px;
     border-radius: 10px;
   }
 

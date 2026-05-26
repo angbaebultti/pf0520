@@ -1,33 +1,34 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import character07Src from '@assets/character07.png'
+import character07ProfileSrc from '@assets/character07_profile.jpg'
 import character06Src from '@assets/charcter06.png'
-import catSrc from '@assets/cat.jpeg'
-import flowerSrc from '@assets/flower.jpeg'
-import juhee2Src from '@assets/juhee2.jpeg'
-import juheeSrc from '@assets/juhee.jpeg'
-import mmcaSrc from '@assets/mmca.png'
-import nightviewSrc from '@assets/nightview.jpeg'
-import oceanSrc from '@assets/ocean.jpeg'
+import character06ProfileSrc from '@assets/character06_profile.jpg'
+import catArchiveSrc from '@assets/cat_archive.jpg'
+import flowerArchiveSrc from '@assets/flower_archive.jpg'
+import juhee2ArchiveSrc from '@assets/juhee2_archive.jpg'
+import juheeArchiveSrc from '@assets/juhee_archive.jpg'
+import mmcaThumbSrc from '@assets/mmca_thumb.jpg'
+import nightviewArchiveSrc from '@assets/nightview_archive.jpg'
+import oceanArchiveSrc from '@assets/ocean_archive.jpg'
 import bubblooSrc from '@assets/bubbloo.png'
-import jibsaLifeSrc from '@assets/jibsa_life.png'
-import kukdeSrc from '@assets/kukde.png'
+import jibsaLifeThumbSrc from '@assets/jibsa_life_thumb.jpg'
+import kukdeThumbSrc from '@assets/kukde_thumb.jpg'
 import '@styles/controlroom.css'
 
 const projects = [
-  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', position: 'identity', thumbnail: kukdeSrc },
-  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', position: 'mmca', thumbnail: mmcaSrc },
+  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', position: 'identity', thumbnail: kukdeThumbSrc },
+  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', position: 'mmca', thumbnail: mmcaThumbSrc },
   {
     id: '03',
     title: 'AI Chatbot Support Fandom Community Mobile UX/UI Project',
     position: 'fandom',
-    thumbnail: jibsaLifeSrc,
+    thumbnail: jibsaLifeThumbSrc,
   },
   { id: '04', title: 'Personal App Project', position: 'app', thumbnail: bubblooSrc },
 ]
 
 const projectDetails = {
   '01': {
-    fileName: '국대떡볶이 사이트 리디자인',
+    fileName: '국대떡볶이',
     status: 'ACTIVE',
     year: '2025',
     type: 'PERSONAL',
@@ -36,7 +37,7 @@ const projectDetails = {
     primaryUrl: 'https://angbaebultti.github.io/kukde/',
   },
   '02': {
-    fileName: '국립현대미술관 영문 사이트 리디자인',
+    fileName: 'MMCA',
     status: 'ACTIVE',
     year: '2026',
     type: 'TEAM',
@@ -74,13 +75,15 @@ const capabilities = [
 ]
 
 const signalArchive = [
-  { label: 'NIGHT VIEW', archiveLabel: 'NIGHT_VIEW.LOG', tone: 'city', image: nightviewSrc },
-  { label: 'INTERFACE', archiveLabel: 'CAT.LOG', tone: 'terminal', image: catSrc },
-  { label: 'SILENT MODE', archiveLabel: 'FLOWER.LOG', tone: 'coffee', image: flowerSrc },
-  { label: 'ANIMATION', archiveLabel: 'JUHEE.LOG', tone: 'portrait', image: juheeSrc },
-  { label: 'CODE SIGNAL', archiveLabel: 'OCEAN_ARCHIVE', tone: 'code', image: oceanSrc },
-  { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2Src },
+  { label: 'NIGHT VIEW', archiveLabel: 'NIGHT_VIEW.LOG', tone: 'city', image: nightviewArchiveSrc },
+  { label: 'INTERFACE', archiveLabel: 'CAT.LOG', tone: 'terminal', image: catArchiveSrc },
+  { label: 'SILENT MODE', archiveLabel: 'FLOWER.LOG', tone: 'coffee', image: flowerArchiveSrc },
+  { label: 'ANIMATION', archiveLabel: 'JUHEE.LOG', tone: 'portrait', image: juheeArchiveSrc },
+  { label: 'CODE SIGNAL', archiveLabel: 'OCEAN_ARCHIVE', tone: 'code', image: oceanArchiveSrc },
+  { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2ArchiveSrc },
 ]
+
+const profilePreloadAssets = [character07ProfileSrc, character06ProfileSrc, ...signalArchive.map((item) => item.image)]
 
 export default function ControlRoom() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -147,15 +150,19 @@ export default function ControlRoom() {
   }, [])
 
   useEffect(() => {
-    const preload = document.createElement('link')
-    preload.rel = 'preload'
-    preload.as = 'image'
-    preload.href = character06Src
-    preload.setAttribute('fetchpriority', 'high')
-    document.head.append(preload)
+    const preloads = [character06Src, ...profilePreloadAssets].map((asset, index) => {
+      const preload = document.createElement('link')
+      preload.rel = 'preload'
+      preload.as = 'image'
+      preload.href = asset
+      if (index === 0) preload.setAttribute('fetchpriority', 'high')
+      document.head.append(preload)
+
+      return preload
+    })
 
     return () => {
-      preload.remove()
+      preloads.forEach((preload) => preload.remove())
     }
   }, [])
 
@@ -312,7 +319,7 @@ export default function ControlRoom() {
                 <span className="control-room__project-kicker">{project.id}</span>
                 <span className="control-room__project-title">{project.title}</span>
                 <span className="control-room__project-preview" aria-hidden="true">
-                  {'thumbnail' in project && <img src={project.thumbnail} alt="" />}
+                  {'thumbnail' in project && <img src={project.thumbnail} alt="" loading="eager" decoding="async" />}
                 </span>
                 <span className="control-room__project-terminal" aria-hidden="true">
                   <span className="control-room__project-file">{details.fileName}</span>
@@ -434,8 +441,8 @@ export default function ControlRoom() {
             <header className="control-room__analysis-header">
               <div className="control-room__analysis-boot">
                 <p style={{ '--typing-steps': 31, '--typing-delay': '0s' } as React.CSSProperties}>&gt;&gt; ACCESSING IDENTITY MODULE...</p>
-                <p style={{ '--typing-steps': 16, '--typing-delay': '1.45s' } as React.CSSProperties}>[ 00:00:12:07 ]</p>
-                <p style={{ '--typing-steps': 22, '--typing-delay': '8.7s' } as React.CSSProperties}>&gt;&gt; CONNECTION STABLE</p>
+                <p style={{ '--typing-steps': 16, '--typing-delay': '0.55s' } as React.CSSProperties}>[ 00:00:12:07 ]</p>
+                <p style={{ '--typing-steps': 22, '--typing-delay': '2.6s' } as React.CSSProperties}>&gt;&gt; CONNECTION STABLE</p>
               </div>
               <h2>IDENTITY ANALYSIS SYSTEM</h2>
               <div>
@@ -449,7 +456,7 @@ export default function ControlRoom() {
             <section className="control-room__analysis-panel control-room__analysis-panel--visual">
               <h3>ENTITY VISUAL</h3>
               <div className="control-room__analysis-portrait">
-                <img src={character07Src} alt="" />
+                <img src={character07ProfileSrc} alt="" loading="eager" decoding="async" />
                 <span>SIGNAL SOURCE<br />LIVE FEED</span>
               </div>
             </section>
@@ -468,7 +475,7 @@ export default function ControlRoom() {
             <main className="control-room__analysis-panel control-room__analysis-panel--core">
               <h3>IDENTITY CORE</h3>
               <div className="control-room__analysis-core-frame">
-                <img src={character06Src} alt="" />
+                <img src={character06ProfileSrc} alt="" loading="eager" decoding="async" />
                 <div className="control-room__analysis-status">
                   <span>STATUS</span>
                   <b>ACTIVE</b>
@@ -549,7 +556,7 @@ export default function ControlRoom() {
                     className={`control-room__archive-card control-room__archive-card--${item.tone} control-room__archive-card--image`}
                     key={item.label}
                   >
-                    <img src={item.image} alt="" />
+                    <img src={item.image} alt="" loading="eager" decoding="async" />
                     <figcaption>{item.archiveLabel}</figcaption>
                   </figure>
                 ))}
