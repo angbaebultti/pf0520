@@ -1,18 +1,26 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import character07Src from '@assets/character07.png'
 import character06Src from '@assets/charcter06.png'
+import catSrc from '@assets/cat.jpeg'
+import flowerSrc from '@assets/flower.jpeg'
+import juhee2Src from '@assets/juhee2.jpeg'
+import juheeSrc from '@assets/juhee.jpeg'
+import mmcaSrc from '@assets/mmca.png'
+import nightviewSrc from '@assets/nightview.jpeg'
+import oceanSrc from '@assets/ocean.jpeg'
+import bubblooSrc from '@assets/bubbloo.png'
 import '@styles/controlroom.css'
 
 const projects = [
   { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', hoverLabel: 'kukde', position: 'identity' },
-  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', hoverLabel: 'MMCA', position: 'mmca' },
+  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', hoverLabel: 'MMCA', position: 'mmca', thumbnail: mmcaSrc },
   {
     id: '03',
     title: 'AI Chatbot Support Fandom Community Mobile UX/UI Project',
     hoverLabel: '집사인생',
     position: 'fandom',
   },
-  { id: '04', title: 'Personal App Project', hoverLabel: 'bubbloo', position: 'app' },
+  { id: '04', title: 'Personal App Project', hoverLabel: 'bubbloo', position: 'app', thumbnail: bubblooSrc },
 ]
 
 const projectDetails = {
@@ -64,12 +72,12 @@ const capabilities = [
 ]
 
 const signalArchive = [
-  { label: 'NIGHT VIEW', tone: 'city' },
-  { label: 'INTERFACE', tone: 'terminal' },
-  { label: 'SILENT MODE', tone: 'coffee' },
-  { label: 'ANIMATION', tone: 'portrait' },
-  { label: 'CODE SIGNAL', tone: 'code' },
-  { label: 'DEEP FOCUS', tone: 'cloud' },
+  { label: 'NIGHT VIEW', archiveLabel: 'NIGHT_VIEW.LOG', tone: 'city', image: nightviewSrc },
+  { label: 'INTERFACE', archiveLabel: 'CAT.LOG', tone: 'terminal', image: catSrc },
+  { label: 'SILENT MODE', archiveLabel: 'FLOWER.LOG', tone: 'coffee', image: flowerSrc },
+  { label: 'ANIMATION', archiveLabel: 'JUHEE.LOG', tone: 'portrait', image: juheeSrc },
+  { label: 'CODE SIGNAL', archiveLabel: 'OCEAN_ARCHIVE', tone: 'code', image: oceanSrc },
+  { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2Src },
 ]
 
 export default function ControlRoom() {
@@ -231,7 +239,9 @@ export default function ControlRoom() {
     const bodyOverflow = document.body.style.overflow
     const bodyPosition = document.body.style.position
     const bodyTop = document.body.style.top
+    const bodyLeft = document.body.style.left
     const bodyWidth = document.body.style.width
+    const lockedBodyWidth = document.documentElement.clientWidth
 
     const blockScroll = (event: Event) => {
       if (!(event.target instanceof Node) || !profileRef.current?.contains(event.target)) {
@@ -244,7 +254,8 @@ export default function ControlRoom() {
     document.body.style.overflow = 'hidden'
     document.body.style.position = 'fixed'
     document.body.style.top = `-${scrollY}px`
-    document.body.style.width = '100%'
+    document.body.style.left = '0'
+    document.body.style.width = `${lockedBodyWidth}px`
 
     window.addEventListener('wheel', blockScroll, { passive: false, capture: true })
     window.addEventListener('touchmove', blockScroll, { passive: false, capture: true })
@@ -257,6 +268,7 @@ export default function ControlRoom() {
       document.body.style.overflow = bodyOverflow
       document.body.style.position = bodyPosition
       document.body.style.top = bodyTop
+      document.body.style.left = bodyLeft
       document.body.style.width = bodyWidth
       window.scrollTo({ top: scrollY, left: 0, behavior: 'auto' })
     }
@@ -298,6 +310,7 @@ export default function ControlRoom() {
                 <span className="control-room__project-kicker">{project.id}</span>
                 <span className="control-room__project-title">{project.title}</span>
                 <span className="control-room__project-preview" aria-hidden="true">
+                  {'thumbnail' in project && <img src={project.thumbnail} alt="" />}
                   <span>{project.hoverLabel}</span>
                 </span>
                 <span className="control-room__project-terminal" aria-hidden="true">
@@ -322,13 +335,13 @@ export default function ControlRoom() {
           aria-expanded={isGuideOpen}
           aria-controls="control-room-guide"
         >
-          HOW TO USE
+         ACCESS GUIDE
         </button>
         <aside id="control-room-guide" className={`control-room__guide${isGuideOpen ? ' control-room__guide--open' : ''}`} aria-label="How to use" aria-hidden={!isGuideOpen}>
           <button className="control-room__guide-close" type="button" onClick={() => setIsGuideOpen(false)} aria-label="Close how to use">
             ×
           </button>
-          <h2>HOW TO USE</h2>
+          <h2>ACCESS GUIDE</h2>
           <p>각 프로젝트 카드 및 캐릭터에 마우스를 올리면 해당 채널의 접근 메뉴가 나타납니다.</p>
           <div className="control-room__guide-demo" aria-hidden="true">
             <span>02</span>
@@ -470,7 +483,9 @@ export default function ControlRoom() {
                     <path className="control-room__analysis-wave-line" d="M720 54 C736 50 744 48 754 50 S772 58 786 52 810 45 828 49 856 57 874 51 896 42 914 45 934 58 956 53 980 50 1002 54 1024 48 1044 45 1066 55 1086 52 1106 47 1128 50 1150 56 1170 51 1192 40 1214 43 1234 59 1256 53 1278 48 1300 50 1322 56 1342 52 1364 43 1386 47 1412 55 1440 50" />
                   </g>
                 </svg>
-                <b>92%</b>
+                <b className="control-room__numeric-value">
+                  <span className="control-room__numeric-digits">92</span>
+                </b>
               </div>
             </main>
 
@@ -509,7 +524,9 @@ export default function ControlRoom() {
                   <i>
                     <b style={{ width: `${capability.value}%` }} />
                   </i>
-                  <strong>{capability.value}%</strong>
+                  <strong className="control-room__numeric-value">
+                    <span className="control-room__numeric-digits">{capability.value}</span>
+                  </strong>
                 </div>
               ))}
               <div className="control-room__analysis-capability">
@@ -517,7 +534,9 @@ export default function ControlRoom() {
                 <i>
                   <b style={{ width: '75%' }} />
                 </i>
-                <strong>75%</strong>
+                <strong className="control-room__numeric-value">
+                  <span className="control-room__numeric-digits">75</span>
+                </strong>
               </div>
             </section>
 
@@ -525,9 +544,12 @@ export default function ControlRoom() {
               <h3>PERSONAL SIGNAL ARCHIVE</h3>
               <div className="control-room__archive-grid" aria-label="Personal signal archive">
                 {signalArchive.map((item) => (
-                  <figure className={`control-room__archive-card control-room__archive-card--${item.tone}`} key={item.label}>
-                    {item.tone === 'portrait' && <img src={character07Src} alt="" />}
-                    <figcaption>{item.label}</figcaption>
+                  <figure
+                    className={`control-room__archive-card control-room__archive-card--${item.tone} control-room__archive-card--image`}
+                    key={item.label}
+                  >
+                    <img src={item.image} alt="" />
+                    <figcaption>{item.archiveLabel}</figcaption>
                   </figure>
                 ))}
               </div>
