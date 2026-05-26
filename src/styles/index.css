@@ -153,7 +153,7 @@ button {
   color: rgba(190, 222, 176, 0.72);
   font-family: 'Courier New', Consolas, monospace;
   font-size: clamp(12px, 0.92vw, 16px);
-  font-weight: 900;
+  font-weight: 300;
   line-height: 1.08;
   letter-spacing: 0;
   background:
@@ -226,6 +226,69 @@ button {
 .scene-scroll-trigger {
   position: relative;
   pointer-events: none;
+}
+
+.tunnel-scroll-hint {
+  --tunnel-scroll-hint-opacity: 1;
+  position: fixed;
+  bottom: 5vh;
+  left: 50%;
+  z-index: 16;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 7px;
+  width: clamp(206px, 17vw, 264px);
+  min-height: 88px;
+  padding: 0;
+  color: rgba(220, 244, 208, 0.94);
+  font-family: Consolas, 'Lucida Console', 'Liberation Mono', monospace;
+  font-size: clamp(13px, 1vw, 17px);
+  font-weight: 300;
+  line-height: 1.04;
+  text-align: center;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  pointer-events: none;
+  background: transparent;
+  border: 0;
+  opacity: var(--tunnel-scroll-hint-opacity);
+  box-shadow: none;
+  text-shadow:
+    0 0 1px rgba(232, 255, 214, 0.34),
+    0 0 7px rgba(143, 210, 103, 0.28),
+    0 2px 12px rgba(0, 0, 0, 0.78);
+  transform: translate3d(-50%, calc((1 - var(--tunnel-scroll-hint-opacity)) * 8px), 0);
+  filter: brightness(1);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+  animation:
+    tunnel-scroll-hint-pulse 2.45s ease-in-out infinite,
+    tunnel-scroll-hint-flicker 6.8s steps(2, end) infinite;
+}
+
+.tunnel-scroll-hint span,
+.tunnel-scroll-hint b {
+  position: relative;
+  z-index: 1;
+}
+
+.tunnel-scroll-hint span {
+  grid-column: 1;
+  color: rgba(152, 210, 118, 0.84);
+  font-size: 0.7em;
+  font-weight: 300;
+  letter-spacing: 0.16em;
+  animation: tunnel-scroll-text-signal 2.7s steps(2, end) infinite;
+}
+
+.tunnel-scroll-hint b {
+  grid-column: 1;
+  color: rgba(236, 248, 225, 0.96);
+  font-size: 1.18em;
+  font-weight: 200;
+  letter-spacing: 0.14em;
+  animation: tunnel-scroll-text-signal 2.7s steps(2, end) 0.16s infinite;
 }
 
 .entity-ident-panel {
@@ -375,6 +438,79 @@ button {
   border: 1px solid rgba(155, 185, 135, 0.22);
   background: rgba(0, 8, 3, 0.28);
   overflow: visible;
+}
+
+@keyframes tunnel-scroll-hint-pulse {
+
+  0%,
+  100% {
+    opacity: var(--tunnel-scroll-hint-opacity);
+    filter: brightness(0.98);
+  }
+
+  50% {
+    opacity: calc(var(--tunnel-scroll-hint-opacity) * 0.78);
+    filter: brightness(1.08);
+  }
+}
+
+@keyframes tunnel-scroll-hint-flicker {
+
+  0%,
+  88%,
+  100% {
+    clip-path: inset(0);
+  }
+
+  90% {
+    clip-path: inset(0 0 9% 0);
+  }
+
+  92% {
+    clip-path: inset(7% 0 0 0);
+  }
+}
+
+@keyframes tunnel-scroll-text-signal {
+
+  0%,
+  100% {
+    opacity: 0.58;
+    filter: brightness(0.9);
+  }
+
+  12%,
+  18% {
+    opacity: 1;
+    filter: brightness(1.16);
+  }
+
+  22%,
+  30% {
+    opacity: 0.72;
+    filter: brightness(0.96);
+  }
+
+  54%,
+  62% {
+    opacity: 0.96;
+    filter: brightness(1.08);
+  }
+}
+
+@media (max-width: 760px) {
+  .tunnel-scroll-hint {
+    bottom: 7vh;
+    left: 50%;
+    width: fit-content;
+    max-width: calc(100vw - 36px);
+    min-width: 0;
+    min-height: 90px;
+    padding: 0;
+    font-size: 13px;
+    text-align: center;
+    transform: translate3d(-50%, calc((1 - var(--tunnel-scroll-hint-opacity)) * 8px), 0);
+  }
 }
 
 .entity-ident-panel__grid {

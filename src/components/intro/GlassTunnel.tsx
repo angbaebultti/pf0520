@@ -190,6 +190,7 @@ const drawCanvasFallback = (canvas: HTMLCanvasElement) => {
 const GlassTunnel: FC<GlassTunnelProps> = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const entityPanelRef = useRef<HTMLDivElement>(null)
+  const scrollHintRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -337,7 +338,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       const vanish = smoothstep(0.84, 1, progress)
       const distanceFromCamera = 3.4 + earlyPull * 4.5 + transformationPull * 11 + finalPull ** 1.55 * 40
       const z = currentZ - distanceFromCamera
-      const x = -0.32 + suction * 0.32
+      const x = 0
       const y = -0.35 + suction * 0.35
       const scaleLoss = earlyPull * 0.1 + transformationPull * 0.18 + finalPull * 0.62
       const baseScale = 1.12 - scaleLoss
@@ -399,6 +400,10 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         entityPanelRef.current.style.setProperty('--entity-signal-sync', String(signalSync))
         entityPanelRef.current.classList.toggle('entity-ident-panel--active', entityOpacity > 0.04)
         entityPanelRef.current.classList.toggle('entity-ident-panel--found', sequenceProgress >= ENTITY_SIGNAL_FOUND_PROGRESS)
+      }
+      if (scrollHintRef.current) {
+        const scrollHintOpacity = (1 - smoothstep(0.015, 0.14, sequenceProgress)) * (1 - controlRoomOpacity)
+        scrollHintRef.current.style.setProperty('--tunnel-scroll-hint-opacity', String(scrollHintOpacity))
       }
       document.documentElement.style.setProperty('--control-room-opacity', String(controlRoomOpacity))
     }
@@ -509,6 +514,10 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
             <span className="entity-ident-panel__found-state">&gt;&gt; WELCOME to my world</span>
           </div>
         </div>
+      </div>
+      <div ref={scrollHintRef} className="tunnel-scroll-hint" aria-hidden="true">
+        <span>&gt;&gt; SIGNAL DETECTED</span>
+        <b>SCROLL TO ENTER</b>
       </div>
     </>
   )

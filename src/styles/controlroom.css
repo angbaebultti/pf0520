@@ -363,6 +363,12 @@
   transform: scale(1.06);
 }
 
+.control-room__project--selected {
+  z-index: 21;
+  opacity: 0.42;
+  filter: brightness(0.84) saturate(0.7);
+}
+
 .control-room__project-terminal {
   position: absolute;
   top: calc(clamp(60px, 4.35vw, 91px) + 28px);
@@ -582,12 +588,20 @@
   place-items: center;
   pointer-events: none;
   opacity: 0;
-  transition: opacity 0.14s steps(3, end);
+  backdrop-filter: blur(0);
+  transition:
+    opacity 0.22s ease,
+    backdrop-filter 0.22s ease;
 }
 
 .control-room__connection--open {
   pointer-events: auto;
   opacity: 1;
+  backdrop-filter: blur(9px) brightness(0.62);
+}
+
+.control-room__connection--closing {
+  pointer-events: none;
 }
 
 .control-room__connection::before {
@@ -595,8 +609,8 @@
   inset: 0;
   content: '';
   background:
-    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 0 1px, transparent 1px 5px),
-    rgba(0, 0, 0, 0.46);
+    repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
+    rgba(0, 0, 0, 0.74);
 }
 
 .control-room__connection-modal {
@@ -604,6 +618,8 @@
   z-index: 1;
   width: min(430px, calc(100vw - 36px));
   padding: clamp(24px, 2.2vw, 34px);
+  overflow: hidden;
+  overscroll-behavior: contain;
   color: rgba(222, 226, 216, 0.78);
   font-family: 'Courier New', Consolas, monospace;
   background:
@@ -614,15 +630,56 @@
   box-shadow:
     0 24px 70px rgba(0, 0, 0, 0.58),
     inset 0 0 24px rgba(143, 195, 93, 0.04);
+  opacity: 0;
+  filter: blur(10px);
+  transform: translate3d(0, 12px, 0) scale(0.985);
+  transition:
+    opacity 0.22s ease,
+    filter 0.22s ease,
+    transform 0.22s ease;
+}
+
+.control-room__connection-modal::before {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.control-room__connection-modal::before {
+  z-index: 0;
+  background: linear-gradient(180deg, transparent 0 38%, rgba(143, 195, 93, 0.12) 43%, transparent 48% 100%);
+  mix-blend-mode: screen;
+  opacity: 0;
+}
+
+.control-room__connection--open .control-room__connection-modal {
+  opacity: 1;
+  filter: blur(0);
+  transform: translate3d(0, 0, 0) scale(1);
+  animation: control-connection-entry 0.26s ease both;
+}
+
+.control-room__connection--open .control-room__connection-modal::before {
+  animation: control-connection-scanline 0.62s ease-out 1;
 }
 
 .control-room__connection-close {
   position: absolute;
   top: 16px;
   right: 18px;
+  z-index: 2;
   color: rgba(222, 226, 216, 0.72);
   font-size: 28px;
   line-height: 1;
+}
+
+.control-room__connection-modal p,
+.control-room__connection-modal h2,
+.control-room__connection-modal dl,
+.control-room__connection-options {
+  position: relative;
+  z-index: 1;
 }
 
 .control-room__connection-modal p {
@@ -662,6 +719,12 @@
   content: ': ';
 }
 
+.control-room__connection-status {
+  color: rgba(168, 225, 122, 0.92);
+  text-shadow: 0 0 10px rgba(143, 195, 93, 0.28);
+  animation: control-connection-status 2.8s ease-in-out infinite;
+}
+
 .control-room__connection-options {
   display: grid;
   gap: 8px;
@@ -669,11 +732,13 @@
 
 .control-room__connection-options a,
 .control-room__connection-options button {
+  position: relative;
   display: flex;
   gap: 14px;
   align-items: center;
   min-height: 34px;
   padding: 0 10px;
+  overflow: hidden;
   color: rgba(222, 226, 216, 0.68);
   font: inherit;
   font-weight: 800;
@@ -804,7 +869,10 @@
     radial-gradient(ellipse at 50% 8%, rgba(205, 244, 164, 0.08), transparent 34%),
     rgba(1, 3, 2, 0.92);
   opacity: 0;
-  transition: opacity 0.12s ease;
+  backdrop-filter: blur(0);
+  transition:
+    opacity 0.22s ease,
+    backdrop-filter 0.22s ease;
 }
 
 .control-room__profile::before,
@@ -836,6 +904,11 @@
 .control-room__profile--open {
   pointer-events: auto;
   opacity: var(--room-opacity);
+  backdrop-filter: blur(7px);
+}
+
+.control-room__profile--closing {
+  pointer-events: none;
 }
 
 .control-room__profile .control-room__profile-shell {
@@ -855,6 +928,8 @@
   min-height: 0;
   margin: auto;
   overflow: hidden;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
   color: var(--phosphor-dim);
   font-family: var(--terminal-font);
   background:
@@ -870,6 +945,19 @@
   text-shadow:
     0 0 1px rgba(225, 255, 204, 0.2),
     0 0 9px rgba(143, 210, 103, 0.12);
+  opacity: 0;
+  filter: blur(10px);
+  transform: translateY(10px) scale(0.99);
+  transition:
+    opacity 0.22s ease,
+    filter 0.22s ease,
+    transform 0.22s ease;
+}
+
+.control-room__profile--open .control-room__profile-shell {
+  opacity: 1;
+  filter: blur(0);
+  transform: translateY(0) scale(1);
 }
 
 .control-room__analysis {
@@ -1026,6 +1114,10 @@
 .control-room__profile--open .control-room__analysis-panel--actions,
 .control-room__profile--open .control-room__analysis-input {
   animation: control-panel-activate 0.58s steps(4, end) 4.7s forwards;
+}
+
+.control-room__profile--open .control-room__analysis-input {
+  animation: control-readonly-terminal 5.4s steps(2, end) 4.7s infinite;
 }
 
 .control-room__analysis-panel--visual {
@@ -1909,20 +2001,18 @@
   gap: 14px;
   align-items: center;
   padding: 0 22px;
-  color: rgba(143, 210, 103, 0.78);
+  color: rgba(143, 210, 103, 0.54);
   font-size: clamp(14px, 0.98vw, 17px);
-  font-weight: 900;
-  letter-spacing: 0.04em;
+  font-weight: 700;
+  letter-spacing: 0.055em;
   text-transform: uppercase;
   opacity: 0.16;
   filter: grayscale(0.7) brightness(0.6);
-}
-
-.control-room__analysis-input i {
-  width: 15px;
-  height: 15px;
-  background: rgba(205, 214, 198, 0.7);
-  animation: control-caret-blink 1s steps(2, end) infinite;
+  pointer-events: none;
+  user-select: none;
+  text-shadow:
+    0 0 1px rgba(232, 255, 214, 0.14),
+    0 0 6px rgba(143, 210, 103, 0.08);
 }
 
 @keyframes control-analysis-scan {
@@ -2026,6 +2116,25 @@
     filter: grayscale(0) brightness(1);
     border-color: rgba(92, 140, 63, 0.48);
     box-shadow: inset 0 0 22px rgba(116, 184, 87, 0.035);
+  }
+}
+
+@keyframes control-readonly-terminal {
+
+  0%,
+  100% {
+    opacity: 0.46;
+    filter: grayscale(0.28) brightness(0.82);
+  }
+
+  48% {
+    opacity: 0.34;
+    filter: grayscale(0.42) brightness(0.72);
+  }
+
+  52% {
+    opacity: 0.5;
+    filter: grayscale(0.2) brightness(0.86);
   }
 }
 
@@ -2308,6 +2417,48 @@
 
   48% {
     clip-path: inset(0);
+  }
+}
+
+@keyframes control-connection-entry {
+
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 10px, 0) scale(0.99);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes control-connection-scanline {
+  0% {
+    opacity: 0;
+    transform: translateY(-140%);
+  }
+
+  28%,
+  62% {
+    opacity: 0.5;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateY(140%);
+  }
+}
+
+@keyframes control-connection-status {
+
+  0%,
+  100% {
+    opacity: 0.72;
+  }
+
+  50% {
+    opacity: 1;
   }
 }
 

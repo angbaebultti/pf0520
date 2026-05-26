@@ -83,15 +83,24 @@ const signalArchive = [
 ]
 
 const profilePreloadAssets = [character07ProfileSrc, ...signalArchive.map((item) => item.image)]
+const modalFadeMs = 220
 
 export default function ControlRoom() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
+  const [isProfileClosing, setIsProfileClosing] = useState(false)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState<keyof typeof projectDetails | null>(null)
+  const [isConnectionClosing, setIsConnectionClosing] = useState(false)
+  const [isAccessingPrimary, setIsAccessingPrimary] = useState(false)
   const hasResetScrollRef = useRef(false)
   const roomRef = useRef<HTMLElement>(null)
   const clickCueRef = useRef<HTMLDivElement>(null)
+  const guideToggleRef = useRef<HTMLButtonElement>(null)
+  const guideRef = useRef<HTMLElement>(null)
   const profileRef = useRef<HTMLDivElement>(null)
+  const profileCloseTimeoutRef = useRef<number | null>(null)
+  const connectionCloseTimeoutRef = useRef<number | null>(null)
+  const accessingPrimaryTimeoutRef = useRef<number | null>(null)
   const characterRef = useRef<HTMLImageElement>(null)
   const isCharacterPixelTarget = useCallback((clientX: number, clientY: number) => {
     const character = characterRef.current
@@ -229,17 +238,93 @@ export default function ControlRoom() {
     }
   }, [isCharacterPixelTarget])
 
+  const clearProfileCloseTimeout = () => {
+    if (profileCloseTimeoutRef.current === null) return
+    window.clearTimeout(profileCloseTimeoutRef.current)
+    profileCloseTimeoutRef.current = null
+  }
+
+  const clearConnectionCloseTimeout = () => {
+    if (connectionCloseTimeoutRef.current === null) return
+    window.clearTimeout(connectionCloseTimeoutRef.current)
+    connectionCloseTimeoutRef.current = null
+  }
+
+  const clearAccessingPrimaryTimeout = () => {
+    if (accessingPrimaryTimeoutRef.current === null) return
+    window.clearTimeout(accessingPrimaryTimeoutRef.current)
+    accessingPrimaryTimeoutRef.current = null
+  }
+
+  const openProfile = () => {
+    clearProfileCloseTimeout()
+    setIsProfileClosing(false)
+    setIsProfileOpen(true)
+  }
+
+  const closeProfile = useCallback(() => {
+    if (!isProfileOpen) return
+    clearProfileCloseTimeout()
+    setIsProfileClosing(true)
+    setIsProfileOpen(false)
+    profileCloseTimeoutRef.current = window.setTimeout(() => {
+      setIsProfileClosing(false)
+      profileCloseTimeoutRef.current = null
+    }, modalFadeMs)
+  }, [isProfileOpen])
+
+  const openConnection = (projectId: keyof typeof projectDetails) => {
+    clearConnectionCloseTimeout()
+    clearAccessingPrimaryTimeout()
+    setIsConnectionClosing(false)
+    setIsAccessingPrimary(false)
+    setSelectedProjectId(projectId)
+  }
+
+  const closeConnection = useCallback(() => {
+    if (!selectedProjectId) return
+    clearConnectionCloseTimeout()
+    clearAccessingPrimaryTimeout()
+    setIsAccessingPrimary(false)
+    setIsConnectionClosing(true)
+    connectionCloseTimeoutRef.current = window.setTimeout(() => {
+      setSelectedProjectId(null)
+      setIsConnectionClosing(false)
+      connectionCloseTimeoutRef.current = null
+    }, modalFadeMs)
+  }, [selectedProjectId])
+
+  const previewPrimaryAccess = () => {
+    clearAccessingPrimaryTimeout()
+    setIsAccessingPrimary(true)
+    accessingPrimaryTimeoutRef.current = window.setTimeout(() => {
+      setIsAccessingPrimary(false)
+      accessingPrimaryTimeoutRef.current = null
+    }, 740)
+  }
+
   const openProfileFromCharacter = (event: React.MouseEvent) => {
     if (isCharacterPixelTarget(event.clientX, event.clientY)) {
-      setIsProfileOpen(true)
+      openProfile()
     }
   }
 
   const selectedProject = selectedProjectId ? projects.find((project) => project.id === selectedProjectId) : null
   const selectedProjectDetails = selectedProjectId ? projectDetails[selectedProjectId] : null
+  const isProfileVisible = isProfileOpen || isProfileClosing
+  const isConnectionVisible = Boolean(selectedProject && selectedProjectDetails)
+  const isAnyModalVisible = isProfileVisible || isConnectionVisible
 
   useEffect(() => {
-    if (!isProfileOpen) return
+    return () => {
+      clearProfileCloseTimeout()
+      clearConnectionCloseTimeout()
+      clearAccessingPrimaryTimeout()
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isAnyModalVisible) return
 
     const scrollY = window.scrollY
     const htmlOverflow = document.documentElement.style.overflow
@@ -252,7 +337,11 @@ export default function ControlRoom() {
     const lockedBodyWidth = document.documentElement.clientWidth
 
     const blockScroll = (event: Event) => {
-      if (!(event.target instanceof Node) || !profileRef.current?.contains(event.target)) {
+      const isInsideModal = event.composedPath().some((target) => (
+        target instanceof Element && target.matches('.control-room__profile-shell, .control-room__profile-shell *, .control-room__connection-modal, .control-room__connection-modal *')
+      ))
+
+      if (!isInsideModal) {
         event.preventDefault()
       }
     }
@@ -280,7 +369,43 @@ export default function ControlRoom() {
       document.body.style.width = bodyWidth
       window.scrollTo({ top: scrollY, left: 0, behavior: 'auto' })
     }
-  }, [isProfileOpen])
+  }, [isAnyModalVisible])
+
+  useEffect(() => {
+    if (!isAnyModalVisible) return
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      event.preventDefault()
+
+      if (isProfileVisible) {
+        closeProfile()
+        return
+      }
+
+      closeConnection()
+    }
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => window.removeEventListener('keydown', handleKeyDown)
+  }, [closeConnection, closeProfile, isAnyModalVisible, isProfileVisible])
+
+  useEffect(() => {
+    if (!isGuideOpen) return
+
+    const handlePointerDown = (event: PointerEvent) => {
+      const target = event.target
+      if (!(target instanceof Node)) return
+      if (guideRef.current?.contains(target) || guideToggleRef.current?.contains(target)) return
+
+      setIsGuideOpen(false)
+    }
+
+    window.addEventListener('pointerdown', handlePointerDown)
+
+    return () => window.removeEventListener('pointerdown', handlePointerDown)
+  }, [isGuideOpen])
 
   return (
     <section ref={roomRef} className="control-room" aria-label="Dark Star Labs portfolio">
@@ -310,10 +435,10 @@ export default function ControlRoom() {
 
             return (
               <button
-                className={`control-room__project control-room__project--${project.position}`}
+                className={`control-room__project control-room__project--${project.position}${selectedProjectId === project.id ? ' control-room__project--selected' : ''}`}
                 type="button"
                 key={project.id}
-                onClick={() => setSelectedProjectId(project.id as keyof typeof projectDetails)}
+                onClick={() => openConnection(project.id as keyof typeof projectDetails)}
               >
                 <span className="control-room__project-kicker">{project.id}</span>
                 <span className="control-room__project-title">{project.title}</span>
@@ -336,6 +461,7 @@ export default function ControlRoom() {
         </div>
 
         <button
+          ref={guideToggleRef}
           className={`control-room__guide-toggle${isGuideOpen ? ' control-room__guide-toggle--active' : ''}`}
           type="button"
           onClick={() => setIsGuideOpen((isOpen) => !isOpen)}
@@ -344,7 +470,7 @@ export default function ControlRoom() {
         >
          ACCESS GUIDE
         </button>
-        <aside id="control-room-guide" className={`control-room__guide${isGuideOpen ? ' control-room__guide--open' : ''}`} aria-label="How to use" aria-hidden={!isGuideOpen}>
+        <aside ref={guideRef} id="control-room-guide" className={`control-room__guide${isGuideOpen ? ' control-room__guide--open' : ''}`} aria-label="How to use" aria-hidden={!isGuideOpen}>
           <button className="control-room__guide-close" type="button" onClick={() => setIsGuideOpen(false)} aria-label="Close how to use">
             ×
           </button>
@@ -384,10 +510,21 @@ export default function ControlRoom() {
           </dl>
         </div>
       </footer>
-      <div className={`control-room__connection${selectedProject && selectedProjectDetails ? ' control-room__connection--open' : ''}`} aria-hidden={!selectedProject}>
+      <div
+        className={`control-room__connection${isConnectionVisible && !isConnectionClosing ? ' control-room__connection--open' : ''}${isConnectionClosing ? ' control-room__connection--closing' : ''}`}
+        aria-hidden={!isConnectionVisible || isConnectionClosing}
+        onPointerDown={(event) => {
+          if (event.target === event.currentTarget) closeConnection()
+        }}
+      >
         {selectedProject && selectedProjectDetails && (
-          <div className="control-room__connection-modal" role="dialog" aria-modal="true" aria-label="Select connection">
-            <button className="control-room__connection-close" type="button" onClick={() => setSelectedProjectId(null)} aria-label="Close connection">
+          <div
+            className="control-room__connection-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Select connection"
+          >
+            <button className="control-room__connection-close" type="button" onClick={closeConnection} aria-label="Close connection">
               ×
             </button>
             <p>SELECT CONNECTION</p>
@@ -395,7 +532,7 @@ export default function ControlRoom() {
             <dl>
               <div>
                 <dt>STATUS</dt>
-                <dd>{selectedProjectDetails.status}</dd>
+                <dd className="control-room__connection-status">{selectedProjectDetails.status}</dd>
               </div>
               <div>
                 <dt>YEAR</dt>
@@ -408,14 +545,14 @@ export default function ControlRoom() {
             </dl>
             <div className="control-room__connection-options">
               {'primaryUrl' in selectedProjectDetails ? (
-                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer">
+                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess}>
                   <span>01</span>
-                  &gt; {selectedProjectDetails.primaryAction} SYSTEM
+                  &gt; {isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM
                 </a>
               ) : (
-                <button type="button">
+                <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess}>
                   <span>01</span>
-                  &gt; {selectedProjectDetails.primaryAction} SYSTEM
+                  &gt; {isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM
                 </button>
               )}
               {'secondaryUrl' in selectedProjectDetails ? (
@@ -430,11 +567,18 @@ export default function ControlRoom() {
                 </button>
               )}
             </div>
-       
           </div>
         )}
       </div>
-      <div ref={profileRef} className={`control-room__profile${isProfileOpen ? ' control-room__profile--open' : ''}`} aria-hidden={!isProfileOpen}>
+      <div
+        ref={profileRef}
+        className={`control-room__profile${isProfileOpen ? ' control-room__profile--open' : ''}${isProfileClosing ? ' control-room__profile--closing' : ''}`}
+        aria-hidden={!isProfileOpen}
+        onPointerDown={(event) => {
+          if (event.target === event.currentTarget) closeProfile()
+        }}
+      >
+        {isProfileVisible && (
         <div className="control-room__profile-shell" role="dialog" aria-modal="true" aria-label="User data">
           <div className="control-room__analysis">
             <header className="control-room__analysis-header">
@@ -573,16 +717,16 @@ export default function ControlRoom() {
             </section>
 
             <nav className="control-room__analysis-panel control-room__analysis-panel--actions" aria-label="Profile actions">
-              <button type="button" onClick={() => setIsProfileOpen(false)}>&gt; BACK TO MAIN</button>
+              <button type="button" onClick={closeProfile}>&gt; BACK TO MAIN</button>
             </nav>
 
             <footer className="control-room__analysis-input">
-              <span>&gt; INPUT COMMAND</span>
-              <i />
+              <span>&gt; INPUT COMMAND [ READ ONLY ]</span>
             </footer>
           </div>
 
         </div>
+        )}
       </div>
       <div ref={clickCueRef} className="control-room__click-cue" aria-hidden="true">
         CLICK
