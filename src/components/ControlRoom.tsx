@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import character07ProfileSrc from '@assets/character07_profile.jpg'
 import character06Src from '@assets/charcter06.png'
+import gunCharacterSrc from '@assets/gun_cha.png'
 import catArchiveSrc from '@assets/cat_archive.jpg'
 import flowerArchiveSrc from '@assets/flower_archive.jpg'
 import juhee2ArchiveSrc from '@assets/juhee2_archive.jpg'
@@ -14,22 +15,23 @@ import kukdeThumbSrc from '@assets/kukde_thumb.jpg'
 import '@styles/controlroom.css'
 
 const projects = [
-  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', position: 'identity', thumbnail: kukdeThumbSrc },
-  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', position: 'mmca', thumbnail: mmcaThumbSrc },
+  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', category: 'WEB / MOBILE UXUI', position: 'identity', thumbnail: kukdeThumbSrc },
+  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', category: 'K-BRAND CONTENTS', position: 'mmca', thumbnail: mmcaThumbSrc },
   {
     id: '03',
     title: 'AI Chatbot Support Fandom Community Mobile UX/UI Project',
+    category: 'AI CHATBOT SUPPORT',
     position: 'fandom',
     thumbnail: jibsaLifeThumbSrc,
   },
-  { id: '04', title: 'Personal App Project', position: 'app', thumbnail: bubblooSrc },
+  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooSrc },
 ]
 
 const projectDetails = {
   '01': {
     fileName: '국대떡볶이',
     status: 'ACTIVE',
-    year: '2025',
+    year: '2026',
     type: 'PERSONAL',
     primaryAction: 'ACCESS LIVE',
     primaryUrl: 'https://angbaebultti.github.io/kukde/',
@@ -185,7 +187,7 @@ export default function ControlRoom() {
   }, [])
 
   useEffect(() => {
-    const preloads = [character06Src, ...profilePreloadAssets].map((asset, index) => {
+    const preloads = [gunCharacterSrc, character06Src, ...profilePreloadAssets].map((asset, index) => {
       const preload = document.createElement('link')
       preload.rel = 'preload'
       preload.as = 'image'
@@ -325,8 +327,15 @@ export default function ControlRoom() {
     delete event.currentTarget.dataset.hudClick
   }
 
+  const updateProjectGlowTarget = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const rect = event.currentTarget.getBoundingClientRect()
+
+    event.currentTarget.style.setProperty('--project-cursor-x', `${event.clientX - rect.left}px`)
+    event.currentTarget.style.setProperty('--project-cursor-y', `${event.clientY - rect.top}px`)
+  }
+
   const openConnectionFromProject = (event: React.MouseEvent<HTMLButtonElement>, projectId: keyof typeof projectDetails) => {
-    if (!(event.target instanceof Element) || !event.target.closest('.control-room__project-preview')) return
+    if (!(event.target instanceof Element)) return
     openConnection(projectId)
   }
 
@@ -453,7 +462,7 @@ export default function ControlRoom() {
             onPointerLeave={clearCharacterHudTarget}
             aria-label="Open user data"
           >
-            <img ref={characterRef} className="control-room__character" src={character06Src} alt="" loading="eager" decoding="sync" />
+            <img ref={characterRef} className="control-room__character" src={gunCharacterSrc} alt="" loading="eager" decoding="sync" />
           </button>
         </div>
 
@@ -468,15 +477,37 @@ export default function ControlRoom() {
 
             return (
               <button
-                className={`control-room__project control-room__project--${project.position}${selectedProjectId === project.id ? ' control-room__project--selected' : ''}`}
+                className={`control-room__project control-room__project--${project.position}${selectedProjectId === project.id ? ' control-room__project--selected' : ''}${selectedProjectId && selectedProjectId !== project.id ? ' control-room__project--signal-lost' : ''}`}
                 type="button"
                 key={project.id}
                 onClick={(event) => openConnectionFromProject(event, project.id as keyof typeof projectDetails)}
+                onPointerMove={updateProjectGlowTarget}
               >
-                <span className="control-room__project-kicker">{project.id}</span>
-                <span className="control-room__project-title">{project.title}</span>
-                <span className="control-room__project-preview" aria-hidden="true" data-hud-click={canUseControlRoom ? 'true' : undefined}>
-                  {'thumbnail' in project && <img src={project.thumbnail} alt="" loading="eager" decoding="async" />}
+                <span className="control-room__project-shell" data-hud-click={canUseControlRoom ? 'true' : undefined}>
+                  <span className="control-room__project-corner control-room__project-corner--tl" />
+                  <span className="control-room__project-corner control-room__project-corner--tr" />
+                  <span className="control-room__project-corner control-room__project-corner--bl" />
+                  <span className="control-room__project-corner control-room__project-corner--br" />
+                  <span className="control-room__project-scan" />
+                  <span className="control-room__project-header">
+                    <span className="control-room__project-kicker">SLOT {project.id}</span>
+                    <span className="control-room__project-lock">TARGET READY</span>
+                  </span>
+                  <span className="control-room__project-title">{project.title}</span>
+                  <span className="control-room__project-category">{project.category}</span>
+                  <span className="control-room__project-preview" aria-hidden="true">
+                    {'thumbnail' in project && <img src={project.thumbnail} alt="" loading="eager" decoding="async" />}
+                  </span>
+                  <span className="control-room__project-data">
+                    <span><b>STATUS</b><i>{details.status}</i></span>
+                    <span><b>SIGNAL</b><i>STABLE</i></span>
+                    <span><b>YEAR</b><i>{details.year}</i></span>
+                    <span><b>ROLE</b><i>{details.type}</i></span>
+                  </span>
+                  <span className="control-room__project-access">
+                    <span>ACCESS PROJECT</span>
+                    <span aria-hidden="true">-&gt;</span>
+                  </span>
                 </span>
                 <span className="control-room__project-terminal" aria-hidden="true">
                   <span className="control-room__project-file">{details.fileName}</span>
@@ -488,7 +519,6 @@ export default function ControlRoom() {
                   {'secondaryAction' in details && (
                     <HudScanButton label={details.secondaryAction} index="02" />
                   )}
-                  <span className="control-room__project-corner" />
                 </span>
               </button>
             )

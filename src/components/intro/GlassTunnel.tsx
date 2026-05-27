@@ -535,13 +535,15 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     const onWheel = (event: WheelEvent) => {
       const sequenceProgress = getSequenceProgress()
       const controlRoomOpacity = smoothstep(CONTROL_ROOM_REVEAL_START, CONTROL_ROOM_REVEAL_END, sequenceProgress)
+      const nextTargetZ = clamp(targetZ - event.deltaY * WHEEL_TRAVEL_SPEED, CAMERA_END_Z, CAMERA_START_Z)
+      const isTunnelMotion = nextTargetZ !== targetZ
 
-      if (controlRoomOpacity < 0.98) {
+      if (controlRoomOpacity < 0.98 || (isTunnelMotion && event.deltaY < 0)) {
         event.preventDefault()
         window.scrollTo(0, 0)
       }
 
-      targetZ = clamp(targetZ - event.deltaY * WHEEL_TRAVEL_SPEED, CAMERA_END_Z, CAMERA_START_Z)
+      targetZ = nextTargetZ
       requestMotion()
     }
 
