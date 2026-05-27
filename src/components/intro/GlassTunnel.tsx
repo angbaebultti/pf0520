@@ -15,6 +15,8 @@ const CAMERA_START_Z = 2.2
 const CHARACTER_END_Z = -28
 const CAMERA_END_Z = -72
 const STAR_COUNT = 500
+const GALAXY_DESKTOP_COUNT = 540
+const GALAXY_MOBILE_COUNT = 240
 const STAR_NEAR_LIMIT_Z = -7
 const CONTROL_ROOM_REVEAL_START = 0.34
 const CONTROL_ROOM_REVEAL_END = 0.43
@@ -92,6 +94,38 @@ const buildStarFieldGeometry = () => {
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
   geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+  return geometry
+}
+
+const buildSignalGalaxyGeometry = (count: number) => {
+  const positions: number[] = []
+  const colors: number[] = []
+  const opacitySeeds: number[] = []
+  const color = new THREE.Color()
+
+  for (let i = 0; i < count; i += 1) {
+    const depth = Math.random()
+    const arm = (i % 3) * ((Math.PI * 2) / 3)
+    const radius = 4.8 + Math.random() ** 0.68 * 34
+    const spin = radius * 0.09 + (Math.random() - 0.5) * 0.9
+    const angle = arm + spin
+    const verticalNoise = (Math.random() - 0.5) * (3.5 + depth * 9)
+    const centerVoid = Math.max(1, smoothstep(5.4, 12, radius))
+    const x = Math.cos(angle) * radius * (1.18 + depth * 0.34) + (Math.random() - 0.5) * 5.2
+    const y = Math.sin(angle) * radius * 0.34 + verticalNoise
+    const z = -34 - depth * 78
+    const brightness = (0.38 + Math.random() * 0.58) * centerVoid
+
+    positions.push(x, y, z)
+    color.setRGB(0.2 * brightness, 0.52 * brightness, 0.86 * brightness)
+    colors.push(color.r, color.g, color.b)
+    opacitySeeds.push(0.42 + Math.random() * 0.58)
+  }
+
+  const geometry = new THREE.BufferGeometry()
+  geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
+  geometry.setAttribute('opacitySeed', new THREE.Float32BufferAttribute(opacitySeeds, 1))
   return geometry
 }
 
@@ -214,10 +248,71 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color(0x000000)
     scene.fog = new THREE.FogExp2(0x000000, 0.012)
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const isMobileDensity = window.matchMedia('(max-width: 720px), (pointer: coarse)').matches
 
     const camera = new THREE.PerspectiveCamera(76, window.innerWidth / window.innerHeight, 0.1, 120)
     camera.position.set(0, 0, CAMERA_START_Z)
     camera.lookAt(0, 0, -24)
+
+    const signalGalaxyGeometry = buildSignalGalaxyGeometry(isMobileDensity ? GALAXY_MOBILE_COUNT : GALAXY_DESKTOP_COUNT)
+    const signalGalaxyMaterial = new THREE.ShaderMaterial({
+      transparent: true,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false,
+      depthTest: false,
+      vertexColors: true,
+      uniforms: {
+        uTime: { value: 0 },
+        uVisibility: { value: 0 },
+        uParallax: { value: 0 },
+        uPixelRatio: { value: Math.min(window.devicePixelRatio || 1, 1.25) },
+      },
+      vertexShader: `
+        attribute float opacitySeed;
+        varying vec3 vColor;
+        varying float vOpacity;
+        varying vec3 vWorldPosition;
+        uniform float uTime;
+        uniform float uVisibility;
+        uniform float uParallax;
+        uniform float uPixelRatio;
+
+        void main() {
+          vec3 transformed = position;
+          float drift = uTime * 0.018 + opacitySeed * 6.28318530718;
+          transformed.x += sin(drift) * 0.18 + uParallax * 0.34;
+          transformed.y += cos(drift * 0.74) * 0.08;
+
+          vec4 mvPosition = modelViewMatrix * vec4(transformed, 1.0);
+          gl_Position = projectionMatrix * mvPosition;
+          gl_PointSize = (1.25 + opacitySeed * 1.05) * uPixelRatio;
+          vColor = color;
+          vOpacity = opacitySeed * uVisibility;
+          vWorldPosition = transformed;
+        }
+      `,
+      fragmentShader: `
+        varying vec3 vColor;
+        varying float vOpacity;
+        varying vec3 vWorldPosition;
+
+        void main() {
+          vec2 point = gl_PointCoord - vec2(0.5);
+          float core = 1.0 - smoothstep(0.12, 0.48, length(point));
+          float centerMask = smoothstep(4.4, 14.0, length(vWorldPosition.xy));
+          float depth = -vWorldPosition.z;
+          float farFade = smoothstep(22.0, 64.0, depth) * (1.0 - smoothstep(88.0, 112.0, depth));
+          float alpha = core * centerMask * farFade * vOpacity * 0.24;
+
+          gl_FragColor = vec4(vColor, alpha);
+        }
+      `,
+    })
+    const signalGalaxy = new THREE.Points(signalGalaxyGeometry, signalGalaxyMaterial)
+    signalGalaxy.frustumCulled = false
+    signalGalaxy.renderOrder = -20
+    scene.add(signalGalaxy)
 
     const geometry = buildRetroTunnelGeometry()
     const material = new THREE.LineBasicMaterial({
@@ -324,6 +419,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       const rendererPixelRatio = Math.min(window.devicePixelRatio || 1, 1.25)
       renderer.setPixelRatio(rendererPixelRatio)
       renderer.setSize(window.innerWidth, window.innerHeight, false)
+      signalGalaxyMaterial.uniforms.uPixelRatio.value = rendererPixelRatio
       camera.aspect = window.innerWidth / window.innerHeight
       camera.updateProjectionMatrix()
     }
@@ -375,9 +471,17 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
       const syncProgress = smoothstep(SIGNAL_SYNC_START, SIGNAL_SYNC_FULL, sequenceProgress)
       const syncExit = smoothstep(CONTROL_ROOM_REVEAL_START, CONTROL_ROOM_REVEAL_END, sequenceProgress)
       const signalSync = syncProgress * (1 - syncExit)
+      const galaxyVisibility = reduceMotion
+        ? 0.075
+        : smoothstep(ENTITY_SIGNAL_FOUND_PROGRESS, SIGNAL_SYNC_FULL, sequenceProgress) * (1 - controlRoomOpacity * 0.72) * 1.18
 
       camera.position.z = cameraZ
       camera.lookAt(0, 0, cameraZ - 28)
+      signalGalaxy.position.z = (CAMERA_START_Z - cameraZ) * 0.055
+      signalGalaxy.rotation.z = reduceMotion ? 0 : -sequenceProgress * 0.035
+      signalGalaxyMaterial.uniforms.uTime.value = reduceMotion ? 0 : performance.now() * 0.001
+      signalGalaxyMaterial.uniforms.uVisibility.value = galaxyVisibility
+      signalGalaxyMaterial.uniforms.uParallax.value = sequenceProgress
       stars.position.z = (CAMERA_START_Z - cameraZ) * 0.18
       apertureRings.forEach((ring, index) => {
         const phase = (performance.now() * 0.00028 + index * 0.18) % 1
@@ -468,6 +572,8 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         entityPanelRef.current.classList.remove('entity-ident-panel--found')
       }
       geometry.dispose()
+      signalGalaxyGeometry.dispose()
+      signalGalaxyMaterial.dispose()
       starGeometry.dispose()
       material.dispose()
       glowMaterial.dispose()

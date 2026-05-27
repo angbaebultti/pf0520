@@ -347,7 +347,7 @@
 .control-room__project:hover .control-room__project-preview {
   border: 1px solid #08ff2f;
   border-color: #08ff2f;
-  border-radius: 16px;
+  border-radius: 8px;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.18), transparent 38%),
     radial-gradient(ellipse at 24% 18%, rgba(8, 255, 47, 0.22), transparent 44%),
@@ -360,7 +360,7 @@
 
 .control-room__project:hover {
   z-index: 20;
-  transform: scale(1.06);
+  transform: scale(1.02);
 }
 
 .control-room__project--selected {
@@ -383,6 +383,7 @@
   font-weight: 800;
   line-height: 1.2;
   background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.34), transparent 46%),
     repeating-linear-gradient(to bottom,
       rgba(255, 255, 255, 0.04) 0,
       rgba(255, 255, 255, 0.04) 1px,
@@ -426,6 +427,14 @@
   font-size: clamp(14px, 1.05vw, 18px);
 }
 
+.control-room__project-terminal > span:not(.hud-scan-button):not(.control-room__project-divider):not(.control-room__project-corner) {
+  position: relative;
+  z-index: 2;
+  text-shadow:
+    0 1px 6px rgba(0, 0, 0, 0.92),
+    0 0 3px rgba(245, 247, 240, 0.2);
+}
+
 .control-room__project-divider {
   height: 1px;
   margin: 4px 0;
@@ -439,6 +448,331 @@
 .control-room__project-action--primary {
   color: #8fc35d;
   text-shadow: 0 0 12px rgba(143, 195, 93, 0.26);
+}
+
+.hud-scan-button {
+  --hud-accent: #08ff2f;
+  --hud-accent-soft: rgba(8, 255, 47, 0.34);
+  --hud-text: rgba(222, 255, 214, 0.92);
+  position: relative;
+  display: block;
+  width: max-content;
+  min-width: clamp(138px, 10.5vw, 184px);
+  max-width: 100%;
+  min-height: 34px;
+  margin: 4px 0 2px -8px;
+  padding: 1px;
+  color: var(--hud-text);
+  font-family: 'Courier New', Consolas, monospace;
+  font-size: clamp(10px, 0.78vw, 13px);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  isolation: isolate;
+  filter:
+    drop-shadow(0 7px 12px rgba(0, 0, 0, 0.62))
+    drop-shadow(0 0 8px rgba(8, 255, 47, 0.28));
+  transform: translateZ(0);
+  transition:
+    filter 0.2s ease,
+    transform 0.22s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.hud-scan-button::before,
+.hud-scan-button::after {
+  position: absolute;
+  inset: 4px;
+  z-index: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.hud-scan-button::before {
+  background:
+    linear-gradient(90deg, var(--hud-accent-soft), transparent 18% 82%, var(--hud-accent-soft)),
+    linear-gradient(180deg, rgba(8, 255, 47, 0.2), transparent 40% 64%, rgba(8, 255, 47, 0.12));
+  border: 1px solid rgba(8, 255, 47, 0.72);
+  box-shadow:
+    inset 0 0 14px rgba(8, 255, 47, 0.12),
+    0 0 16px rgba(8, 255, 47, 0.18);
+  opacity: 0.92;
+  transition:
+    inset 0.22s ease,
+    border-color 0.22s ease,
+    box-shadow 0.22s ease,
+    opacity 0.22s ease;
+}
+
+.hud-scan-button::after {
+  background:
+    linear-gradient(90deg, transparent, rgba(210, 255, 198, 0.22), transparent),
+    linear-gradient(180deg, transparent 0 44%, rgba(8, 255, 47, 0.3) 48% 52%, transparent 56% 100%);
+  opacity: 0;
+  transform: translateX(-118%);
+}
+
+.hud-scan-button__grid {
+  position: absolute;
+  inset: 5px;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to right, rgba(8, 255, 47, 0.1) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(to bottom, rgba(8, 255, 47, 0.08) 0 1px, transparent 1px 6px),
+    rgba(0, 8, 3, 0.86);
+  opacity: 0.86;
+}
+
+.hud-scan-button__inner {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 34px;
+  padding: 0 13px;
+  overflow: hidden;
+  text-shadow:
+    0 0 6px rgba(8, 255, 47, 0.46),
+    1px 0 rgba(180, 255, 175, 0.16);
+}
+
+.hud-scan-button__index {
+  color: rgba(180, 255, 166, 0.54);
+  font-size: 0.82em;
+  letter-spacing: 0;
+}
+
+.hud-scan-button__label {
+  position: relative;
+  white-space: nowrap;
+}
+
+.hud-scan-button__label::before {
+  color: rgba(8, 255, 47, 0.78);
+  content: '> ';
+}
+
+.hud-scan-button--modal {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  font-size: clamp(12px, 0.88vw, 15px);
+}
+
+.hud-scan-button--modal .hud-scan-button__inner {
+  min-height: 42px;
+  padding-inline: 16px;
+}
+
+.control-room__project-terminal .hud-scan-button {
+  --hud-accent-soft: rgba(8, 255, 47, 0.18);
+  --hud-text: rgba(214, 250, 205, 0.86);
+  width: calc(100% - 18px);
+  margin-right: auto;
+  margin-left: auto;
+  filter:
+    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.48))
+    drop-shadow(0 0 7px rgba(8, 255, 47, 0.16));
+}
+
+.control-room__project-terminal .hud-scan-button__inner {
+  justify-content: center;
+}
+
+.control-room__project-terminal .hud-scan-button::before {
+  background:
+    linear-gradient(90deg, rgba(8, 255, 47, 0.14), transparent 18% 82%, rgba(8, 255, 47, 0.12)),
+    linear-gradient(180deg, rgba(8, 255, 47, 0.12), transparent 44% 68%, rgba(8, 255, 47, 0.08));
+  border-color: rgba(8, 255, 47, 0.48);
+  box-shadow:
+    inset 0 0 10px rgba(8, 255, 47, 0.06),
+    0 0 9px rgba(8, 255, 47, 0.08);
+  opacity: 0.82;
+}
+
+.control-room__project-terminal .hud-scan-button__grid {
+  opacity: 0.48;
+}
+
+.hud-scan-button__scan {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  z-index: 2;
+  width: 38%;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgba(207, 255, 196, 0.45), transparent);
+  opacity: 0;
+  transform: translateX(-130%) skewX(-14deg);
+}
+
+.hud-scan-button__corner {
+  position: absolute;
+  z-index: 4;
+  width: 13px;
+  height: 13px;
+  pointer-events: none;
+  border-color: rgba(8, 255, 47, 0.86);
+  filter: drop-shadow(0 0 4px rgba(8, 255, 47, 0.54));
+  transition:
+    width 0.2s ease,
+    height 0.2s ease,
+    transform 0.22s ease,
+    border-color 0.2s ease;
+}
+
+.hud-scan-button__corner--tl {
+  top: 0;
+  left: 0;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.hud-scan-button__corner--tr {
+  top: 0;
+  right: 0;
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.hud-scan-button__corner--bl {
+  bottom: 0;
+  left: 0;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.hud-scan-button__corner--br {
+  right: 0;
+  bottom: 0;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
+}
+
+.control-room__project:hover .hud-scan-button,
+.control-room__project:focus-visible .hud-scan-button,
+.control-room__connection-options a:hover .hud-scan-button,
+.control-room__connection-options a:focus-visible .hud-scan-button,
+.control-room__connection-options button:hover .hud-scan-button,
+.control-room__connection-options button:focus-visible .hud-scan-button,
+.hud-scan-button--loading {
+  filter:
+    drop-shadow(0 0 8px rgba(8, 255, 47, 0.44))
+    drop-shadow(0 0 20px rgba(8, 255, 47, 0.24));
+  transform: scale(1.02);
+}
+
+.control-room__project:hover .control-room__project-terminal .hud-scan-button,
+.control-room__project:focus-visible .control-room__project-terminal .hud-scan-button {
+  filter:
+    drop-shadow(0 5px 12px rgba(0, 0, 0, 0.5))
+    drop-shadow(0 0 10px rgba(8, 255, 47, 0.22));
+}
+
+.control-room__project:hover .hud-scan-button::before,
+.control-room__project:focus-visible .hud-scan-button::before,
+.control-room__connection-options a:hover .hud-scan-button::before,
+.control-room__connection-options a:focus-visible .hud-scan-button::before,
+.control-room__connection-options button:hover .hud-scan-button::before,
+.control-room__connection-options button:focus-visible .hud-scan-button::before,
+.hud-scan-button--loading::before {
+  inset: 2px;
+  border-color: rgba(168, 255, 142, 0.9);
+  box-shadow:
+    inset 0 0 18px rgba(8, 255, 47, 0.18),
+    0 0 10px rgba(8, 255, 47, 0.28),
+    0 0 28px rgba(8, 255, 47, 0.2);
+  opacity: 1;
+}
+
+.control-room__project:hover .control-room__project-terminal .hud-scan-button::before,
+.control-room__project:focus-visible .control-room__project-terminal .hud-scan-button::before {
+  border-color: rgba(8, 255, 47, 0.66);
+  box-shadow:
+    inset 0 0 12px rgba(8, 255, 47, 0.1),
+    0 0 10px rgba(8, 255, 47, 0.12),
+    0 0 18px rgba(8, 255, 47, 0.1);
+}
+
+.control-room__project:hover .hud-scan-button::after,
+.control-room__project:focus-visible .hud-scan-button::after,
+.control-room__connection-options a:hover .hud-scan-button::after,
+.control-room__connection-options a:focus-visible .hud-scan-button::after,
+.control-room__connection-options button:hover .hud-scan-button::after,
+.control-room__connection-options button:focus-visible .hud-scan-button::after,
+.hud-scan-button--loading::after {
+  animation: hud-target-sweep 0.72s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.control-room__project:hover .hud-scan-button__scan,
+.control-room__project:focus-visible .hud-scan-button__scan,
+.control-room__connection-options a:hover .hud-scan-button__scan,
+.control-room__connection-options a:focus-visible .hud-scan-button__scan,
+.control-room__connection-options button:hover .hud-scan-button__scan,
+.control-room__connection-options button:focus-visible .hud-scan-button__scan,
+.hud-scan-button--loading .hud-scan-button__scan {
+  animation: hud-scan-beam 0.78s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.control-room__project:hover .hud-scan-button__label,
+.control-room__project:focus-visible .hud-scan-button__label,
+.control-room__connection-options a:hover .hud-scan-button__label,
+.control-room__connection-options a:focus-visible .hud-scan-button__label,
+.control-room__connection-options button:hover .hud-scan-button__label,
+.control-room__connection-options button:focus-visible .hud-scan-button__label,
+.hud-scan-button--loading .hud-scan-button__label {
+  animation: hud-text-flicker 1.2s steps(2, end);
+}
+
+.control-room__project:hover .hud-scan-button__corner--tl,
+.control-room__project:focus-visible .hud-scan-button__corner--tl,
+.control-room__connection-options a:hover .hud-scan-button__corner--tl,
+.control-room__connection-options a:focus-visible .hud-scan-button__corner--tl,
+.control-room__connection-options button:hover .hud-scan-button__corner--tl,
+.control-room__connection-options button:focus-visible .hud-scan-button__corner--tl,
+.hud-scan-button--loading .hud-scan-button__corner--tl {
+  width: 17px;
+  height: 17px;
+  transform: translate(-3px, -3px);
+}
+
+.control-room__project:hover .hud-scan-button__corner--tr,
+.control-room__project:focus-visible .hud-scan-button__corner--tr,
+.control-room__connection-options a:hover .hud-scan-button__corner--tr,
+.control-room__connection-options a:focus-visible .hud-scan-button__corner--tr,
+.control-room__connection-options button:hover .hud-scan-button__corner--tr,
+.control-room__connection-options button:focus-visible .hud-scan-button__corner--tr,
+.hud-scan-button--loading .hud-scan-button__corner--tr {
+  width: 17px;
+  height: 17px;
+  transform: translate(3px, -3px);
+}
+
+.control-room__project:hover .hud-scan-button__corner--bl,
+.control-room__project:focus-visible .hud-scan-button__corner--bl,
+.control-room__connection-options a:hover .hud-scan-button__corner--bl,
+.control-room__connection-options a:focus-visible .hud-scan-button__corner--bl,
+.control-room__connection-options button:hover .hud-scan-button__corner--bl,
+.control-room__connection-options button:focus-visible .hud-scan-button__corner--bl,
+.hud-scan-button--loading .hud-scan-button__corner--bl {
+  width: 17px;
+  height: 17px;
+  transform: translate(-3px, 3px);
+}
+
+.control-room__project:hover .hud-scan-button__corner--br,
+.control-room__project:focus-visible .hud-scan-button__corner--br,
+.control-room__connection-options a:hover .hud-scan-button__corner--br,
+.control-room__connection-options a:focus-visible .hud-scan-button__corner--br,
+.control-room__connection-options button:hover .hud-scan-button__corner--br,
+.control-room__connection-options button:focus-visible .hud-scan-button__corner--br,
+.hud-scan-button--loading .hud-scan-button__corner--br {
+  width: 17px;
+  height: 17px;
+  transform: translate(3px, 3px);
 }
 
 .control-room__project-corner {
@@ -733,13 +1067,11 @@
 .control-room__connection-options a,
 .control-room__connection-options button {
   position: relative;
-  display: flex;
-  gap: 14px;
-  align-items: center;
+  display: block;
   min-height: 34px;
-  padding: 0 10px;
+  padding: 0;
   overflow: hidden;
-  color: rgba(222, 226, 216, 0.68);
+  color: rgba(222, 255, 214, 0.92);
   font: inherit;
   font-weight: 800;
   text-decoration: none;
@@ -751,12 +1083,12 @@
 .control-room__connection-options button:hover,
 .control-room__connection-options button:focus-visible {
   color: #8fc35d;
-  background: rgba(143, 195, 93, 0.16);
-  outline: 1px solid rgba(222, 226, 216, 0.78);
-  outline-offset: 0;
+  background: transparent;
+  outline: 0;
 }
 
-.control-room__connection-options span {
+.control-room__connection-options > a > span:not(.hud-scan-button),
+.control-room__connection-options > button > span:not(.hud-scan-button) {
   color: rgba(222, 226, 216, 0.48);
 }
 
@@ -1572,6 +1904,17 @@
   text-shadow: 0 0 1px rgba(232, 255, 214, 0.1);
 }
 
+.control-room__analysis-data dt,
+.control-room__analysis-data dd {
+  color: rgba(206, 229, 193, 0.82);
+}
+
+.control-room__analysis-data-value--kr {
+  color: rgba(190, 214, 178, 0.78);
+  font-weight: 650;
+  text-shadow: 0 0 1px rgba(232, 255, 214, 0.06);
+}
+
 .control-room__analysis-data dd::before {
   content: ': ';
 }
@@ -2338,65 +2681,158 @@
   top: 0;
   left: 0;
   z-index: 80;
-  display: grid;
-  width: 58px;
-  height: 24px;
-  place-items: center;
-  color: rgba(225, 244, 214, 0.88);
+  display: block;
+  width: 118px;
+  height: 38px;
+  padding: 1px;
+  overflow: hidden;
+  color: rgba(222, 255, 214, 0.94);
   font-family: 'Courier New', Consolas, monospace;
-  font-size: 11px;
-  font-weight: 200;
+  font-size: 12px;
+  font-weight: 900;
   line-height: 1;
-  letter-spacing: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   text-shadow:
-    0 0 7px rgba(205, 244, 164, 0.34),
-    1px 0 rgba(0, 184, 255, 0.2);
+    0 0 8px rgba(8, 255, 47, 0.58),
+    1px 0 rgba(180, 255, 175, 0.16);
   pointer-events: none;
   background:
-    repeating-linear-gradient(to bottom,
-      rgba(255, 255, 255, 0.11) 0,
-      rgba(255, 255, 255, 0.11) 1px,
-      transparent 1px,
-      transparent 4px),
-    rgba(2, 5, 4, 0.62);
-  border: 1px solid rgba(205, 244, 164, 0.34);
+    linear-gradient(90deg, rgba(8, 255, 47, 0.24), transparent 20% 80%, rgba(8, 255, 47, 0.18)),
+    rgba(0, 8, 3, 0.9);
+  border: 1px solid rgba(8, 255, 47, 0.72);
   box-shadow:
-    inset 0 0 12px rgba(205, 244, 164, 0.05),
-    0 0 16px rgba(0, 184, 255, 0.11);
+    inset 0 0 16px rgba(8, 255, 47, 0.12),
+    0 8px 18px rgba(0, 0, 0, 0.56),
+    0 0 20px rgba(8, 255, 47, 0.22);
   opacity: 0;
-  transform: translate3d(var(--click-cue-x), var(--click-cue-y), 0) skewX(-5deg);
+  transform: translate3d(var(--click-cue-x), var(--click-cue-y), 0) scale(0.96);
   transition:
-    opacity 0.08s steps(2, end),
-    filter 0.08s steps(2, end);
-  filter: brightness(0.78);
+    opacity 0.1s steps(2, end),
+    filter 0.12s steps(2, end),
+    transform 0.16s ease;
+  filter:
+    brightness(0.88)
+    drop-shadow(0 0 8px rgba(8, 255, 47, 0.18));
 }
 
 .control-room__click-cue::before,
 .control-room__click-cue::after {
   position: absolute;
+  inset: 4px;
   content: '';
   pointer-events: none;
 }
 
 .control-room__click-cue::before {
-  inset: -5px;
-  border-top: 1px solid rgba(0, 184, 255, 0.28);
-  border-bottom: 1px solid rgba(205, 244, 164, 0.18);
-  opacity: 0.72;
+  z-index: 0;
+  border: 1px solid rgba(168, 255, 142, 0.42);
+  box-shadow:
+    inset 0 0 12px rgba(8, 255, 47, 0.1),
+    0 0 12px rgba(8, 255, 47, 0.12);
 }
 
 .control-room__click-cue::after {
-  top: 50%;
-  right: -18px;
-  width: 14px;
-  height: 1px;
-  background: rgba(225, 244, 214, 0.62);
-  box-shadow: 0 0 8px rgba(205, 244, 164, 0.18);
+  z-index: 1;
+  background:
+    linear-gradient(90deg, transparent, rgba(210, 255, 198, 0.3), transparent),
+    linear-gradient(180deg, transparent 0 44%, rgba(8, 255, 47, 0.34) 48% 52%, transparent 56% 100%);
+  opacity: 0;
+  transform: translateX(-118%);
+}
+
+.control-room__click-cue-grid {
+  position: absolute;
+  inset: 5px;
+  z-index: 0;
+  background:
+    repeating-linear-gradient(to right, rgba(8, 255, 47, 0.1) 0 1px, transparent 1px 12px),
+    repeating-linear-gradient(to bottom, rgba(8, 255, 47, 0.1) 0 1px, transparent 1px 5px);
+  opacity: 0.82;
+}
+
+.control-room__click-cue-label {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  height: 100%;
+  padding: 0 14px;
+}
+
+.control-room__click-cue-label::before {
+  color: rgba(8, 255, 47, 0.88);
+  content: '>';
+}
+
+.control-room__click-cue-scan {
+  position: absolute;
+  top: 5px;
+  bottom: 5px;
+  left: 0;
+  z-index: 2;
+  width: 42%;
+  background: linear-gradient(90deg, transparent, rgba(207, 255, 196, 0.5), transparent);
+  opacity: 0;
+  transform: translateX(-130%) skewX(-14deg);
+}
+
+.control-room__click-cue-corner {
+  position: absolute;
+  z-index: 4;
+  width: 12px;
+  height: 12px;
+  border-color: rgba(8, 255, 47, 0.9);
+  filter: drop-shadow(0 0 4px rgba(8, 255, 47, 0.6));
+}
+
+.control-room__click-cue-corner--tl {
+  top: -1px;
+  left: -1px;
+  border-top: 1px solid;
+  border-left: 1px solid;
+}
+
+.control-room__click-cue-corner--tr {
+  top: -1px;
+  right: -1px;
+  border-top: 1px solid;
+  border-right: 1px solid;
+}
+
+.control-room__click-cue-corner--bl {
+  bottom: -1px;
+  left: -1px;
+  border-bottom: 1px solid;
+  border-left: 1px solid;
+}
+
+.control-room__click-cue-corner--br {
+  right: -1px;
+  bottom: -1px;
+  border-right: 1px solid;
+  border-bottom: 1px solid;
 }
 
 .control-room__click-cue--active {
   opacity: calc(var(--room-opacity) * 0.92);
-  filter: brightness(1);
+  filter:
+    brightness(1)
+    drop-shadow(0 0 10px rgba(8, 255, 47, 0.44))
+    drop-shadow(0 0 22px rgba(8, 255, 47, 0.24));
+  transform: translate3d(var(--click-cue-x), var(--click-cue-y), 0) scale(1.02);
+}
+
+.control-room__click-cue--active::after {
+  animation: hud-target-sweep 0.72s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.control-room__click-cue--active .control-room__click-cue-scan {
+  animation: hud-scan-beam 0.78s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;
+}
+
+.control-room__click-cue--active .control-room__click-cue-label {
   animation: control-click-cue-flicker 0.68s steps(4, end) infinite;
 }
 
@@ -2459,6 +2895,70 @@
 
   50% {
     opacity: 1;
+  }
+}
+
+@keyframes hud-scan-beam {
+  0% {
+    opacity: 0;
+    transform: translateX(-130%) skewX(-14deg);
+  }
+
+  18% {
+    opacity: 0.74;
+  }
+
+  72% {
+    opacity: 0.58;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(285%) skewX(-14deg);
+  }
+}
+
+@keyframes hud-target-sweep {
+  0% {
+    opacity: 0;
+    transform: translateX(-118%);
+  }
+
+  24% {
+    opacity: 0.55;
+  }
+
+  100% {
+    opacity: 0;
+    transform: translateX(118%);
+  }
+}
+
+@keyframes hud-text-flicker {
+  0%,
+  100% {
+    opacity: 1;
+    filter: brightness(1);
+  }
+
+  12% {
+    opacity: 0.68;
+    filter: brightness(1.5);
+  }
+
+  16% {
+    opacity: 1;
+  }
+
+  42% {
+    opacity: 0.76;
+    filter: brightness(0.92);
+  }
+
+  48%,
+  58% {
+    opacity: 1;
+    filter: brightness(1.22);
   }
 }
 
@@ -2586,6 +3086,34 @@
   .control-room__project-preview {
     min-height: 64px;
     padding: 11px;
+  }
+
+  .hud-scan-button {
+    width: 100%;
+    min-width: 0;
+    min-height: 31px;
+    margin-left: 0;
+    font-size: 10px;
+  }
+
+  .hud-scan-button__inner {
+    min-height: 31px;
+    gap: 6px;
+    padding-inline: 10px;
+  }
+
+  .hud-scan-button__corner {
+    width: 10px;
+    height: 10px;
+  }
+
+  .hud-scan-button--modal {
+    font-size: 11px;
+  }
+
+  .hud-scan-button--modal .hud-scan-button__inner {
+    min-height: 38px;
+    padding-inline: 12px;
   }
 
   .control-room__project:hover {

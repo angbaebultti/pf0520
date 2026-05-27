@@ -32,7 +32,6 @@ const projectDetails = {
     year: '2025',
     type: 'PERSONAL',
     primaryAction: 'ACCESS LIVE',
-    secondaryAction: 'OPEN ARCHIVE',
     primaryUrl: 'https://angbaebultti.github.io/kukde/',
   },
   '02': {
@@ -61,7 +60,6 @@ const projectDetails = {
     year: '2026',
     type: 'PERSONAL',
     primaryAction: 'ACCESS LIVE',
-    secondaryAction: 'OPEN ARCHIVE',
   },
 } as const
 
@@ -84,6 +82,31 @@ const signalArchive = [
 
 const profilePreloadAssets = [character07ProfileSrc, ...signalArchive.map((item) => item.image)]
 const modalFadeMs = 220
+const entryProfileRevealOpacity = 0.72
+
+type HudScanButtonProps = {
+  label: string
+  index?: string
+  variant?: 'card' | 'modal'
+  isLoading?: boolean
+}
+
+function HudScanButton({ label, index, variant = 'card', isLoading = false }: HudScanButtonProps) {
+  return (
+    <span className={`hud-scan-button hud-scan-button--${variant}${isLoading ? ' hud-scan-button--loading' : ''}`}>
+      <span className="hud-scan-button__grid" aria-hidden="true" />
+      <span className="hud-scan-button__corner hud-scan-button__corner--tl" aria-hidden="true" />
+      <span className="hud-scan-button__corner hud-scan-button__corner--tr" aria-hidden="true" />
+      <span className="hud-scan-button__corner hud-scan-button__corner--bl" aria-hidden="true" />
+      <span className="hud-scan-button__corner hud-scan-button__corner--br" aria-hidden="true" />
+      <span className="hud-scan-button__scan" aria-hidden="true" />
+      <span className="hud-scan-button__inner">
+        {index && <span className="hud-scan-button__index">{index}</span>}
+        <span className="hud-scan-button__label">{label}</span>
+      </span>
+    </span>
+  )
+}
 
 export default function ControlRoom() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
@@ -93,6 +116,9 @@ export default function ControlRoom() {
   const [isConnectionClosing, setIsConnectionClosing] = useState(false)
   const [isAccessingPrimary, setIsAccessingPrimary] = useState(false)
   const hasResetScrollRef = useRef(false)
+  const hasAutoOpenedProfileRef = useRef(false)
+  const shouldOpenGuideAfterProfileRef = useRef(false)
+  const hasShownEntryGuideRef = useRef(false)
   const roomRef = useRef<HTMLElement>(null)
   const clickCueRef = useRef<HTMLDivElement>(null)
   const guideToggleRef = useRef<HTMLButtonElement>(null)
@@ -185,6 +211,12 @@ export default function ControlRoom() {
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' })
       }
 
+      if (opacity >= entryProfileRevealOpacity && !hasAutoOpenedProfileRef.current) {
+        hasAutoOpenedProfileRef.current = true
+        shouldOpenGuideAfterProfileRef.current = true
+        openProfile()
+      }
+
       if (opacity < 0.2) {
         hasResetScrollRef.current = false
       }
@@ -269,6 +301,11 @@ export default function ControlRoom() {
     setIsProfileOpen(false)
     profileCloseTimeoutRef.current = window.setTimeout(() => {
       setIsProfileClosing(false)
+      if (shouldOpenGuideAfterProfileRef.current && !hasShownEntryGuideRef.current) {
+        shouldOpenGuideAfterProfileRef.current = false
+        hasShownEntryGuideRef.current = true
+        setIsGuideOpen(true)
+      }
       profileCloseTimeoutRef.current = null
     }, modalFadeMs)
   }, [isProfileOpen])
@@ -451,8 +488,10 @@ export default function ControlRoom() {
                   <span>YEAR : {details.year}</span>
                   <span>TYPE : {details.type}</span>
                   <span className="control-room__project-divider" />
-                  <span className="control-room__project-action control-room__project-action--primary">&gt; {details.primaryAction}</span>
-                  <span className="control-room__project-action">&gt; {details.secondaryAction}</span>
+                  <HudScanButton label={details.primaryAction} index="01" />
+                  {'secondaryAction' in details && (
+                    <HudScanButton label={details.secondaryAction} index="02" />
+                  )}
                   <span className="control-room__project-corner" />
                 </span>
               </button>
@@ -546,25 +585,27 @@ export default function ControlRoom() {
             <div className="control-room__connection-options">
               {'primaryUrl' in selectedProjectDetails ? (
                 <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess}>
-                  <span>01</span>
-                  &gt; {isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM
+                  <HudScanButton
+                    label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
+                    index="01"
+                    variant="modal"
+                    isLoading={isAccessingPrimary}
+                  />
                 </a>
               ) : (
                 <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess}>
-                  <span>01</span>
-                  &gt; {isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM
+                  <HudScanButton
+                    label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
+                    index="01"
+                    variant="modal"
+                    isLoading={isAccessingPrimary}
+                  />
                 </button>
               )}
-              {'secondaryUrl' in selectedProjectDetails ? (
+              {'secondaryAction' in selectedProjectDetails && 'secondaryUrl' in selectedProjectDetails && (
                 <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer">
-                  <span>02</span>
-                  &gt; {selectedProjectDetails.secondaryAction} FILE
+                  <HudScanButton label={`${selectedProjectDetails.secondaryAction} FILE`} index="02" variant="modal" />
                 </a>
-              ) : (
-                <button type="button">
-                  <span>02</span>
-                  &gt; {selectedProjectDetails.secondaryAction} FILE
-                </button>
               )}
             </div>
           </div>
@@ -657,7 +698,7 @@ export default function ControlRoom() {
                 </div>
                 <div>
                   <dt>EDUCATION</dt>
-                  <dd>공군사관학교(자퇴)</dd>
+                  <dd className="control-room__analysis-data-value--kr">공군사관학교(자퇴)</dd>
                 </div>
                 <div>
                   <dt>MBTI</dt>
@@ -729,7 +770,13 @@ export default function ControlRoom() {
         )}
       </div>
       <div ref={clickCueRef} className="control-room__click-cue" aria-hidden="true">
-        CLICK
+        <span className="control-room__click-cue-grid" />
+        <span className="control-room__click-cue-corner control-room__click-cue-corner--tl" />
+        <span className="control-room__click-cue-corner control-room__click-cue-corner--tr" />
+        <span className="control-room__click-cue-corner control-room__click-cue-corner--bl" />
+        <span className="control-room__click-cue-corner control-room__click-cue-corner--br" />
+        <span className="control-room__click-cue-scan" />
+        <span className="control-room__click-cue-label">CLICK</span>
       </div>
     </section>
   )
