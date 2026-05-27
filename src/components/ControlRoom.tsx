@@ -682,15 +682,6 @@ export default function ControlRoom() {
                 <p>USER ID : JUHEE</p>
                 <p>CLEARANCE : LEVEL 1</p>
               </div>
-              <button
-                className="control-room__analysis-guide"
-                type="button"
-                onClick={() => setIsGuideOpen(true)}
-                data-hud-click="true"
-              >
-                <span>ACCESS GUIDE</span>
-                <span aria-hidden="true" />
-              </button>
             </header>
 
        
@@ -829,7 +820,10 @@ export default function ControlRoom() {
             </section>
 
             <nav className="control-room__analysis-panel control-room__analysis-panel--actions" aria-label="Profile actions">
-              <button type="button" onClick={closeProfile} data-hud-click="true">&gt; BACK TO MAIN</button>
+              <button type="button" onClick={closeProfile} data-hud-click="true">
+                <span>&gt; BACK TO MAIN</span>
+                <span aria-hidden="true" />
+              </button>
             </nav>
 
             <footer className="control-room__analysis-input">
