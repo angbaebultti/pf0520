@@ -1,7 +1,7 @@
 import { useEffect, useRef, type FC } from 'react'
 import * as THREE from 'three'
-import character03Url from '@assets/charcter03.png'
-import character04Url from '@assets/charcter04.png'
+import character03Url from '@assets/charcter03_intro.png'
+import character04Url from '@assets/charcter04_intro.png'
 
 interface GlassTunnelProps {
   onComplete?: () => void

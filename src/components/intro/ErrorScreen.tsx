@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from 'react'
-import charcter02Url from '@assets/charcter02.png'
+import charcter02Url from '@assets/charcter02_intro.png'
 import AnalogVHSOverlay from './AnalogVHSOverlay'
 import GhostEntityRenderer from './GhostEntityRenderer'
 
 const DURATION_MS = 3000
 const GLYPHS = '01ABCDEFabcdef[]{}()<>=_*#/\\|:;!?$%&+-~^'
 const HEX = '0123456789ABCDEF'
-const MAX_PIXEL_RATIO = 2
+const MAX_PIXEL_RATIO = 1
+const FRAME_INTERVAL_MS = 1000 / 30
 
 const LOG_FRAGMENTS = [
   'kernel panic: recursive node failure',
@@ -164,6 +165,7 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
     let height = window.innerHeight
     let pixelRatio = Math.min(window.devicePixelRatio || 1, MAX_PIXEL_RATIO)
     let startTime = performance.now()
+    let lastDrawTime = 0
     let completeTimer = 0
     let lastBreakProgress = 0
     let blocks = buildBlocks(width, height)
@@ -279,6 +281,10 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
     }
 
     const draw = (now: number) => {
+      animationFrame = requestAnimationFrame(draw)
+      if (now - lastDrawTime < FRAME_INTERVAL_MS) return
+      lastDrawTime = now
+
       const elapsed = now - startTime
       const progress = Math.min(elapsed / durationMs, 1)
       const breakProgress = breakDurationMs > 0 ? Math.min(Math.max((elapsed - durationMs) / breakDurationMs, 0), 1) : 0
@@ -302,8 +308,6 @@ export default function ErrorScreen({ durationMs = DURATION_MS, breakDurationMs 
         Math.cos(elapsed * 0.021) * intensity * 1.5 +
         (peak > 0 ? rand(-3, 3) * peak : 0) +
         (isBreaking ? Math.cos(elapsed * 0.063) * rupture * 6 : 0)
-
-      animationFrame = requestAnimationFrame(draw)
 
       context.save()
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)

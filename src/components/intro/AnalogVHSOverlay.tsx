@@ -4,6 +4,8 @@ interface AnalogVHSOverlayProps {
   zIndex?: number
 }
 
+const FRAME_INTERVAL_MS = 1000 / 24
+
 export default function AnalogVHSOverlay({ zIndex = 102 }: AnalogVHSOverlayProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null)
 
@@ -17,6 +19,7 @@ export default function AnalogVHSOverlay({ zIndex = 102 }: AnalogVHSOverlayProps
 
     let frame = 0
     let animation = 0
+    let lastDrawTime = 0
 
     const resize = () => {
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 1.35)
@@ -27,9 +30,12 @@ export default function AnalogVHSOverlay({ zIndex = 102 }: AnalogVHSOverlayProps
       context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0)
     }
 
-    const draw = () => {
-      frame += 1
+    const draw = (now: number) => {
       animation = requestAnimationFrame(draw)
+      if (now - lastDrawTime < FRAME_INTERVAL_MS) return
+      lastDrawTime = now
+
+      frame += 1
 
       const width = window.innerWidth
       const height = window.innerHeight
@@ -63,7 +69,7 @@ export default function AnalogVHSOverlay({ zIndex = 102 }: AnalogVHSOverlayProps
     }
 
     resize()
-    draw()
+    draw(performance.now())
     window.addEventListener('resize', resize)
 
     return () => {

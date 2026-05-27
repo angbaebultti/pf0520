@@ -1,7 +1,8 @@
 import { useEffect, useRef, type FC } from 'react'
-import characterUrl from '@assets/character.png'
+import characterUrl from '@assets/character_intro.png'
 
 const GHOST_SIZE = 240
+const FRAME_INTERVAL_MS = 1000 / 30
 const processedGhostCache = new Map<string, ImageData>()
 
 interface GhostEntityRendererProps {
@@ -124,6 +125,7 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
 
     let animation = 0
     let frame = 0
+    let lastDrawTime = 0
 
     const resize = () => {
       const pixelRatio = Math.min(window.devicePixelRatio || 1, 1)
@@ -135,8 +137,11 @@ const GhostEntityRenderer: FC<GhostEntityRendererProps> = ({
     }
 
     const draw = (now: number) => {
-      frame += 1
       animation = requestAnimationFrame(draw)
+      if (now - lastDrawTime < FRAME_INTERVAL_MS) return
+      lastDrawTime = now
+
+      frame += 1
 
       const width = window.innerWidth
       const height = window.innerHeight

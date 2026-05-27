@@ -1,7 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
+import gsap from 'gsap'
 import character07ProfileSrc from '@assets/character07_profile.jpg'
-import character06Src from '@assets/charcter06.png'
-import gunCharacterSrc from '@assets/gun_cha.png'
+import character06Src from '@assets/charcter06_profile_intro.png'
+import gunCharacterSrc from '@assets/gun_cha_main.png'
 import catArchiveSrc from '@assets/cat_archive.jpg'
 import flowerArchiveSrc from '@assets/flower_archive.jpg'
 import juhee2ArchiveSrc from '@assets/juhee2_archive.jpg'
@@ -9,7 +10,7 @@ import juheeArchiveSrc from '@assets/juhee_archive.jpg'
 import mmcaThumbSrc from '@assets/mmca_thumb.jpg'
 import nightviewArchiveSrc from '@assets/nightview_archive.jpg'
 import oceanArchiveSrc from '@assets/ocean_archive.jpg'
-import bubblooSrc from '@assets/bubbloo.png'
+import bubblooThumbSrc from '@assets/bubbloo_thumb.jpg'
 import jibsaLifeThumbSrc from '@assets/jibsa_life_thumb.jpg'
 import kukdeThumbSrc from '@assets/kukde_thumb.jpg'
 import '@styles/controlroom.css'
@@ -24,7 +25,7 @@ const projects = [
     position: 'fandom',
     thumbnail: jibsaLifeThumbSrc,
   },
-  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooSrc },
+  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooThumbSrc },
 ]
 
 const projectDetails = {
@@ -135,6 +136,7 @@ export default function ControlRoom() {
   const connectionCloseTimeoutRef = useRef<number | null>(null)
   const accessingPrimaryTimeoutRef = useRef<number | null>(null)
   const characterRef = useRef<HTMLImageElement>(null)
+  const introTitleRef = useRef<HTMLHeadingElement>(null)
   const isCharacterPixelTarget = useCallback((clientX: number, clientY: number) => {
     const character = characterRef.current
 
@@ -198,19 +200,143 @@ export default function ControlRoom() {
   }, [])
 
   useEffect(() => {
-    const preloads = [gunCharacterSrc, character06Src, ...profilePreloadAssets].map((asset, index) => {
-      const preload = document.createElement('link')
-      preload.rel = 'preload'
-      preload.as = 'image'
-      preload.href = asset
-      if (index === 0) preload.setAttribute('fetchpriority', 'high')
-      document.head.append(preload)
+    const criticalPreload = document.createElement('link')
+    criticalPreload.rel = 'preload'
+    criticalPreload.as = 'image'
+    criticalPreload.href = gunCharacterSrc
+    criticalPreload.setAttribute('fetchpriority', 'high')
+    document.head.append(criticalPreload)
 
-      return preload
-    })
+    const preloads: HTMLLinkElement[] = []
+    const preloadProfileAssets = () => {
+      ;[character06Src, ...profilePreloadAssets].forEach((asset) => {
+        const preload = document.createElement('link')
+        preload.rel = 'preload'
+        preload.as = 'image'
+        preload.href = asset
+        document.head.append(preload)
+        preloads.push(preload)
+      })
+    }
+    const idleId = 'requestIdleCallback' in window
+      ? window.requestIdleCallback(preloadProfileAssets, { timeout: 2400 })
+      : globalThis.setTimeout(preloadProfileAssets, 1200)
 
     return () => {
+      criticalPreload.remove()
+      if ('cancelIdleCallback' in window && typeof idleId === 'number') {
+        window.cancelIdleCallback(idleId)
+      } else {
+        globalThis.clearTimeout(idleId)
+      }
       preloads.forEach((preload) => preload.remove())
+    }
+  }, [])
+
+  useEffect(() => {
+    const title = introTitleRef.current
+    if (!title) return
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+    gsap.set(title, {
+      '--intro-title-brightness': 1,
+      '--intro-title-glow': 0.36,
+      '--intro-title-noise-x': '0px',
+      '--intro-title-noise-y': '0px',
+      '--intro-title-radar': 0,
+      '--intro-title-scan': -0.24,
+      '--intro-title-scan-boost': 0,
+      '--intro-title-hover': 0,
+    })
+
+    if (reduceMotion) return
+
+    let isFlickerActive = true
+    let flickerDelay: gsap.core.Tween | undefined
+    let flickerTimeline: gsap.core.Timeline | undefined
+    let hoverTimeline: gsap.core.Timeline | undefined
+
+    const context = gsap.context(() => {
+      gsap.to(title, {
+        '--intro-title-brightness': 1.018,
+        '--intro-title-glow': 0.395,
+        duration: 6.4,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      })
+
+      gsap.to(title, {
+        '--intro-title-radar': 1,
+        duration: 4.5,
+        ease: 'sine.inOut',
+        yoyo: true,
+        repeat: -1,
+      })
+
+      gsap.timeline({ repeat: -1, repeatDelay: 6.4, delay: 2.1 })
+        .set(title, { '--intro-title-scan': -0.24, '--intro-title-scan-boost': 0 })
+        .to(title, { '--intro-title-scan-boost': 0.44, duration: 0.24, ease: 'sine.out' }, 0)
+        .to(title, { '--intro-title-scan': 1.24, duration: 1.62, ease: 'power2.inOut' }, 0)
+        .to(title, { '--intro-title-scan-boost': 0, duration: 0.58, ease: 'sine.in' }, 0.82)
+
+      const flicker = () => {
+        const delay = gsap.utils.random(3.4, 8.2)
+        flickerDelay = gsap.delayedCall(delay, () => {
+          if (!isFlickerActive) return
+
+          flickerTimeline = gsap.timeline({ onComplete: flicker })
+            .set(title, {
+              '--intro-title-noise-x': `${gsap.utils.random(-0.34, 0.34)}px`,
+              '--intro-title-noise-y': `${gsap.utils.random(-0.18, 0.18)}px`,
+              '--intro-title-brightness': gsap.utils.random(1.016, 1.034),
+            })
+            .to(title, {
+              '--intro-title-noise-x': '0px',
+              '--intro-title-noise-y': '0px',
+              '--intro-title-brightness': 1,
+              duration: 0.08,
+              ease: 'steps(1)',
+            })
+        })
+      }
+
+      flicker()
+    }, title)
+
+    const handlePointerEnter = () => {
+      hoverTimeline?.kill()
+      hoverTimeline = gsap.timeline()
+        .to(title, { '--intro-title-hover': 1, duration: 0.62, ease: 'sine.out' }, 0)
+        .set(title, { '--intro-title-scan': -0.18, '--intro-title-scan-boost': 0 }, 0)
+        .to(title, { '--intro-title-scan-boost': 0.46, duration: 0.24, ease: 'sine.out' }, 0.04)
+        .to(title, { '--intro-title-scan': 1.18, duration: 1.08, ease: 'power2.inOut' }, 0.04)
+        .to(title, {
+          '--intro-title-noise-x': `${gsap.utils.random(-0.18, 0.18)}px`,
+          '--intro-title-noise-y': `${gsap.utils.random(-0.08, 0.08)}px`,
+          duration: 0.06,
+          ease: 'steps(1)',
+        }, 0.16)
+        .to(title, { '--intro-title-noise-x': '0px', '--intro-title-noise-y': '0px', duration: 0.1, ease: 'steps(1)' }, 0.25)
+        .to(title, { '--intro-title-scan-boost': 0, duration: 0.56, ease: 'sine.in' }, 0.62)
+    }
+
+    const handlePointerLeave = () => {
+      gsap.to(title, { '--intro-title-hover': 0, duration: 0.72, ease: 'sine.inOut' })
+    }
+
+    title.addEventListener('pointerenter', handlePointerEnter)
+    title.addEventListener('pointerleave', handlePointerLeave)
+
+    return () => {
+      isFlickerActive = false
+      title.removeEventListener('pointerenter', handlePointerEnter)
+      title.removeEventListener('pointerleave', handlePointerLeave)
+      flickerDelay?.kill()
+      flickerTimeline?.kill()
+      hoverTimeline?.kill()
+      context.revert()
     }
   }, [])
 
@@ -481,7 +607,7 @@ export default function ControlRoom() {
 
         <div className="control-room__intro">
           <p>UIUX DESIGNER</p>
-          <h1>HONG JUHEE</h1>
+          <h1 ref={introTitleRef} className="control-room__intro-title" data-text="HONG JUHEE">HONG JUHEE</h1>
         </div>
 
         <div className="control-room__projects" aria-label="Featured works">

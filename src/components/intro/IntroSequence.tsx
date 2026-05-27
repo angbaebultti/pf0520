@@ -4,7 +4,11 @@ import GlassTunnel from './GlassTunnel'
 
 type Phase = 'error' | 'tunnel'
 
-export default function IntroSequence() {
+type IntroSequenceProps = {
+  onTunnelStart?: () => void
+}
+
+export default function IntroSequence({ onTunnelStart }: IntroSequenceProps) {
   const [phase, setPhase] = useState<Phase>('error')
 
   useEffect(() => {
@@ -12,12 +16,13 @@ export default function IntroSequence() {
   }, [])
 
   const goToTunnel = useCallback(() => {
+    onTunnelStart?.()
     setPhase('tunnel')
-  }, [])
+  }, [onTunnelStart])
 
   return (
     <>
-      <GlassTunnel />
+      {phase === 'tunnel' && <GlassTunnel />}
       {phase === 'error' && (
         <>
           <ErrorScreen durationMs={3000} breakDurationMs={3000} onComplete={goToTunnel} />
