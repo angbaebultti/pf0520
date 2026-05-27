@@ -14,8 +14,6 @@ export default function GlobalHudCursor() {
     if (!mediaQuery.matches) return
 
     gsap.set(cursor, { xPercent: -50, yPercent: -50 })
-    const moveX = gsap.quickTo(cursor, 'x', { duration: 0.18, ease: 'power3.out' })
-    const moveY = gsap.quickTo(cursor, 'y', { duration: 0.18, ease: 'power3.out' })
 
     const isInteractive = (target: EventTarget | null) => (
       target instanceof Element &&
@@ -29,8 +27,7 @@ export default function GlobalHudCursor() {
       }
 
       const isClickTarget = isInteractive(event.target)
-      moveX(event.clientX)
-      moveY(event.clientY)
+      gsap.set(cursor, { x: event.clientX, y: event.clientY })
       cursor.classList.add('global-hud-cursor--visible')
       cursor.classList.toggle('global-hud-cursor--click', isClickTarget)
     }

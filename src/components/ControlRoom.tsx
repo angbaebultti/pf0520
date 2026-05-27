@@ -86,7 +86,8 @@ const signalArchive = [
 
 const profilePreloadAssets = [character07ProfileSrc, ...signalArchive.map((item) => item.image)]
 const modalFadeMs = 220
-const entryProfileRevealOpacity = 0.72
+const entryProfileRevealOpacity = 0.96
+type ProfileRevealMode = 'fast' | 'ready'
 
 type HudScanButtonProps = {
   label: string
@@ -124,6 +125,7 @@ export default function ControlRoom() {
   const [isAccessingPrimary, setIsAccessingPrimary] = useState(false)
   const [isRoomInteractive, setIsRoomInteractive] = useState(false)
   const [openProfilePanel, setOpenProfilePanel] = useState<ProfilePanelId>('scan')
+  const [profileRevealMode, setProfileRevealMode] = useState<ProfileRevealMode>('ready')
   const hasResetScrollRef = useRef(false)
   const hasAutoOpenedProfileRef = useRef(false)
   const shouldOpenGuideAfterProfileRef = useRef(false)
@@ -363,7 +365,7 @@ export default function ControlRoom() {
       if (opacity >= entryProfileRevealOpacity && !hasAutoOpenedProfileRef.current) {
         hasAutoOpenedProfileRef.current = true
         shouldOpenGuideAfterProfileRef.current = true
-        openProfile()
+        openProfile('fast')
       }
 
       if (opacity < 0.2) {
@@ -396,9 +398,10 @@ export default function ControlRoom() {
     accessingPrimaryTimeoutRef.current = null
   }
 
-  const openProfile = () => {
+  const openProfile = (mode: ProfileRevealMode = 'ready') => {
     clearProfileCloseTimeout()
     setIsProfileClosing(false)
+    setProfileRevealMode(mode)
     setOpenProfilePanel('scan')
     setIsProfileOpen(true)
   }
@@ -451,7 +454,7 @@ export default function ControlRoom() {
 
   const openProfileFromCharacter = (event: React.MouseEvent) => {
     if (isCharacterPixelTarget(event.clientX, event.clientY)) {
-      openProfile()
+      openProfile('ready')
     }
   }
 
@@ -740,7 +743,7 @@ export default function ControlRoom() {
             <div>
               <dt>EMAIL</dt>
               <dd>
-                <a href="mailto:103juhee@naver.com" data-hud-click={canUseControlRoom ? 'true' : undefined}>103juhee@naver.com</a>
+                <a href="https://mail.google.com/mail/?view=cm&fs=1&to=103juhee@naver.com" target="_blank" rel="noreferrer" data-hud-click={canUseControlRoom ? 'true' : undefined}>103juhee@naver.com</a>
               </dd>
             </div>
             <div>
@@ -817,7 +820,7 @@ export default function ControlRoom() {
       </div>
       <div
         ref={profileRef}
-        className={`control-room__profile${isProfileOpen ? ' control-room__profile--open' : ''}${isProfileClosing ? ' control-room__profile--closing' : ''}`}
+        className={`control-room__profile control-room__profile--${profileRevealMode}${isProfileOpen ? ' control-room__profile--open' : ''}${isProfileClosing ? ' control-room__profile--closing' : ''}`}
         aria-hidden={!isProfileOpen}
         onPointerDown={(event) => {
           if (event.target === event.currentTarget) closeProfile()
