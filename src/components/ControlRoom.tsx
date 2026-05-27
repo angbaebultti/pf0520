@@ -65,12 +65,13 @@ const projectDetails = {
   },
 } as const
 
-const capabilities = [
-  { label: 'HTML/CSS', value: 95 },
-  { label: 'JS', value: 80 },
-  { label: 'GSAP', value: 80 },
-  { label: 'FIGMA', value: 95 },
-  { label: 'UI DESIGN', value: 85 },
+const workflowSignals = [
+  { label: 'REACT', meta: 'FRONTEND' },
+  { label: 'GSAP', meta: 'MOTION' },
+  { label: 'THREE.JS', meta: '3D / INTERACTION' },
+  { label: 'FIGMA', meta: 'DESIGN / PROTOTYPE' },
+  { label: 'TYPE SCRIPT', meta: 'LANGUAGE' },
+  { label: 'SCSS', meta: 'STYLING' },
 ]
 
 const signalArchive = [
@@ -114,6 +115,7 @@ export default function ControlRoom() {
   const [isProfileOpen, setIsProfileOpen] = useState(false)
   const [isProfileClosing, setIsProfileClosing] = useState(false)
   const [isGuideOpen, setIsGuideOpen] = useState(false)
+  const [isContactOpen, setIsContactOpen] = useState(false)
   const [selectedProjectId, setSelectedProjectId] = useState<keyof typeof projectDetails | null>(null)
   const [isConnectionClosing, setIsConnectionClosing] = useState(false)
   const [isAccessingPrimary, setIsAccessingPrimary] = useState(false)
@@ -126,6 +128,8 @@ export default function ControlRoom() {
   const roomRef = useRef<HTMLElement>(null)
   const guideToggleRef = useRef<HTMLButtonElement>(null)
   const guideRef = useRef<HTMLElement>(null)
+  const contactToggleRef = useRef<HTMLButtonElement>(null)
+  const contactRef = useRef<HTMLElement>(null)
   const profileRef = useRef<HTMLDivElement>(null)
   const profileCloseTimeoutRef = useRef<number | null>(null)
   const connectionCloseTimeoutRef = useRef<number | null>(null)
@@ -423,20 +427,22 @@ export default function ControlRoom() {
   }, [closeConnection, closeProfile, isAnyModalVisible, isProfileVisible])
 
   useEffect(() => {
-    if (!isGuideOpen) return
+    if (!isGuideOpen && !isContactOpen) return
 
     const handlePointerDown = (event: PointerEvent) => {
       const target = event.target
       if (!(target instanceof Node)) return
       if (guideRef.current?.contains(target) || guideToggleRef.current?.contains(target)) return
+      if (contactRef.current?.contains(target) || contactToggleRef.current?.contains(target)) return
 
       setIsGuideOpen(false)
+      setIsContactOpen(false)
     }
 
     window.addEventListener('pointerdown', handlePointerDown)
 
     return () => window.removeEventListener('pointerdown', handlePointerDown)
-  }, [isGuideOpen])
+  }, [isContactOpen, isGuideOpen])
 
   return (
     <section
@@ -534,13 +540,15 @@ export default function ControlRoom() {
           aria-controls="control-room-guide"
           data-hud-click={canUseControlRoom ? 'true' : undefined}
         >
-         ACCESS GUIDE
+          <span className="control-room__hud-button-label">ACCESS GUIDE</span>
+          <span className="control-room__guide-reticle" aria-hidden="true" />
         </button>
         <aside ref={guideRef} id="control-room-guide" className={`control-room__guide${isGuideOpen ? ' control-room__guide--open' : ''}`} aria-label="How to use" aria-hidden={!isGuideOpen}>
           <button className="control-room__guide-close" type="button" onClick={() => setIsGuideOpen(false)} aria-label="Close how to use" data-hud-click="true">
             ×
           </button>
           <h2>ACCESS GUIDE</h2>
+          <p className="control-room__guide-copy">SELECT A PROJECT SLOT TO OPEN ITS CONNECTION MENU. TARGET THE CENTRAL ENTITY TO READ USER DATA.</p>
           <p>각 프로젝트 카드 및 캐릭터에 마우스를 올리면 해당 채널의 접근 메뉴가 나타납니다.</p>
           <div className="control-room__guide-demo" aria-hidden="true">
             <span>02</span>
@@ -555,11 +563,24 @@ export default function ControlRoom() {
             </div>
           </div>
         </aside>
-      </div>
 
-      <footer className="control-room__contact" aria-label="Contact">
-        <div className="control-room__contact-inner">
-          <p className="control-room__contact-copy">© 2026 HONG JUHEE Portfolio</p>
+        <button
+          ref={contactToggleRef}
+          className={`control-room__contact-toggle${isContactOpen ? ' control-room__contact-toggle--active' : ''}`}
+          type="button"
+          onClick={() => setIsContactOpen((isOpen) => !isOpen)}
+          aria-expanded={isContactOpen}
+          aria-controls="control-room-contact"
+          data-hud-click={canUseControlRoom ? 'true' : undefined}
+        >
+          <span className="control-room__hud-button-label">CONTACT SIGNAL</span>
+          <span className="control-room__contact-icon" aria-hidden="true" />
+        </button>
+        <aside ref={contactRef} id="control-room-contact" className={`control-room__contact${isContactOpen ? ' control-room__contact--open' : ''}`} aria-label="Contact signal" aria-hidden={!isContactOpen}>
+          <button className="control-room__contact-close" type="button" onClick={() => setIsContactOpen(false)} aria-label="Close contact signal" data-hud-click="true">
+            X
+          </button>
+          <p className="control-room__contact-copy">(C) 2026 HONG JUHEE Portfolio</p>
           <dl className="control-room__contact-list">
             <div>
               <dt>EMAIL</dt>
@@ -570,12 +591,13 @@ export default function ControlRoom() {
             <div>
               <dt>KAKAOTALK</dt>
               <dd>
-                <a href="https://open.kakao.com/o/slx8IWvi" data-hud-click={canUseControlRoom ? 'true' : undefined}>https://open.kakao.com/o/slx8IWvi</a>
+                <a href="https://open.kakao.com/o/slx8IWvi" target="_blank" rel="noreferrer" data-hud-click={canUseControlRoom ? 'true' : undefined}>OPEN CHAT</a>
               </dd>
             </div>
           </dl>
-        </div>
-      </footer>
+        </aside>
+      </div>
+
       <div
         className={`control-room__connection${isConnectionVisible && !isConnectionClosing ? ' control-room__connection--open' : ''}${isConnectionClosing ? ' control-room__connection--closing' : ''}`}
         aria-hidden={!isConnectionVisible || isConnectionClosing}
@@ -660,6 +682,15 @@ export default function ControlRoom() {
                 <p>USER ID : JUHEE</p>
                 <p>CLEARANCE : LEVEL 1</p>
               </div>
+              <button
+                className="control-room__analysis-guide"
+                type="button"
+                onClick={() => setIsGuideOpen(true)}
+                data-hud-click="true"
+              >
+                <span>ACCESS GUIDE</span>
+                <span aria-hidden="true" />
+              </button>
             </header>
 
        
@@ -692,20 +723,6 @@ export default function ControlRoom() {
                   <b>ACTIVE</b>
                 </div>
               </div>
-              <div className="control-room__analysis-wave">
-                <span>SIGNAL STRENGTH</span>
-                <svg viewBox="0 0 720 92" aria-hidden="true" focusable="false">
-                  <g className="control-room__analysis-wave-flow">
-                    <path className="control-room__analysis-wave-line control-room__analysis-wave-line--dim" d="M0 50 C30 42 52 58 80 50 S132 40 160 51 210 63 244 49 304 38 340 50 392 60 430 49 486 41 522 51 584 63 620 49 680 42 720 50" />
-                    <path className="control-room__analysis-wave-line" d="M0 54 C16 50 24 48 34 50 S52 58 66 52 90 45 108 49 136 57 154 51 176 42 194 45 214 58 236 53 260 50 282 54 304 48 324 45 346 55 366 52 386 47 408 50 430 56 450 51 472 40 494 43 514 59 536 53 558 48 580 50 602 56 622 52 644 43 666 47 692 55 720 50" />
-                    <path className="control-room__analysis-wave-line control-room__analysis-wave-line--dim" d="M720 50 C750 42 772 58 800 50 S852 40 880 51 930 63 964 49 1024 38 1060 50 1112 60 1150 49 1206 41 1242 51 1304 63 1340 49 1400 42 1440 50" />
-                    <path className="control-room__analysis-wave-line" d="M720 54 C736 50 744 48 754 50 S772 58 786 52 810 45 828 49 856 57 874 51 896 42 914 45 934 58 956 53 980 50 1002 54 1024 48 1044 45 1066 55 1086 52 1106 47 1128 50 1150 56 1170 51 1192 40 1214 43 1234 59 1256 53 1278 48 1300 50 1322 56 1342 52 1364 43 1386 47 1412 55 1440 50" />
-                  </g>
-                </svg>
-                <b className="control-room__numeric-value">
-                  <span className="control-room__numeric-digits">92</span>
-                </b>
-              </div>
             </main>
 
             <aside className="control-room__analysis-panel control-room__analysis-panel--data">
@@ -736,27 +753,54 @@ export default function ControlRoom() {
             </aside>
 
             <section className="control-room__analysis-panel control-room__analysis-panel--scan">
-              <h3>CAPABILITY SCAN</h3>
-              {capabilities.map((capability) => (
-                <div className="control-room__analysis-capability" key={`analysis-${capability.label}`}>
-                  <span>{capability.label.replace('UI DESIGN', 'UI / UX')}</span>
-                  <i>
-                    <b style={{ width: `${capability.value}%` }} />
-                  </i>
-                  <strong className="control-room__numeric-value">
-                    <span className="control-room__numeric-digits">{capability.value}</span>
-                  </strong>
-                </div>
-              ))}
-              <div className="control-room__analysis-capability">
-                <span>PROTOTYPE</span>
-                <i>
-                  <b style={{ width: '75%' }} />
-                </i>
-                <strong className="control-room__numeric-value">
-                  <span className="control-room__numeric-digits">75</span>
-                </strong>
+              <div className="control-room__workflow-header">
+                <h3>WORKFLOW SIGNAL</h3>
+                <span>SIGNAL MAP</span>
               </div>
+              <div className="control-room__workflow-map" aria-hidden="true">
+                <svg viewBox="0 0 260 220" focusable="false">
+                  <g className="control-room__workflow-radar">
+                    <polygon points="130,16 228,62 252,154 182,210 78,210 8,154 32,62" />
+                    <polygon points="130,45 202,79 220,147 169,188 91,188 40,147 58,79" />
+                    <polygon points="130,76 176,98 188,140 156,166 104,166 72,140 84,98" />
+                    <line x1="130" y1="16" x2="130" y2="210" />
+                    <line x1="8" y1="154" x2="252" y2="154" />
+                    <line x1="32" y1="62" x2="182" y2="210" />
+                    <line x1="228" y1="62" x2="78" y2="210" />
+                  </g>
+                  <polygon className="control-room__workflow-shape" points="130,78 181,104 172,151 136,178 88,166 72,126 101,96" />
+                  <g className="control-room__workflow-nodes">
+                    <circle cx="130" cy="78" r="6" />
+                    <circle cx="181" cy="104" r="6" />
+                    <circle cx="172" cy="151" r="6" />
+                    <circle cx="136" cy="178" r="6" />
+                    <circle cx="88" cy="166" r="6" />
+                    <circle cx="72" cy="126" r="6" />
+                    <circle cx="101" cy="96" r="6" />
+                  </g>
+                </svg>
+              </div>
+              <div className="control-room__workflow-list">
+                {workflowSignals.map((signal) => (
+                  <div className="control-room__workflow-item" key={signal.label}>
+                    <span aria-hidden="true" />
+                    <b>{signal.label}</b>
+                    <em>{signal.meta}</em>
+                  </div>
+                ))}
+              </div>
+            </section>
+
+            <section className="control-room__analysis-panel control-room__analysis-panel--activity">
+              <span>SYSTEM ACTIVITY</span>
+              <svg viewBox="0 0 720 92" aria-hidden="true" focusable="false">
+                <g className="control-room__analysis-wave-flow">
+                  <path className="control-room__analysis-wave-line control-room__analysis-wave-line--dim" d="M0 50 C30 42 52 58 80 50 S132 40 160 51 210 63 244 49 304 38 340 50 392 60 430 49 486 41 522 51 584 63 620 49 680 42 720 50" />
+                  <path className="control-room__analysis-wave-line" d="M0 54 C16 50 24 48 34 50 S52 58 66 52 90 45 108 49 136 57 154 51 176 42 194 45 214 58 236 53 260 50 282 54 304 48 324 45 346 55 366 52 386 47 408 50 430 56 450 51 472 40 494 43 514 59 536 53 558 48 580 50 602 56 622 52 644 43 666 47 692 55 720 50" />
+                  <path className="control-room__analysis-wave-line control-room__analysis-wave-line--dim" d="M720 50 C750 42 772 58 800 50 S852 40 880 51 930 63 964 49 1024 38 1060 50 1112 60 1150 49 1206 41 1242 51 1304 63 1340 49 1400 42 1440 50" />
+                  <path className="control-room__analysis-wave-line" d="M720 54 C736 50 744 48 754 50 S772 58 786 52 810 45 828 49 856 57 874 51 896 42 914 45 934 58 956 53 980 50 1002 54 1024 48 1044 45 1066 55 1086 52 1106 47 1128 50 1150 56 1170 51 1192 40 1214 43 1234 59 1256 53 1278 48 1300 50 1322 56 1342 52 1364 43 1386 47 1412 55 1440 50" />
+                </g>
+              </svg>
             </section>
 
             <section className="control-room__analysis-panel control-room__analysis-panel--archive">
