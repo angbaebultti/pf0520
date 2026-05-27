@@ -66,12 +66,12 @@ const projectDetails = {
 } as const
 
 const workflowSignals = [
-  { label: 'REACT', meta: 'FRONTEND' },
-  { label: 'GSAP', meta: 'MOTION' },
-  { label: 'THREE.JS', meta: '3D / INTERACTION' },
+  { label: 'REACT', meta: 'COMPONENT SYSTEM' },
+  { label: 'GSAP', meta: 'MOTION DESIGN' },
+  { label: 'THREE.JS', meta: '3D INTERACTION' },
   { label: 'FIGMA', meta: 'DESIGN / PROTOTYPE' },
-  { label: 'TYPE SCRIPT', meta: 'LANGUAGE' },
-  { label: 'SCSS', meta: 'STYLING' },
+  { label: 'TYPESCRIPT', meta: 'STRUCTURED FRONTEND' },
+  { label: 'INTERACTION', meta: 'IMMERSIVE EXPERIENCE' },
 ]
 
 const signalArchive = [
@@ -548,7 +548,7 @@ export default function ControlRoom() {
             ×
           </button>
           <h2>ACCESS GUIDE</h2>
-          <p className="control-room__guide-copy">SELECT A PROJECT SLOT TO OPEN ITS CONNECTION MENU. TARGET THE CENTRAL ENTITY TO READ USER DATA.</p>
+          <p className="control-room__guide-copy">프로젝트 슬롯을 선택하면 연결 메뉴가 열립니다. 중앙 캐릭터를 선택하면 사용자 데이터를 확인할 수 있습니다.</p>
           <p>각 프로젝트 카드 및 캐릭터에 마우스를 올리면 해당 채널의 접근 메뉴가 나타납니다.</p>
           <div className="control-room__guide-demo" aria-hidden="true">
             <span>02</span>
@@ -749,25 +749,40 @@ export default function ControlRoom() {
                 <span>SIGNAL MAP</span>
               </div>
               <div className="control-room__workflow-map" aria-hidden="true">
-                <svg viewBox="0 0 260 220" focusable="false">
-                  <g className="control-room__workflow-radar">
-                    <polygon points="130,16 228,62 252,154 182,210 78,210 8,154 32,62" />
-                    <polygon points="130,45 202,79 220,147 169,188 91,188 40,147 58,79" />
-                    <polygon points="130,76 176,98 188,140 156,166 104,166 72,140 84,98" />
-                    <line x1="130" y1="16" x2="130" y2="210" />
-                    <line x1="8" y1="154" x2="252" y2="154" />
-                    <line x1="32" y1="62" x2="182" y2="210" />
-                    <line x1="228" y1="62" x2="78" y2="210" />
+                <svg viewBox="0 0 320 300" focusable="false">
+                  <g className="control-room__workflow-particles">
+                    <circle cx="160" cy="42" r="1.6" />
+                    <circle cx="204" cy="72" r="1.2" />
+                    <circle cx="228" cy="118" r="1.4" />
+                    <circle cx="218" cy="190" r="1.2" />
+                    <circle cx="160" cy="240" r="1.5" />
+                    <circle cx="92" cy="214" r="1.2" />
+                    <circle cx="72" cy="148" r="1.4" />
+                    <circle cx="112" cy="92" r="1.1" />
+                    <circle cx="148" cy="128" r="1.3" />
+                    <circle cx="182" cy="158" r="1.1" />
+                    <circle cx="134" cy="184" r="1.2" />
+                    <circle cx="104" cy="152" r="1.1" />
                   </g>
-                  <polygon className="control-room__workflow-shape" points="130,78 181,104 172,151 136,178 88,166 72,126 101,96" />
+                  <g className="control-room__workflow-radar">
+                    <polygon className="control-room__workflow-radar-ring control-room__workflow-radar-ring--outer" points="160,34 260,92 260,208 160,266 60,208 60,92" />
+                    <polygon className="control-room__workflow-radar-ring control-room__workflow-radar-ring--outer" points="160,54 243,102 243,198 160,246 77,198 77,102" />
+                    <polygon className="control-room__workflow-radar-ring control-room__workflow-radar-ring--mid" points="160,74 226,112 226,188 160,226 94,188 94,112" />
+                    <polygon className="control-room__workflow-radar-ring control-room__workflow-radar-ring--mid" points="160,94 208,122 208,178 160,206 112,178 112,122" />
+                    <polygon className="control-room__workflow-radar-ring control-room__workflow-radar-ring--inner" points="160,114 191,132 191,168 160,186 129,168 129,132" />
+                    <polygon className="control-room__workflow-radar-ring control-room__workflow-radar-ring--inner" points="160,132 176,141 176,159 160,168 144,159 144,141" />
+                    <line className="control-room__workflow-radar-axis" x1="160" y1="34" x2="160" y2="266" />
+                    <line className="control-room__workflow-radar-axis" x1="60" y1="92" x2="260" y2="208" />
+                    <line className="control-room__workflow-radar-axis" x1="260" y1="92" x2="60" y2="208" />
+                  </g>
+                  <polygon className="control-room__workflow-shape" points="79.6,103.6 255,94.9 258.6,150 255,205.1 89.6,190.6 55.6,150" />
                   <g className="control-room__workflow-nodes">
-                    <circle cx="130" cy="78" r="6" />
-                    <circle cx="181" cy="104" r="6" />
-                    <circle cx="172" cy="151" r="6" />
-                    <circle cx="136" cy="178" r="6" />
-                    <circle cx="88" cy="166" r="6" />
-                    <circle cx="72" cy="126" r="6" />
-                    <circle cx="101" cy="96" r="6" />
+                    <circle cx="79.6" cy="103.6" r="7" />
+                    <circle cx="255" cy="94.9" r="7" />
+                    <circle cx="258.6" cy="150" r="7" />
+                    <circle cx="255" cy="205.1" r="7" />
+                    <circle cx="89.6" cy="190.6" r="7" />
+                    <circle cx="55.6" cy="150" r="7" />
                   </g>
                 </svg>
               </div>
