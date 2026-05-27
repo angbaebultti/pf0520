@@ -428,6 +428,12 @@ button {
   }
 }
 
+@media (max-width: 760px), (hover: none), (pointer: coarse) {
+  .global-hud-cursor {
+    display: none !important;
+  }
+}
+
 @keyframes global-hud-cursor-lock {
   0% {
     opacity: 0;

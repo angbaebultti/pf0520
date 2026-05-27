@@ -10,7 +10,7 @@ import juheeArchiveSrc from '@assets/juhee_archive.jpg'
 import mmcaThumbSrc from '@assets/mmca_thumb.jpg'
 import nightviewArchiveSrc from '@assets/nightview_archive.jpg'
 import oceanArchiveSrc from '@assets/ocean_archive.jpg'
-import bubblooThumbSrc from '@assets/bubbloo_thumb.jpg'
+import bubblooCardSrc from '@assets/bubbloo_card.jpg'
 import jibsaLifeThumbSrc from '@assets/jibsa_life_thumb.jpg'
 import kukdeThumbSrc from '@assets/kukde_thumb.jpg'
 import '@styles/controlroom.css'
@@ -25,7 +25,7 @@ const projects = [
     position: 'fandom',
     thumbnail: jibsaLifeThumbSrc,
   },
-  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooThumbSrc },
+  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooCardSrc },
 ]
 
 const projectDetails = {
@@ -95,6 +95,8 @@ type HudScanButtonProps = {
   isLoading?: boolean
 }
 
+type ProfilePanelId = 'visual' | 'log' | 'core' | 'data' | 'scan' | 'activity' | 'archive'
+
 function HudScanButton({ label, index, variant = 'card', isLoading = false }: HudScanButtonProps) {
   return (
     <span className={`hud-scan-button hud-scan-button--${variant}${isLoading ? ' hud-scan-button--loading' : ''}`}>
@@ -121,6 +123,7 @@ export default function ControlRoom() {
   const [isConnectionClosing, setIsConnectionClosing] = useState(false)
   const [isAccessingPrimary, setIsAccessingPrimary] = useState(false)
   const [isRoomInteractive, setIsRoomInteractive] = useState(false)
+  const [openProfilePanel, setOpenProfilePanel] = useState<ProfilePanelId>('scan')
   const hasResetScrollRef = useRef(false)
   const hasAutoOpenedProfileRef = useRef(false)
   const shouldOpenGuideAfterProfileRef = useRef(false)
@@ -396,6 +399,7 @@ export default function ControlRoom() {
   const openProfile = () => {
     clearProfileCloseTimeout()
     setIsProfileClosing(false)
+    setOpenProfilePanel('scan')
     setIsProfileOpen(true)
   }
 
@@ -482,6 +486,24 @@ export default function ControlRoom() {
   const isConnectionVisible = Boolean(selectedProject && selectedProjectDetails)
   const isAnyModalVisible = isProfileVisible || isConnectionVisible
   const canUseControlRoom = isRoomInteractive || isAnyModalVisible
+  const getProfilePanelClassName = (panelId: ProfilePanelId, modifier: string) => (
+    `control-room__analysis-panel control-room__analysis-panel--${modifier}${openProfilePanel === panelId ? ' control-room__analysis-panel--accordion-open' : ''}`
+  )
+  const renderProfilePanelTitle = (panelId: ProfilePanelId, title: string, meta?: string) => (
+    <h3>
+      <button
+        className="control-room__accordion-trigger"
+        type="button"
+        onClick={() => setOpenProfilePanel(panelId)}
+        aria-expanded={openProfilePanel === panelId}
+        aria-controls={`profile-panel-${panelId}`}
+        data-hud-click="true"
+      >
+        <span>{title}</span>
+        {meta && <em>{meta}</em>}
+      </button>
+    </h3>
+  )
 
   useEffect(() => {
     return () => {
@@ -819,38 +841,45 @@ export default function ControlRoom() {
 
        
 
-            <section className="control-room__analysis-panel control-room__analysis-panel--visual">
-              <h3>ENTITY VISUAL</h3>
-              <div className="control-room__analysis-portrait">
-                <img src={character07ProfileSrc} alt="" loading="eager" decoding="async" />
-                <span>SIGNAL SOURCE<br />LIVE FEED</span>
+            <section className={getProfilePanelClassName('visual', 'visual')}>
+              {renderProfilePanelTitle('visual', 'ENTITY VISUAL')}
+              <div id="profile-panel-visual" className="control-room__accordion-content">
+                <div className="control-room__analysis-portrait">
+                  <img src={character07ProfileSrc} alt="" loading="eager" decoding="async" />
+                  <span>SIGNAL SOURCE<br />LIVE FEED</span>
+                </div>
               </div>
             </section>
 
-            <section className="control-room__analysis-panel control-room__analysis-panel--log">
-              <h3>SYSTEM LOG</h3>
-              <p>[00:00:10:21] SCANNING...</p>
-              <p>[00:00:10:54] FACIAL DATA SYNCHRONIZED.</p>
-              <p>[00:00:11:02] VOICE PATTERN NOT FOUND.</p>
-              <p>[00:00:11:18] BEHAVIOR ANALYSIS STARTED.</p>
-              <p>[00:00:11:59] INTEREST PATTERN DETECTED.</p>
-              <p>[00:00:12:07] IDENTITY CONFIRMED.</p>
-              <b>&gt;&gt; ANALYSIS COMPLETE</b>
+            <section className={getProfilePanelClassName('log', 'log')}>
+              {renderProfilePanelTitle('log', 'SYSTEM LOG')}
+              <div id="profile-panel-log" className="control-room__accordion-content">
+                <p>[00:00:10:21] SCANNING...</p>
+                <p>[00:00:10:54] FACIAL DATA SYNCHRONIZED.</p>
+                <p>[00:00:11:02] VOICE PATTERN NOT FOUND.</p>
+                <p>[00:00:11:18] BEHAVIOR ANALYSIS STARTED.</p>
+                <p>[00:00:11:59] INTEREST PATTERN DETECTED.</p>
+                <p>[00:00:12:07] IDENTITY CONFIRMED.</p>
+                <b>&gt;&gt; ANALYSIS COMPLETE</b>
+              </div>
             </section>
 
-            <main className="control-room__analysis-panel control-room__analysis-panel--core">
-              <h3>IDENTITY CORE</h3>
-              <div className="control-room__analysis-core-frame">
-                <img src={character06Src} alt="" loading="eager" decoding="async" />
-                <div className="control-room__analysis-status">
-                  <span>STATUS</span>
-                  <b>ACTIVE</b>
+            <main className={getProfilePanelClassName('core', 'core')}>
+              {renderProfilePanelTitle('core', 'IDENTITY CORE')}
+              <div id="profile-panel-core" className="control-room__accordion-content">
+                <div className="control-room__analysis-core-frame">
+                  <img src={character06Src} alt="" loading="eager" decoding="async" />
+                  <div className="control-room__analysis-status">
+                    <span>STATUS</span>
+                    <b>ACTIVE</b>
+                  </div>
                 </div>
               </div>
             </main>
 
-            <aside className="control-room__analysis-panel control-room__analysis-panel--data">
-              <h3>USER DATA</h3>
+            <aside className={getProfilePanelClassName('data', 'data')}>
+              {renderProfilePanelTitle('data', 'USER DATA')}
+              <div id="profile-panel-data" className="control-room__accordion-content">
               <dl className="control-room__analysis-data">
                 <div>
                   <dt>NAME</dt>
@@ -874,13 +903,14 @@ export default function ControlRoom() {
                 </div>
               </dl>
               <p>NOTES :<br />FAST EXECUTION / STRONG MENTALITY<br />HIGH ADAPTABILITY</p>
+              </div>
             </aside>
 
-            <section className="control-room__analysis-panel control-room__analysis-panel--scan">
+            <section className={getProfilePanelClassName('scan', 'scan')}>
               <div className="control-room__workflow-header">
-                <h3>WORKFLOW SIGNAL</h3>
-                <span>SIGNAL MAP</span>
+                {renderProfilePanelTitle('scan', 'WORKFLOW SIGNAL', 'SIGNAL MAP')}
               </div>
+              <div id="profile-panel-scan" className="control-room__accordion-content">
               <div className="control-room__workflow-map" aria-hidden="true">
                 <svg viewBox="0 0 320 300" focusable="false">
                   <g className="control-room__workflow-particles">
@@ -930,10 +960,12 @@ export default function ControlRoom() {
                   </div>
                 ))}
               </div>
+              </div>
             </section>
 
-            <section className="control-room__analysis-panel control-room__analysis-panel--activity">
-              <span>SYSTEM ACTIVITY</span>
+            <section className={getProfilePanelClassName('activity', 'activity')}>
+              {renderProfilePanelTitle('activity', 'SYSTEM ACTIVITY')}
+              <div id="profile-panel-activity" className="control-room__accordion-content">
               <svg viewBox="0 0 720 92" aria-hidden="true" focusable="false">
                 <g className="control-room__analysis-wave-flow">
                   <path className="control-room__analysis-wave-line control-room__analysis-wave-line--dim" d="M0 50 C30 42 52 58 80 50 S132 40 160 51 210 63 244 49 304 38 340 50 392 60 430 49 486 41 522 51 584 63 620 49 680 42 720 50" />
@@ -942,10 +974,12 @@ export default function ControlRoom() {
                   <path className="control-room__analysis-wave-line" d="M720 54 C736 50 744 48 754 50 S772 58 786 52 810 45 828 49 856 57 874 51 896 42 914 45 934 58 956 53 980 50 1002 54 1024 48 1044 45 1066 55 1086 52 1106 47 1128 50 1150 56 1170 51 1192 40 1214 43 1234 59 1256 53 1278 48 1300 50 1322 56 1342 52 1364 43 1386 47 1412 55 1440 50" />
                 </g>
               </svg>
+              </div>
             </section>
 
-            <section className="control-room__analysis-panel control-room__analysis-panel--archive">
-              <h3>PERSONAL SIGNAL ARCHIVE</h3>
+            <section className={getProfilePanelClassName('archive', 'archive')}>
+              {renderProfilePanelTitle('archive', 'PERSONAL SIGNAL ARCHIVE')}
+              <div id="profile-panel-archive" className="control-room__accordion-content">
               <div className="control-room__archive-grid" aria-label="Personal signal archive">
                 {signalArchive.map((item) => (
                   <figure
@@ -967,6 +1001,7 @@ export default function ControlRoom() {
                   <dd>89%</dd>
                 </div>
               </dl>
+              </div>
             </section>
 
             <nav className="control-room__analysis-panel control-room__analysis-panel--actions" aria-label="Profile actions">

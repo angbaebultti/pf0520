@@ -23,6 +23,11 @@ export default function GlobalHudCursor() {
     )
 
     const moveCursor = (event: PointerEvent) => {
+      if (!mediaQuery.matches) {
+        hideCursor()
+        return
+      }
+
       const isClickTarget = isInteractive(event.target)
       moveX(event.clientX)
       moveY(event.clientY)
