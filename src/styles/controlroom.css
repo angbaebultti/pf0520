@@ -787,7 +787,7 @@
   isolation: isolate;
   filter:
     drop-shadow(0 9px 16px rgba(0, 0, 0, 0.78))
-    drop-shadow(0 0 5px rgba(237, 255, 226, 0.16));
+    drop-shadow(0 0 3px rgba(237, 255, 226, 0.09));
   transform: translateZ(0);
   transition:
     filter 0.2s ease,
@@ -810,10 +810,10 @@
     var(--hud-plate);
   border: 1px solid var(--hud-edge);
   box-shadow:
-    inset 0 0 0 1px rgba(8, 255, 47, 0.24),
+    inset 0 0 0 1px rgba(8, 255, 47, 0.14),
     inset 0 0 18px rgba(0, 0, 0, 0.44),
     0 0 0 1px rgba(0, 0, 0, 0.62),
-    0 0 14px rgba(237, 255, 226, 0.08);
+    0 0 8px rgba(237, 255, 226, 0.04);
   opacity: 1;
   transition:
     inset 0.22s ease,
@@ -854,7 +854,7 @@
   overflow: hidden;
   text-shadow:
     0 1px 2px rgba(0, 0, 0, 0.86),
-    0 0 8px rgba(237, 255, 226, 0.18);
+    0 0 5px rgba(237, 255, 226, 0.1);
 }
 
 .hud-scan-button__index {
@@ -897,7 +897,7 @@
   margin-left: auto;
   filter:
     drop-shadow(0 5px 10px rgba(0, 0, 0, 0.56))
-    drop-shadow(0 0 7px rgba(8, 255, 47, 0.18));
+    drop-shadow(0 0 4px rgba(8, 255, 47, 0.09));
 }
 
 .control-room__project-terminal .hud-scan-button__inner {
@@ -911,10 +911,10 @@
     var(--hud-plate);
   border-color: var(--hud-edge);
   box-shadow:
-    inset 0 0 0 1px rgba(8, 255, 47, 0.2),
-    inset 0 0 12px rgba(8, 255, 47, 0.08),
+    inset 0 0 0 1px rgba(8, 255, 47, 0.12),
+    inset 0 0 10px rgba(8, 255, 47, 0.04),
     0 0 0 1px rgba(0, 0, 0, 0.58),
-    0 0 10px rgba(8, 255, 47, 0.1);
+    0 0 6px rgba(8, 255, 47, 0.05);
   opacity: 1;
 }
 
@@ -950,7 +950,7 @@
   height: 13px;
   pointer-events: none;
   border-color: rgba(8, 255, 47, 0.86);
-  filter: drop-shadow(0 0 4px rgba(8, 255, 47, 0.54));
+  filter: drop-shadow(0 0 2px rgba(8, 255, 47, 0.28));
   transition:
     width 0.2s ease,
     height 0.2s ease,
@@ -995,8 +995,8 @@
 .hud-scan-button--loading {
   filter:
     drop-shadow(0 9px 16px rgba(0, 0, 0, 0.78))
-    drop-shadow(0 0 8px rgba(8, 255, 47, 0.44))
-    drop-shadow(0 0 20px rgba(8, 255, 47, 0.24));
+    drop-shadow(0 0 5px rgba(8, 255, 47, 0.24))
+    drop-shadow(0 0 12px rgba(8, 255, 47, 0.1));
   transform: scale(1.02);
 }
 
@@ -1004,8 +1004,8 @@
 .control-room__project:focus-visible .control-room__project-terminal .hud-scan-button {
   filter:
     drop-shadow(0 7px 14px rgba(0, 0, 0, 0.64))
-    drop-shadow(0 0 12px rgba(8, 255, 47, 0.5))
-    drop-shadow(0 0 28px rgba(8, 255, 47, 0.28));
+    drop-shadow(0 0 7px rgba(8, 255, 47, 0.24))
+    drop-shadow(0 0 16px rgba(8, 255, 47, 0.12));
 }
 
 .control-room__project:hover .hud-scan-button::before,
@@ -1018,11 +1018,11 @@
   inset: 2px;
   border-color: rgba(246, 255, 240, 0.94);
   box-shadow:
-    inset 0 0 0 1px rgba(8, 255, 47, 0.38),
-    inset 0 0 18px rgba(8, 255, 47, 0.18),
+    inset 0 0 0 1px rgba(8, 255, 47, 0.2),
+    inset 0 0 14px rgba(8, 255, 47, 0.08),
     0 0 0 1px rgba(0, 0, 0, 0.68),
-    0 0 10px rgba(8, 255, 47, 0.28),
-    0 0 28px rgba(8, 255, 47, 0.2);
+    0 0 7px rgba(8, 255, 47, 0.12),
+    0 0 16px rgba(8, 255, 47, 0.08);
   opacity: 1;
 }
 
@@ -1034,11 +1034,11 @@
     rgba(0, 18, 6, 0.96);
   border-color: rgba(124, 255, 96, 0.96);
   box-shadow:
-    inset 0 0 0 1px rgba(196, 255, 178, 0.32),
-    inset 0 0 22px rgba(8, 255, 47, 0.22),
+    inset 0 0 0 1px rgba(196, 255, 178, 0.2),
+    inset 0 0 16px rgba(8, 255, 47, 0.1),
     0 0 0 1px rgba(0, 0, 0, 0.64),
-    0 0 14px rgba(8, 255, 47, 0.32),
-    0 0 34px rgba(8, 255, 47, 0.22);
+    0 0 8px rgba(8, 255, 47, 0.14),
+    0 0 18px rgba(8, 255, 47, 0.08);
 }
 
 .control-room__project:hover .control-room__project-terminal .hud-scan-button__grid,
@@ -1740,20 +1740,14 @@
   position: relative;
   z-index: 1;
   width: 100%;
-  height: auto;
+  height: min(360px, calc(100% - 56px));
   aspect-ratio: 16 / 9;
-  max-height: min(360px, calc(100% - 56px));
   object-fit: cover;
   object-position: center center;
   filter: none;
   opacity: 1;
   transform: scale(1);
   animation: control-preview-drift 8s ease-in-out infinite alternate;
-}
-
-.control-room__connection-preview--identity img,
-.control-room__connection-preview--app img {
-  object-fit: contain;
 }
 
 .control-room__connection-preview span {
@@ -2489,6 +2483,12 @@
   animation: control-eye-blink 2.8s steps(1, end) infinite;
 }
 
+.control-room__profile-shell--level-2 .control-room__analysis-portrait::after,
+.control-room__profile-shell--level-3 .control-room__analysis-portrait::after {
+  animation: none;
+  opacity: 0;
+}
+
 .control-room__analysis-portrait img {
   position: relative;
   z-index: 1;
@@ -2498,6 +2498,9 @@
   object-position: 45% 38%;
   opacity: 0.28;
   filter: grayscale(1) sepia(0.3) hue-rotate(48deg) saturate(1.1) contrast(0.92) brightness(0.54);
+  transition:
+    opacity 0.28s ease,
+    filter 0.28s ease;
 }
 
 .control-room__profile--open .control-room__analysis-portrait img {
@@ -2568,6 +2571,9 @@
   opacity: 0.22;
   filter: grayscale(1) sepia(0.35) hue-rotate(50deg) saturate(1.1) contrast(0.9) brightness(0.58);
   transform: none;
+  transition:
+    opacity 0.28s ease,
+    filter 0.28s ease;
 }
 
 .control-room__profile--open .control-room__analysis-core-frame img {
@@ -2578,15 +2584,13 @@
 .control-room__profile-shell--level-3 .control-room__analysis-portrait img {
   filter: grayscale(0.22) sepia(0.18) hue-rotate(32deg) saturate(1.3) contrast(1.08) brightness(0.86) !important;
   opacity: 1 !important;
-  animation:
-    control-level-image-jump 0.34s steps(3, end),
-    control-voice-glitch 0.34s steps(2, end) !important;
+  animation: control-level-image-settle 0.28s ease-out !important;
 }
 
 .control-room__profile-shell--level-3 .control-room__analysis-core-frame img {
   filter: grayscale(0.28) sepia(0.2) hue-rotate(42deg) saturate(1.45) contrast(1.14) brightness(0.98) !important;
   opacity: 1 !important;
-  animation: control-level-image-jump 0.34s steps(3, end) !important;
+  animation: control-level-image-settle 0.28s ease-out !important;
 }
 
 .control-room__analysis-core-frame::after {
@@ -4007,6 +4011,17 @@
 
   68% {
     transform: translate(3px, -1px);
+  }
+}
+
+@keyframes control-level-image-settle {
+  0% {
+    opacity: 0.82;
+    filter: grayscale(0.28) sepia(0.2) hue-rotate(36deg) saturate(1.18) contrast(1.02) brightness(0.78);
+  }
+
+  100% {
+    opacity: 1;
   }
 }
 

@@ -4,6 +4,8 @@ import character06ProfileSrc from '@assets/character06_profile.jpg'
 import character07ProfileSrc from '@assets/character07_profile.jpg'
 import character06Src from '@assets/charcter06_profile_intro.png'
 import gunCharacterSrc from '@assets/gun_cha_main.png'
+import gunCharacterSyncedSrc from '@assets/gun_cha02.png'
+import gunCharacterBoostedSrc from '@assets/gun_cha03.png'
 import catArchiveSrc from '@assets/cat_archive.jpg'
 import flowerArchiveSrc from '@assets/flower_archive.jpg'
 import juhee2ArchiveSrc from '@assets/juhee2_archive.jpg'
@@ -89,7 +91,14 @@ const signalArchive = [
   { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2ArchiveSrc },
 ]
 
-const profilePreloadAssets = [character06ProfileSrc, character07ProfileSrc, gunCharacterSrc, ...signalArchive.map((item) => item.image)]
+const profilePreloadAssets = [
+  character06ProfileSrc,
+  character07ProfileSrc,
+  gunCharacterSrc,
+  gunCharacterSyncedSrc,
+  gunCharacterBoostedSrc,
+  ...signalArchive.map((item) => item.image),
+]
 const modalFadeMs = 220
 const entryProfileRevealOpacity = 0.96
 type ProfileRevealMode = 'fast' | 'ready'
@@ -146,8 +155,35 @@ export default function ControlRoom() {
   const profileCloseTimeoutRef = useRef<number | null>(null)
   const connectionCloseTimeoutRef = useRef<number | null>(null)
   const accessingPrimaryTimeoutRef = useRef<number | null>(null)
+  const decodedProfileAssetsRef = useRef(new Set<string>())
+  const decodingProfileAssetsRef = useRef(new Map<string, Promise<void>>())
   const characterRef = useRef<HTMLImageElement>(null)
   const introTitleRef = useRef<HTMLHeadingElement>(null)
+  const decodeProfileImage = useCallback((asset: string) => {
+    if (decodedProfileAssetsRef.current.has(asset)) return Promise.resolve()
+
+    const pendingDecode = decodingProfileAssetsRef.current.get(asset)
+    if (pendingDecode) return pendingDecode
+
+    const image = new Image()
+    image.decoding = 'async'
+    image.src = asset
+
+    const decodePromise = (image.decode
+      ? image.decode()
+      : new Promise<void>((resolve, reject) => {
+          image.onload = () => resolve()
+          image.onerror = () => reject(new Error(`Failed to load ${asset}`))
+        }))
+      .catch(() => undefined)
+      .then(() => {
+        decodedProfileAssetsRef.current.add(asset)
+        decodingProfileAssetsRef.current.delete(asset)
+      })
+
+    decodingProfileAssetsRef.current.set(asset, decodePromise)
+    return decodePromise
+  }, [])
   const isCharacterPixelTarget = useCallback((clientX: number, clientY: number) => {
     const character = characterRef.current
 
@@ -227,6 +263,7 @@ export default function ControlRoom() {
         preload.href = asset
         document.head.append(preload)
         preloads.push(preload)
+        void decodeProfileImage(asset)
       })
     }
     const idleId = 'requestIdleCallback' in window
@@ -242,7 +279,7 @@ export default function ControlRoom() {
       }
       preloads.forEach((preload) => preload.remove())
     }
-  }, [])
+  }, [decodeProfileImage])
 
   useEffect(() => {
     const title = introTitleRef.current
@@ -413,9 +450,20 @@ export default function ControlRoom() {
     setIsProfileOpen(true)
   }
 
-  const upgradeProfileLevel = useCallback(() => {
-    setProfileLevel((level) => Math.min(level + 1, 3))
-  }, [])
+  const upgradeProfileLevel = useCallback(async () => {
+    const nextLevel = Math.min(profileLevel + 1, 3)
+    if (nextLevel === profileLevel) return
+
+    if (nextLevel === 2) {
+      await decodeProfileImage(gunCharacterSyncedSrc)
+    }
+
+    if (nextLevel === 3) {
+      await decodeProfileImage(gunCharacterBoostedSrc)
+    }
+
+    setProfileLevel((level) => Math.max(level, nextLevel))
+  }, [decodeProfileImage, profileLevel])
 
   const closeProfile = useCallback(() => {
     if (!isProfileOpen) return
@@ -616,8 +664,9 @@ export default function ControlRoom() {
     return () => window.removeEventListener('pointerdown', handlePointerDown)
   }, [isContactOpen, isGuideOpen])
 
-  const profileVisualSrc = profileLevel >= 2 ? character06ProfileSrc : character07ProfileSrc
-  const profileCoreSrc = character06Src
+  const profileSyncedSrc = profileLevel >= 3 ? gunCharacterBoostedSrc : gunCharacterSyncedSrc
+  const profileVisualSrc = profileLevel >= 2 ? profileSyncedSrc : character07ProfileSrc
+  const profileCoreSrc = profileLevel >= 2 ? profileSyncedSrc : character06Src
   const profileStatusLabel = profileLevel >= 3 ? 'BOOSTED' : profileLevel >= 2 ? 'SYNCED' : 'ACTIVE'
   const profileCommandLabel = profileLevel >= 3 ? 'MAX LEVEL REACHED' : `RUN SYNC > LEVEL ${profileLevel + 1}`
 
