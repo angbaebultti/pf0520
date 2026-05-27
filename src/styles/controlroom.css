@@ -14,7 +14,12 @@
     radial-gradient(ellipse at 50% 42%, rgba(205, 219, 188, 0.1), transparent 30%),
     linear-gradient(180deg, #171918 0%, #090b0b 52%, #020303 100%);
   opacity: var(--room-opacity);
+  pointer-events: none;
   transition: opacity 0.18s linear;
+}
+
+.control-room--interactive {
+  pointer-events: auto;
 }
 
 .control-room__stage {

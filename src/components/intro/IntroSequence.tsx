@@ -21,7 +21,7 @@ export default function IntroSequence() {
       {phase === 'error' && (
         <>
           <ErrorScreen durationMs={3000} breakDurationMs={3000} onComplete={goToTunnel} />
-          <button className="intro-skip-button" type="button" onClick={goToTunnel} aria-label="Skip intro">
+          <button className="intro-skip-button" type="button" onClick={goToTunnel} aria-label="Skip intro" data-hud-click="true">
             SKIP
           </button>
         </>

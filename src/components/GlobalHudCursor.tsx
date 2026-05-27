@@ -19,7 +19,7 @@ export default function GlobalHudCursor() {
 
     const isInteractive = (target: EventTarget | null) => (
       target instanceof Element &&
-      Boolean(target.closest('a, button, [role="button"], [tabindex]:not([tabindex="-1"]), .control-room__project, .control-room__character-hit'))
+      Boolean(target.closest('[data-hud-click="true"]'))
     )
 
     const moveCursor = (event: PointerEvent) => {

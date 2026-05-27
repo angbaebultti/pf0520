@@ -510,6 +510,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
         scrollHintRef.current.style.setProperty('--tunnel-scroll-hint-opacity', String(scrollHintOpacity))
       }
       document.documentElement.style.setProperty('--control-room-opacity', String(controlRoomOpacity))
+      document.documentElement.classList.toggle('intro-scroll-lock', controlRoomOpacity < 0.98)
     }
 
     const animateToTarget = () => {
@@ -562,6 +563,7 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     return () => {
       cancelAnimationFrame(animationId)
       document.documentElement.style.setProperty('--control-room-opacity', '0')
+      document.documentElement.classList.remove('intro-scroll-lock')
       canvas.removeEventListener('webglcontextlost', onContextLost)
       window.removeEventListener('resize', onResize)
       window.removeEventListener('wheel', onWheel)

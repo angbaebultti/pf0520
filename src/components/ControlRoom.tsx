@@ -115,10 +115,12 @@ export default function ControlRoom() {
   const [selectedProjectId, setSelectedProjectId] = useState<keyof typeof projectDetails | null>(null)
   const [isConnectionClosing, setIsConnectionClosing] = useState(false)
   const [isAccessingPrimary, setIsAccessingPrimary] = useState(false)
+  const [isRoomInteractive, setIsRoomInteractive] = useState(false)
   const hasResetScrollRef = useRef(false)
   const hasAutoOpenedProfileRef = useRef(false)
   const shouldOpenGuideAfterProfileRef = useRef(false)
   const hasShownEntryGuideRef = useRef(false)
+  const isRoomInteractiveRef = useRef(false)
   const roomRef = useRef<HTMLElement>(null)
   const guideToggleRef = useRef<HTMLButtonElement>(null)
   const guideRef = useRef<HTMLElement>(null)
@@ -204,6 +206,12 @@ export default function ControlRoom() {
 
     const resetScrollOnReveal = () => {
       const opacity = Number.parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--control-room-opacity')) || 0
+      const shouldBeInteractive = opacity >= 0.98
+
+      if (shouldBeInteractive !== isRoomInteractiveRef.current) {
+        isRoomInteractiveRef.current = shouldBeInteractive
+        setIsRoomInteractive(shouldBeInteractive)
+      }
 
       if (opacity >= 0.98 && !hasResetScrollRef.current) {
         hasResetScrollRef.current = true
@@ -304,11 +312,30 @@ export default function ControlRoom() {
     }
   }
 
+  const updateCharacterHudTarget = (event: React.PointerEvent<HTMLButtonElement>) => {
+    const isHudTarget = canUseControlRoom && isCharacterPixelTarget(event.clientX, event.clientY)
+    if (isHudTarget) {
+      event.currentTarget.dataset.hudClick = 'true'
+    } else {
+      delete event.currentTarget.dataset.hudClick
+    }
+  }
+
+  const clearCharacterHudTarget = (event: React.PointerEvent<HTMLButtonElement>) => {
+    delete event.currentTarget.dataset.hudClick
+  }
+
+  const openConnectionFromProject = (event: React.MouseEvent<HTMLButtonElement>, projectId: keyof typeof projectDetails) => {
+    if (!(event.target instanceof Element) || !event.target.closest('.control-room__project-preview')) return
+    openConnection(projectId)
+  }
+
   const selectedProject = selectedProjectId ? projects.find((project) => project.id === selectedProjectId) : null
   const selectedProjectDetails = selectedProjectId ? projectDetails[selectedProjectId] : null
   const isProfileVisible = isProfileOpen || isProfileClosing
   const isConnectionVisible = Boolean(selectedProject && selectedProjectDetails)
   const isAnyModalVisible = isProfileVisible || isConnectionVisible
+  const canUseControlRoom = isRoomInteractive || isAnyModalVisible
 
   useEffect(() => {
     return () => {
@@ -403,7 +430,11 @@ export default function ControlRoom() {
   }, [isGuideOpen])
 
   return (
-    <section ref={roomRef} className="control-room" aria-label="Dark Star Labs portfolio">
+    <section
+      ref={roomRef}
+      className={`control-room${canUseControlRoom ? ' control-room--interactive' : ''}`}
+      aria-label="Dark Star Labs portfolio"
+    >
       <div className="control-room__stage">
         <header className="control-room__header">
           {/* <nav className="control-room__nav" aria-label="Main navigation">
@@ -414,7 +445,14 @@ export default function ControlRoom() {
         </header>
 
         <div className="control-room__hero">
-          <button className="control-room__character-hit" type="button" onClick={openProfileFromCharacter} aria-label="Open user data">
+          <button
+            className="control-room__character-hit"
+            type="button"
+            onClick={openProfileFromCharacter}
+            onPointerMove={updateCharacterHudTarget}
+            onPointerLeave={clearCharacterHudTarget}
+            aria-label="Open user data"
+          >
             <img ref={characterRef} className="control-room__character" src={character06Src} alt="" loading="eager" decoding="sync" />
           </button>
         </div>
@@ -433,11 +471,11 @@ export default function ControlRoom() {
                 className={`control-room__project control-room__project--${project.position}${selectedProjectId === project.id ? ' control-room__project--selected' : ''}`}
                 type="button"
                 key={project.id}
-                onClick={() => openConnection(project.id as keyof typeof projectDetails)}
+                onClick={(event) => openConnectionFromProject(event, project.id as keyof typeof projectDetails)}
               >
                 <span className="control-room__project-kicker">{project.id}</span>
                 <span className="control-room__project-title">{project.title}</span>
-                <span className="control-room__project-preview" aria-hidden="true">
+                <span className="control-room__project-preview" aria-hidden="true" data-hud-click={canUseControlRoom ? 'true' : undefined}>
                   {'thumbnail' in project && <img src={project.thumbnail} alt="" loading="eager" decoding="async" />}
                 </span>
                 <span className="control-room__project-terminal" aria-hidden="true">
@@ -464,11 +502,12 @@ export default function ControlRoom() {
           onClick={() => setIsGuideOpen((isOpen) => !isOpen)}
           aria-expanded={isGuideOpen}
           aria-controls="control-room-guide"
+          data-hud-click={canUseControlRoom ? 'true' : undefined}
         >
          ACCESS GUIDE
         </button>
         <aside ref={guideRef} id="control-room-guide" className={`control-room__guide${isGuideOpen ? ' control-room__guide--open' : ''}`} aria-label="How to use" aria-hidden={!isGuideOpen}>
-          <button className="control-room__guide-close" type="button" onClick={() => setIsGuideOpen(false)} aria-label="Close how to use">
+          <button className="control-room__guide-close" type="button" onClick={() => setIsGuideOpen(false)} aria-label="Close how to use" data-hud-click="true">
             ×
           </button>
           <h2>ACCESS GUIDE</h2>
@@ -495,13 +534,13 @@ export default function ControlRoom() {
             <div>
               <dt>EMAIL</dt>
               <dd>
-                <a href="mailto:103juhee@naver.com">103juhee@naver.com</a>
+                <a href="mailto:103juhee@naver.com" data-hud-click={canUseControlRoom ? 'true' : undefined}>103juhee@naver.com</a>
               </dd>
             </div>
             <div>
               <dt>KAKAOTALK</dt>
               <dd>
-                <a href="https://open.kakao.com/o/slx8IWvi">https://open.kakao.com/o/slx8IWvi</a>
+                <a href="https://open.kakao.com/o/slx8IWvi" data-hud-click={canUseControlRoom ? 'true' : undefined}>https://open.kakao.com/o/slx8IWvi</a>
               </dd>
             </div>
           </dl>
@@ -521,7 +560,7 @@ export default function ControlRoom() {
             aria-modal="true"
             aria-label="Select connection"
           >
-            <button className="control-room__connection-close" type="button" onClick={closeConnection} aria-label="Close connection">
+            <button className="control-room__connection-close" type="button" onClick={closeConnection} aria-label="Close connection" data-hud-click="true">
               ×
             </button>
             <p>SELECT CONNECTION</p>
@@ -542,7 +581,7 @@ export default function ControlRoom() {
             </dl>
             <div className="control-room__connection-options">
               {'primaryUrl' in selectedProjectDetails ? (
-                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess}>
+                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
                   <HudScanButton
                     label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
                     index="01"
@@ -551,7 +590,7 @@ export default function ControlRoom() {
                   />
                 </a>
               ) : (
-                <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess}>
+                <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
                   <HudScanButton
                     label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
                     index="01"
@@ -561,7 +600,7 @@ export default function ControlRoom() {
                 </button>
               )}
               {'secondaryAction' in selectedProjectDetails && 'secondaryUrl' in selectedProjectDetails && (
-                <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer">
+                <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer" data-hud-click="true">
                   <HudScanButton label={`${selectedProjectDetails.secondaryAction} FILE`} index="02" variant="modal" />
                 </a>
               )}
@@ -716,7 +755,7 @@ export default function ControlRoom() {
             </section>
 
             <nav className="control-room__analysis-panel control-room__analysis-panel--actions" aria-label="Profile actions">
-              <button type="button" onClick={closeProfile}>&gt; BACK TO MAIN</button>
+              <button type="button" onClick={closeProfile} data-hud-click="true">&gt; BACK TO MAIN</button>
             </nav>
 
             <footer className="control-room__analysis-input">
