@@ -99,6 +99,8 @@ const profilePreloadAssets = [
   gunCharacterBoostedSrc,
   ...signalArchive.map((item) => item.image),
 ]
+const projectThumbnailAssets = projects.map((project) => project.thumbnail)
+const projectPreviewAssets = projects.map((project) => project.previewImage)
 const modalFadeMs = 220
 const entryProfileRevealOpacity = 0.96
 type ProfileRevealMode = 'fast' | 'ready'
@@ -155,14 +157,14 @@ export default function ControlRoom() {
   const profileCloseTimeoutRef = useRef<number | null>(null)
   const connectionCloseTimeoutRef = useRef<number | null>(null)
   const accessingPrimaryTimeoutRef = useRef<number | null>(null)
-  const decodedProfileAssetsRef = useRef(new Set<string>())
-  const decodingProfileAssetsRef = useRef(new Map<string, Promise<void>>())
+  const decodedImageAssetsRef = useRef(new Set<string>())
+  const decodingImageAssetsRef = useRef(new Map<string, Promise<void>>())
   const characterRef = useRef<HTMLImageElement>(null)
   const introTitleRef = useRef<HTMLHeadingElement>(null)
-  const decodeProfileImage = useCallback((asset: string) => {
-    if (decodedProfileAssetsRef.current.has(asset)) return Promise.resolve()
+  const decodeImageAsset = useCallback((asset: string) => {
+    if (decodedImageAssetsRef.current.has(asset)) return Promise.resolve()
 
-    const pendingDecode = decodingProfileAssetsRef.current.get(asset)
+    const pendingDecode = decodingImageAssetsRef.current.get(asset)
     if (pendingDecode) return pendingDecode
 
     const image = new Image()
@@ -177,11 +179,11 @@ export default function ControlRoom() {
         }))
       .catch(() => undefined)
       .then(() => {
-        decodedProfileAssetsRef.current.add(asset)
-        decodingProfileAssetsRef.current.delete(asset)
+        decodedImageAssetsRef.current.add(asset)
+        decodingImageAssetsRef.current.delete(asset)
       })
 
-    decodingProfileAssetsRef.current.set(asset, decodePromise)
+    decodingImageAssetsRef.current.set(asset, decodePromise)
     return decodePromise
   }, [])
   const isCharacterPixelTarget = useCallback((clientX: number, clientY: number) => {
@@ -247,31 +249,37 @@ export default function ControlRoom() {
   }, [])
 
   useEffect(() => {
-    const criticalPreload = document.createElement('link')
-    criticalPreload.rel = 'preload'
-    criticalPreload.as = 'image'
-    criticalPreload.href = gunCharacterSrc
-    criticalPreload.setAttribute('fetchpriority', 'high')
-    document.head.append(criticalPreload)
+    const criticalAssets = [gunCharacterSrc, ...projectThumbnailAssets]
+    const criticalPreloads = criticalAssets.map((asset) => {
+      const preload = document.createElement('link')
+      preload.rel = 'preload'
+      preload.as = 'image'
+      preload.href = asset
+      preload.setAttribute('fetchpriority', 'high')
+      document.head.append(preload)
+      void decodeImageAsset(asset)
+
+      return preload
+    })
 
     const preloads: HTMLLinkElement[] = []
-    const preloadProfileAssets = () => {
-      ;[character06Src, ...profilePreloadAssets].forEach((asset) => {
+    const preloadDeferredAssets = () => {
+      ;[character06Src, ...profilePreloadAssets, ...projectPreviewAssets].forEach((asset) => {
         const preload = document.createElement('link')
         preload.rel = 'preload'
         preload.as = 'image'
         preload.href = asset
         document.head.append(preload)
         preloads.push(preload)
-        void decodeProfileImage(asset)
+        void decodeImageAsset(asset)
       })
     }
     const idleId = 'requestIdleCallback' in window
-      ? window.requestIdleCallback(preloadProfileAssets, { timeout: 2400 })
-      : globalThis.setTimeout(preloadProfileAssets, 1200)
+      ? window.requestIdleCallback(preloadDeferredAssets, { timeout: 1400 })
+      : globalThis.setTimeout(preloadDeferredAssets, 800)
 
     return () => {
-      criticalPreload.remove()
+      criticalPreloads.forEach((preload) => preload.remove())
       if ('cancelIdleCallback' in window && typeof idleId === 'number') {
         window.cancelIdleCallback(idleId)
       } else {
@@ -279,7 +287,7 @@ export default function ControlRoom() {
       }
       preloads.forEach((preload) => preload.remove())
     }
-  }, [decodeProfileImage])
+  }, [decodeImageAsset])
 
   useEffect(() => {
     const title = introTitleRef.current
@@ -455,15 +463,15 @@ export default function ControlRoom() {
     if (nextLevel === profileLevel) return
 
     if (nextLevel === 2) {
-      await decodeProfileImage(gunCharacterSyncedSrc)
+      await decodeImageAsset(gunCharacterSyncedSrc)
     }
 
     if (nextLevel === 3) {
-      await decodeProfileImage(gunCharacterBoostedSrc)
+      await decodeImageAsset(gunCharacterBoostedSrc)
     }
 
     setProfileLevel((level) => Math.max(level, nextLevel))
-  }, [decodeProfileImage, profileLevel])
+  }, [decodeImageAsset, profileLevel])
 
   const closeProfile = useCallback(() => {
     if (!isProfileOpen) return
@@ -481,11 +489,20 @@ export default function ControlRoom() {
     }, modalFadeMs)
   }, [isProfileOpen])
 
-  const openConnection = (projectId: keyof typeof projectDetails) => {
+  const openConnection = async (projectId: keyof typeof projectDetails) => {
     clearConnectionCloseTimeout()
     clearAccessingPrimaryTimeout()
     setIsConnectionClosing(false)
     setIsAccessingPrimary(false)
+
+    const project = projects.find((item) => item.id === projectId)
+    if (project) {
+      await Promise.all([
+        decodeImageAsset(project.thumbnail),
+        decodeImageAsset(project.previewImage),
+      ])
+    }
+
     setSelectedProjectId(projectId)
   }
 
@@ -539,7 +556,7 @@ export default function ControlRoom() {
 
   const openConnectionFromProject = (event: React.MouseEvent<HTMLButtonElement>, projectId: keyof typeof projectDetails) => {
     if (!(event.target instanceof Element)) return
-    openConnection(projectId)
+    void openConnection(projectId)
   }
 
   const selectedProject = selectedProjectId ? projects.find((project) => project.id === selectedProjectId) : null
