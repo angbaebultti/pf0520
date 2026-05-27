@@ -515,8 +515,6 @@
 .control-room__project-preview::after {
   z-index: 2;
   background:
-    radial-gradient(circle at 88% 50%, transparent 0 8px, rgba(143, 210, 103, 0.38) 9px 10px, transparent 11px),
-    radial-gradient(circle at 88% 50%, transparent 0 18px, rgba(143, 210, 103, 0.16) 19px 20px, transparent 21px),
     linear-gradient(90deg, transparent 0 74%, rgba(0, 0, 0, 0.22));
   opacity: 0.72;
 }
@@ -4178,10 +4176,10 @@
   }
 
   .control-room__project-shell {
-    grid-template-rows: 14px minmax(42px, auto) 14px minmax(72px, 1fr) 66px 30px;
+    grid-template-rows: 14px minmax(42px, auto) 14px auto 66px 30px;
     gap: 8px;
     height: auto;
-    min-height: 282px;
+    min-height: 332px;
     padding: 12px;
     clip-path: polygon(0 8px, 8px 0, calc(100% - 28px) 0, 100% 28px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 28px 100%, 0 calc(100% - 28px));
     background:
@@ -4202,7 +4200,17 @@
   }
 
   .control-room__project-preview {
-    height: 100%;
+    aspect-ratio: 16 / 9;
+    width: 100%;
+    height: auto;
+  }
+
+  .control-room__project--mmca .control-room__project-preview {
+    background: #1f1f1f;
+  }
+
+  .control-room__project--mmca .control-room__project-preview img {
+    object-fit: contain;
   }
 
   .control-room__project-data {
@@ -4615,8 +4623,8 @@
   }
 
   .control-room__project-shell {
-    grid-template-rows: 13px minmax(40px, auto) 13px minmax(64px, 1fr) 62px 28px;
-    min-height: 264px;
+    grid-template-rows: 13px minmax(40px, auto) 13px auto 62px 28px;
+    min-height: 312px;
     padding: 10px;
   }
 
