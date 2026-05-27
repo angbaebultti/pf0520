@@ -120,7 +120,6 @@ export default function ControlRoom() {
   const shouldOpenGuideAfterProfileRef = useRef(false)
   const hasShownEntryGuideRef = useRef(false)
   const roomRef = useRef<HTMLElement>(null)
-  const clickCueRef = useRef<HTMLDivElement>(null)
   const guideToggleRef = useRef<HTMLButtonElement>(null)
   const guideRef = useRef<HTMLElement>(null)
   const profileRef = useRef<HTMLDivElement>(null)
@@ -228,47 +227,6 @@ export default function ControlRoom() {
 
     return () => cancelAnimationFrame(animationId)
   }, [])
-
-  useEffect(() => {
-    const room = roomRef.current
-    const clickCue = clickCueRef.current
-
-    if (!room || !clickCue) return
-
-    const getClickable = (event: PointerEvent) => {
-      const target = event.target
-      if (!(target instanceof Element)) return null
-      const project = target.closest('.control-room__project')
-      if (project && room.contains(project)) return project
-
-      const characterHit = target.closest('.control-room__character-hit')
-      if (characterHit && room.contains(characterHit) && isCharacterPixelTarget(event.clientX, event.clientY)) return characterHit
-
-      return null
-    }
-
-    const moveCue = (event: PointerEvent) => {
-      clickCue.style.setProperty('--click-cue-x', `${event.clientX + 18}px`)
-      clickCue.style.setProperty('--click-cue-y', `${event.clientY + 16}px`)
-
-      const clickable = getClickable(event)
-      clickCue.classList.toggle('control-room__click-cue--active', Boolean(clickable))
-    }
-
-    const hideCue = () => {
-      clickCue.classList.remove('control-room__click-cue--active')
-    }
-
-    room.addEventListener('pointermove', moveCue)
-    room.addEventListener('pointerleave', hideCue)
-    room.addEventListener('pointerdown', hideCue)
-
-    return () => {
-      room.removeEventListener('pointermove', moveCue)
-      room.removeEventListener('pointerleave', hideCue)
-      room.removeEventListener('pointerdown', hideCue)
-    }
-  }, [isCharacterPixelTarget])
 
   const clearProfileCloseTimeout = () => {
     if (profileCloseTimeoutRef.current === null) return
@@ -768,15 +726,6 @@ export default function ControlRoom() {
 
         </div>
         )}
-      </div>
-      <div ref={clickCueRef} className="control-room__click-cue" aria-hidden="true">
-        <span className="control-room__click-cue-grid" />
-        <span className="control-room__click-cue-corner control-room__click-cue-corner--tl" />
-        <span className="control-room__click-cue-corner control-room__click-cue-corner--tr" />
-        <span className="control-room__click-cue-corner control-room__click-cue-corner--bl" />
-        <span className="control-room__click-cue-corner control-room__click-cue-corner--br" />
-        <span className="control-room__click-cue-scan" />
-        <span className="control-room__click-cue-label">CLICK</span>
       </div>
     </section>
   )
