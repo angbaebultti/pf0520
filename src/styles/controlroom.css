@@ -301,6 +301,9 @@
 .control-room__project {
   --project-cursor-x: 50%;
   --project-cursor-y: 50%;
+  --project-panel-bg: rgba(12, 14, 12, 0.9);
+  --project-panel-wash: rgba(96, 106, 118, 0.16);
+  --project-panel-edge: rgba(222, 226, 216, 0.13);
   position: absolute;
   display: block;
   width: clamp(304px, 18.8vw, 384px);
@@ -322,6 +325,7 @@
 
 .control-room__project-shell {
   position: relative;
+  z-index: 1;
   display: grid;
   grid-template-rows:
     clamp(16px, 1.05vw, 20px)
@@ -339,15 +343,16 @@
   isolation: isolate;
   background:
     radial-gradient(circle at var(--project-cursor-x) var(--project-cursor-y), rgba(142, 255, 112, 0.07), transparent 28%),
-    linear-gradient(135deg, rgba(143, 210, 103, 0.06), transparent 24% 72%, rgba(143, 210, 103, 0.045)),
-    repeating-linear-gradient(to bottom, rgba(179, 255, 151, 0.026) 0 1px, transparent 1px 7px),
-    repeating-linear-gradient(to right, rgba(143, 210, 103, 0.026) 0 1px, transparent 1px 22px),
-    rgba(0, 3, 1, 0.68);
-  border: 1px solid rgba(126, 210, 91, 0.34);
+    linear-gradient(135deg, var(--project-panel-wash), transparent 30% 68%, rgba(143, 210, 103, 0.055)),
+    linear-gradient(180deg, rgba(245, 247, 240, 0.045), transparent 18% 78%, rgba(0, 0, 0, 0.16)),
+    repeating-linear-gradient(to bottom, rgba(179, 255, 151, 0.022) 0 1px, transparent 1px 7px),
+    repeating-linear-gradient(to right, rgba(222, 226, 216, 0.026) 0 1px, transparent 1px 22px),
+    var(--project-panel-bg);
+  border: 1px solid var(--project-panel-edge);
   box-shadow:
-    inset 0 0 0 1px rgba(222, 255, 214, 0.035),
+    inset 0 0 0 1px rgba(245, 247, 240, 0.045),
     inset 0 0 34px rgba(8, 255, 47, 0.035),
-    0 20px 54px rgba(0, 0, 0, 0.48);
+    0 20px 54px rgba(0, 0, 0, 0.58);
   transition:
     border-color 0.38s ease,
     box-shadow 0.42s ease,
@@ -369,10 +374,10 @@
 .control-room__project-shell::before {
   z-index: -1;
   background:
-    linear-gradient(90deg, transparent, rgba(205, 255, 184, 0.045), transparent),
-    radial-gradient(circle at 16% 18%, rgba(143, 210, 103, 0.06), transparent 20%),
-    radial-gradient(circle at 82% 76%, rgba(143, 210, 103, 0.05), transparent 22%);
-  opacity: 0.58;
+    linear-gradient(90deg, transparent, rgba(245, 247, 240, 0.055), transparent),
+    radial-gradient(circle at 16% 18%, var(--project-panel-wash), transparent 22%),
+    radial-gradient(circle at 82% 76%, rgba(143, 210, 103, 0.055), transparent 24%);
+  opacity: 0.72;
 }
 
 .control-room__project-shell::after {
@@ -448,6 +453,7 @@
   grid-template-rows: repeat(4, 1fr);
   gap: 0;
   padding: 0;
+  background: rgba(0, 0, 0, 0.16);
   border-top: 1px solid rgba(143, 210, 103, 0.24);
   border-bottom: 1px solid rgba(143, 210, 103, 0.24);
 }
@@ -489,9 +495,9 @@
   height: 100%;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 50% 50%, rgba(143, 210, 103, 0.06), transparent 62%),
-    rgba(3, 7, 4, 0.58);
-  border: 1px solid rgba(143, 210, 103, 0.22);
+    radial-gradient(ellipse at 50% 50%, rgba(245, 247, 240, 0.055), transparent 62%),
+    rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(222, 226, 216, 0.16);
   contain: paint;
   transition:
     border-color 0.24s ease,
@@ -509,14 +515,14 @@
       transparent 6px),
     linear-gradient(90deg, rgba(8, 255, 47, 0.04), transparent 32% 72%, rgba(8, 255, 47, 0.03));
   mix-blend-mode: screen;
-  opacity: 0.38;
+  opacity: 0;
 }
 
 .control-room__project-preview::after {
   z-index: 2;
   background:
     linear-gradient(90deg, transparent 0 74%, rgba(0, 0, 0, 0.22));
-  opacity: 0.72;
+  opacity: 0;
 }
 
 .control-room__project-preview img {
@@ -527,8 +533,8 @@
   height: 100%;
   object-fit: cover;
   object-position: center center;
-  filter: contrast(1.06) brightness(0.88) saturate(1.02);
-  opacity: 0.9;
+  filter: none;
+  opacity: 1;
   transform: translateZ(0);
   backface-visibility: hidden;
 }
@@ -547,7 +553,7 @@
 }
 
 .control-room__project--app .control-room__project-preview::before {
-  opacity: 0.06;
+  opacity: 0;
 }
 
 .control-room__project--app .control-room__project-preview::after {
@@ -559,26 +565,38 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  filter: contrast(1.18) brightness(1.04) saturate(1.08);
+  filter: none;
   opacity: 1;
 }
 
 .control-room__project--identity {
+  --project-panel-bg: rgba(15, 15, 12, 0.92);
+  --project-panel-wash: rgba(142, 119, 82, 0.18);
+  --project-panel-edge: rgba(190, 170, 126, 0.24);
   top: clamp(82px, 10vh, 124px);
   left: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--mmca {
+  --project-panel-bg: rgba(12, 13, 16, 0.92);
+  --project-panel-wash: rgba(118, 125, 142, 0.2);
+  --project-panel-edge: rgba(185, 191, 204, 0.22);
   top: calc(clamp(82px, 10vh, 124px) + clamp(372px, 23.5vw, 440px));
   left: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--fandom {
+  --project-panel-bg: rgba(13, 12, 17, 0.92);
+  --project-panel-wash: rgba(132, 118, 165, 0.2);
+  --project-panel-edge: rgba(191, 178, 222, 0.22);
   top: clamp(82px, 10vh, 124px);
   right: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--app {
+  --project-panel-bg: rgba(10, 14, 16, 0.92);
+  --project-panel-wash: rgba(88, 136, 150, 0.18);
+  --project-panel-edge: rgba(158, 204, 214, 0.22);
   top: calc(clamp(82px, 10vh, 124px) + clamp(372px, 23.5vw, 440px));
   right: clamp(44px, 5.2vw, 126px);
 }
@@ -607,7 +625,7 @@
 
 .control-room__project:hover .control-room__project-preview img,
 .control-room__project:focus-visible .control-room__project-preview img {
-  filter: contrast(1.1) brightness(0.96) saturate(1.06);
+  filter: none;
   opacity: 1;
   animation: project-hologram-flicker 1.4s steps(2, end);
 }
@@ -665,6 +683,7 @@
 
 .control-room__project-terminal {
   position: absolute;
+  z-index: 12;
   top: calc(clamp(60px, 4.35vw, 91px) + 28px);
   left: calc(100% + 14px);
   display: grid;
@@ -709,6 +728,7 @@
 
 .control-room__project:hover .control-room__project-terminal,
 .control-room__project:focus-visible .control-room__project-terminal {
+  z-index: 24;
   border-width: 1px;
   border-color: rgba(126, 171, 83, 0.42);
   opacity: 1;
@@ -746,8 +766,10 @@
 
 .hud-scan-button {
   --hud-accent: #08ff2f;
-  --hud-accent-soft: rgba(8, 255, 47, 0.34);
-  --hud-text: rgba(222, 255, 214, 0.92);
+  --hud-accent-soft: rgba(8, 255, 47, 0.18);
+  --hud-text: rgba(246, 255, 240, 0.96);
+  --hud-plate: rgba(0, 8, 3, 0.94);
+  --hud-edge: rgba(237, 255, 226, 0.62);
   position: relative;
   display: block;
   width: max-content;
@@ -764,8 +786,8 @@
   text-transform: uppercase;
   isolation: isolate;
   filter:
-    drop-shadow(0 7px 12px rgba(0, 0, 0, 0.62))
-    drop-shadow(0 0 8px rgba(8, 255, 47, 0.28));
+    drop-shadow(0 9px 16px rgba(0, 0, 0, 0.78))
+    drop-shadow(0 0 5px rgba(237, 255, 226, 0.16));
   transform: translateZ(0);
   transition:
     filter 0.2s ease,
@@ -783,13 +805,16 @@
 
 .hud-scan-button::before {
   background:
-    linear-gradient(90deg, var(--hud-accent-soft), transparent 18% 82%, var(--hud-accent-soft)),
-    linear-gradient(180deg, rgba(8, 255, 47, 0.2), transparent 40% 64%, rgba(8, 255, 47, 0.12));
-  border: 1px solid rgba(8, 255, 47, 0.72);
+    linear-gradient(90deg, rgba(237, 255, 226, 0.12), transparent 20% 78%, rgba(8, 255, 47, 0.16)),
+    linear-gradient(180deg, rgba(237, 255, 226, 0.1), transparent 42% 68%, rgba(8, 255, 47, 0.11)),
+    var(--hud-plate);
+  border: 1px solid var(--hud-edge);
   box-shadow:
-    inset 0 0 14px rgba(8, 255, 47, 0.12),
-    0 0 16px rgba(8, 255, 47, 0.18);
-  opacity: 0.92;
+    inset 0 0 0 1px rgba(8, 255, 47, 0.24),
+    inset 0 0 18px rgba(0, 0, 0, 0.44),
+    0 0 0 1px rgba(0, 0, 0, 0.62),
+    0 0 14px rgba(237, 255, 226, 0.08);
+  opacity: 1;
   transition:
     inset 0.22s ease,
     border-color 0.22s ease,
@@ -811,10 +836,10 @@
   z-index: 1;
   pointer-events: none;
   background:
-    repeating-linear-gradient(to right, rgba(8, 255, 47, 0.1) 0 1px, transparent 1px 14px),
-    repeating-linear-gradient(to bottom, rgba(8, 255, 47, 0.08) 0 1px, transparent 1px 6px),
-    rgba(0, 8, 3, 0.86);
-  opacity: 0.86;
+    repeating-linear-gradient(to right, rgba(237, 255, 226, 0.045) 0 1px, transparent 1px 14px),
+    repeating-linear-gradient(to bottom, rgba(237, 255, 226, 0.035) 0 1px, transparent 1px 6px),
+    rgba(0, 0, 0, 0.22);
+  opacity: 0.72;
 }
 
 .hud-scan-button__inner {
@@ -828,12 +853,12 @@
   padding: 0 13px;
   overflow: hidden;
   text-shadow:
-    0 0 6px rgba(8, 255, 47, 0.46),
-    1px 0 rgba(180, 255, 175, 0.16);
+    0 1px 2px rgba(0, 0, 0, 0.86),
+    0 0 8px rgba(237, 255, 226, 0.18);
 }
 
 .hud-scan-button__index {
-  color: rgba(180, 255, 166, 0.54);
+  color: rgba(180, 255, 166, 0.72);
   font-size: 0.82em;
   letter-spacing: 0;
 }
@@ -844,7 +869,7 @@
 }
 
 .hud-scan-button__label::before {
-  color: rgba(8, 255, 47, 0.78);
+  color: rgba(8, 255, 47, 0.92);
   content: '> ';
 }
 
@@ -861,14 +886,18 @@
 }
 
 .control-room__project-terminal .hud-scan-button {
-  --hud-accent-soft: rgba(8, 255, 47, 0.18);
-  --hud-text: rgba(214, 250, 205, 0.86);
+  --hud-accent-soft: rgba(8, 255, 47, 0.2);
+  --hud-text: rgba(214, 250, 205, 0.88);
+  --hud-plate: rgba(0, 8, 3, 0.96);
+  --hud-edge: rgba(8, 255, 47, 0.54);
+  position: relative;
+  z-index: 8;
   width: calc(100% - 18px);
   margin-right: auto;
   margin-left: auto;
   filter:
-    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.48))
-    drop-shadow(0 0 7px rgba(8, 255, 47, 0.16));
+    drop-shadow(0 5px 10px rgba(0, 0, 0, 0.56))
+    drop-shadow(0 0 7px rgba(8, 255, 47, 0.18));
 }
 
 .control-room__project-terminal .hud-scan-button__inner {
@@ -878,16 +907,27 @@
 .control-room__project-terminal .hud-scan-button::before {
   background:
     linear-gradient(90deg, rgba(8, 255, 47, 0.14), transparent 18% 82%, rgba(8, 255, 47, 0.12)),
-    linear-gradient(180deg, rgba(8, 255, 47, 0.12), transparent 44% 68%, rgba(8, 255, 47, 0.08));
-  border-color: rgba(8, 255, 47, 0.48);
+    linear-gradient(180deg, rgba(8, 255, 47, 0.12), transparent 44% 68%, rgba(8, 255, 47, 0.08)),
+    var(--hud-plate);
+  border-color: var(--hud-edge);
   box-shadow:
-    inset 0 0 10px rgba(8, 255, 47, 0.06),
-    0 0 9px rgba(8, 255, 47, 0.08);
-  opacity: 0.82;
+    inset 0 0 0 1px rgba(8, 255, 47, 0.2),
+    inset 0 0 12px rgba(8, 255, 47, 0.08),
+    0 0 0 1px rgba(0, 0, 0, 0.58),
+    0 0 10px rgba(8, 255, 47, 0.1);
+  opacity: 1;
 }
 
 .control-room__project-terminal .hud-scan-button__grid {
-  opacity: 0.48;
+  opacity: 0.52;
+}
+
+.control-room__project-terminal .hud-scan-button__index {
+  color: rgba(180, 255, 166, 0.6);
+}
+
+.control-room__project-terminal .hud-scan-button__label::before {
+  color: rgba(8, 255, 47, 0.9);
 }
 
 .hud-scan-button__scan {
@@ -954,6 +994,7 @@
 .control-room__connection-options button:focus-visible .hud-scan-button,
 .hud-scan-button--loading {
   filter:
+    drop-shadow(0 9px 16px rgba(0, 0, 0, 0.78))
     drop-shadow(0 0 8px rgba(8, 255, 47, 0.44))
     drop-shadow(0 0 20px rgba(8, 255, 47, 0.24));
   transform: scale(1.02);
@@ -962,8 +1003,9 @@
 .control-room__project:hover .control-room__project-terminal .hud-scan-button,
 .control-room__project:focus-visible .control-room__project-terminal .hud-scan-button {
   filter:
-    drop-shadow(0 5px 12px rgba(0, 0, 0, 0.5))
-    drop-shadow(0 0 10px rgba(8, 255, 47, 0.22));
+    drop-shadow(0 7px 14px rgba(0, 0, 0, 0.64))
+    drop-shadow(0 0 12px rgba(8, 255, 47, 0.5))
+    drop-shadow(0 0 28px rgba(8, 255, 47, 0.28));
 }
 
 .control-room__project:hover .hud-scan-button::before,
@@ -974,9 +1016,11 @@
 .control-room__connection-options button:focus-visible .hud-scan-button::before,
 .hud-scan-button--loading::before {
   inset: 2px;
-  border-color: rgba(168, 255, 142, 0.9);
+  border-color: rgba(246, 255, 240, 0.94);
   box-shadow:
+    inset 0 0 0 1px rgba(8, 255, 47, 0.38),
     inset 0 0 18px rgba(8, 255, 47, 0.18),
+    0 0 0 1px rgba(0, 0, 0, 0.68),
     0 0 10px rgba(8, 255, 47, 0.28),
     0 0 28px rgba(8, 255, 47, 0.2);
   opacity: 1;
@@ -984,11 +1028,26 @@
 
 .control-room__project:hover .control-room__project-terminal .hud-scan-button::before,
 .control-room__project:focus-visible .control-room__project-terminal .hud-scan-button::before {
-  border-color: rgba(8, 255, 47, 0.66);
+  background:
+    linear-gradient(90deg, rgba(8, 255, 47, 0.34), rgba(8, 255, 47, 0.1) 18% 82%, rgba(8, 255, 47, 0.32)),
+    linear-gradient(180deg, rgba(8, 255, 47, 0.26), transparent 44% 68%, rgba(8, 255, 47, 0.18)),
+    rgba(0, 18, 6, 0.96);
+  border-color: rgba(124, 255, 96, 0.96);
   box-shadow:
-    inset 0 0 12px rgba(8, 255, 47, 0.1),
-    0 0 10px rgba(8, 255, 47, 0.12),
-    0 0 18px rgba(8, 255, 47, 0.1);
+    inset 0 0 0 1px rgba(196, 255, 178, 0.32),
+    inset 0 0 22px rgba(8, 255, 47, 0.22),
+    0 0 0 1px rgba(0, 0, 0, 0.64),
+    0 0 14px rgba(8, 255, 47, 0.32),
+    0 0 34px rgba(8, 255, 47, 0.22);
+}
+
+.control-room__project:hover .control-room__project-terminal .hud-scan-button__grid,
+.control-room__project:focus-visible .control-room__project-terminal .hud-scan-button__grid {
+  opacity: 0.82;
+  background:
+    repeating-linear-gradient(to right, rgba(168, 255, 142, 0.13) 0 1px, transparent 1px 12px),
+    repeating-linear-gradient(to bottom, rgba(168, 255, 142, 0.1) 0 1px, transparent 1px 5px),
+    rgba(0, 22, 7, 0.88);
 }
 
 .control-room__project:hover .hud-scan-button::after,
@@ -1187,6 +1246,10 @@
   top: clamp(28px, 3.2vh, 54px);
 }
 
+.control-room__guide-toggle--active {
+  z-index: 42;
+}
+
 .control-room__contact-toggle {
   bottom: clamp(28px, 3.2vh, 54px);
   background:
@@ -1331,6 +1394,28 @@
     linear-gradient(to bottom right, transparent calc(50% - 0.5px), rgba(205, 255, 184, 0.76) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
     linear-gradient(to bottom left, transparent calc(50% - 0.5px), rgba(205, 255, 184, 0.76) calc(50% - 0.5px) calc(50% + 0.5px), transparent calc(50% + 0.5px));
   transform: translate(-50%, -50%);
+}
+
+.control-room__guide-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 35;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 44%, transparent 0 22%, rgba(0, 0, 0, 0.34) 58%, rgba(0, 0, 0, 0.72) 100%),
+    repeating-linear-gradient(to bottom, rgba(205, 255, 184, 0.018) 0 1px, transparent 1px 5px),
+    rgba(0, 0, 0, 0.56);
+  opacity: 0;
+  backdrop-filter: blur(0) brightness(1);
+  transition:
+    opacity 0.22s ease,
+    backdrop-filter 0.22s ease;
+}
+
+.control-room__guide-backdrop--open {
+  pointer-events: auto;
+  opacity: 1;
+  backdrop-filter: blur(3px) brightness(0.68);
 }
 
 .control-room__guide {
@@ -1530,8 +1615,12 @@
 .control-room__connection-modal {
   position: relative;
   z-index: 1;
-  width: min(430px, calc(100vw - 36px));
-  padding: clamp(24px, 2.2vw, 34px);
+  display: grid;
+  grid-template-columns: minmax(0, 1.55fr) minmax(300px, 0.85fr);
+  gap: clamp(18px, 2vw, 30px);
+  width: min(1080px, calc(100vw - 44px));
+  min-height: min(560px, calc(100dvh - 88px));
+  padding: clamp(18px, 1.8vw, 28px);
   overflow: hidden;
   overscroll-behavior: contain;
   color: rgba(222, 226, 216, 0.78);
@@ -1599,9 +1688,97 @@
 .control-room__connection-modal p,
 .control-room__connection-modal h2,
 .control-room__connection-modal dl,
+.control-room__connection-info,
+.control-room__connection-preview,
 .control-room__connection-options {
   position: relative;
   z-index: 1;
+}
+
+.control-room__connection-preview {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(18px, 1.6vw, 28px);
+  min-height: 420px;
+  overflow: hidden;
+  padding: clamp(18px, 1.6vw, 28px);
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0.22), transparent 34% 72%, rgba(0, 0, 0, 0.32)),
+    radial-gradient(circle at 50% 42%, rgba(143, 210, 103, 0.1), transparent 58%),
+    rgba(0, 0, 0, 0.42);
+  border: 1px solid rgba(143, 210, 103, 0.34);
+  box-shadow:
+    inset 0 0 0 1px rgba(222, 255, 214, 0.035),
+    inset 0 0 36px rgba(143, 195, 93, 0.04);
+}
+
+.control-room__connection-preview::before,
+.control-room__connection-preview::after {
+  position: absolute;
+  inset: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.control-room__connection-preview::before {
+  z-index: 2;
+  background:
+    repeating-linear-gradient(to bottom, rgba(205, 255, 184, 0.024) 0 1px, transparent 1px 5px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.28), transparent 18% 82%, rgba(0, 0, 0, 0.24));
+  mix-blend-mode: screen;
+  opacity: 0.42;
+}
+
+.control-room__connection-preview::after {
+  z-index: 3;
+  border: 1px solid rgba(205, 255, 184, 0.18);
+  box-shadow: inset 0 0 28px rgba(0, 0, 0, 0.38);
+}
+
+.control-room__connection-preview img {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  max-height: min(360px, calc(100% - 56px));
+  object-fit: cover;
+  object-position: center center;
+  filter: none;
+  opacity: 1;
+  transform: scale(1);
+  animation: control-preview-drift 8s ease-in-out infinite alternate;
+}
+
+.control-room__connection-preview--identity img,
+.control-room__connection-preview--app img {
+  object-fit: contain;
+}
+
+.control-room__connection-preview span {
+  position: relative;
+  z-index: 4;
+  display: block;
+  flex: 0 0 auto;
+  order: -1;
+  max-width: 82%;
+  text-shadow:
+    0 0 1px rgba(245, 247, 240, 0.46),
+    0 0 12px rgba(143, 210, 103, 0.22);
+}
+
+.control-room__connection-preview span {
+  margin-bottom: 10px;
+  color: rgba(180, 255, 151, 0.82);
+  font-size: clamp(11px, 0.78vw, 14px);
+  font-weight: 900;
+  letter-spacing: 0.035em;
+}
+
+.control-room__connection-info {
+  align-self: center;
+  min-width: 0;
 }
 
 .control-room__connection-modal p {
@@ -2020,6 +2197,22 @@
   filter: none;
 }
 
+.control-room__analysis-clearance {
+  color: rgba(205, 255, 184, 0.88);
+  text-shadow:
+    0 0 1px rgba(232, 255, 214, 0.42),
+    0 0 12px rgba(143, 210, 103, 0.28);
+  transition:
+    color 0.2s ease,
+    text-shadow 0.2s ease;
+}
+
+.control-room__profile-shell--level-2 .control-room__analysis-clearance,
+.control-room__profile-shell--level-3 .control-room__analysis-clearance {
+  color: #dfffd6;
+  animation: control-level-pulse 0.42s steps(3, end);
+}
+
 .control-room__accordion-trigger {
   display: flex;
   align-items: center;
@@ -2255,6 +2448,9 @@
     repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.045) 0 1px, transparent 1px 6px),
     radial-gradient(ellipse at 50% 45%, rgba(116, 184, 87, 0.12), transparent 48%),
     rgba(0, 5, 2, 0.72);
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
 }
 
 .control-room__analysis-portrait {
@@ -2332,6 +2528,38 @@
   overflow: hidden;
 }
 
+.control-room__analysis-portrait b,
+.control-room__analysis-core-action,
+.control-room__workflow-action {
+  position: absolute;
+  z-index: 4;
+  right: 18px;
+  bottom: 16px;
+  color: rgba(205, 255, 184, 0.78);
+  font-family: var(--terminal-font);
+  font-size: clamp(10px, 0.68vw, 12px);
+  font-weight: 900;
+  letter-spacing: 0.035em;
+  text-shadow:
+    0 0 1px rgba(232, 255, 214, 0.28),
+    0 0 10px rgba(143, 210, 103, 0.18);
+  opacity: 0;
+  transform: translateY(4px);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.control-room__analysis-portrait:hover b,
+.control-room__analysis-portrait:focus-visible b,
+.control-room__analysis-core-frame:hover .control-room__analysis-core-action,
+.control-room__analysis-core-frame:focus-visible .control-room__analysis-core-action,
+.control-room__workflow-map:hover .control-room__workflow-action,
+.control-room__workflow-map:focus-visible .control-room__workflow-action {
+  opacity: 1;
+  transform: translateY(0);
+}
+
 .control-room__analysis-core-frame img {
   width: 100%;
   height: 100%;
@@ -2344,6 +2572,21 @@
 
 .control-room__profile--open .control-room__analysis-core-frame img {
   animation: control-core-sync 0.95s steps(6, end) 3s forwards;
+}
+
+.control-room__profile-shell--level-2 .control-room__analysis-portrait img,
+.control-room__profile-shell--level-3 .control-room__analysis-portrait img {
+  filter: grayscale(0.22) sepia(0.18) hue-rotate(32deg) saturate(1.3) contrast(1.08) brightness(0.86) !important;
+  opacity: 1 !important;
+  animation:
+    control-level-image-jump 0.34s steps(3, end),
+    control-voice-glitch 0.34s steps(2, end) !important;
+}
+
+.control-room__profile-shell--level-3 .control-room__analysis-core-frame img {
+  filter: grayscale(0.28) sepia(0.2) hue-rotate(42deg) saturate(1.45) contrast(1.14) brightness(0.98) !important;
+  opacity: 1 !important;
+  animation: control-level-image-jump 0.34s steps(3, end) !important;
 }
 
 .control-room__analysis-core-frame::after {
@@ -2415,6 +2658,16 @@
 
 .control-room__profile--open .control-room__analysis-status b::before {
   animation: control-status-text 0.62s steps(2, end) 3.55s forwards;
+}
+
+.control-room__profile-shell--level-2 .control-room__analysis-status b::before {
+  color: #dfffd6 !important;
+  content: 'SYNCED' !important;
+}
+
+.control-room__profile-shell--level-3 .control-room__analysis-status b::before {
+  color: #f1ffe8 !important;
+  content: 'BOOSTED' !important;
 }
 
 .control-room__analysis-wave,
@@ -2891,9 +3144,18 @@
 .control-room__workflow-map {
   position: relative;
   z-index: 2;
+  display: block;
   height: 100%;
   min-height: 0;
+  width: 100%;
+  padding: 0;
   overflow: hidden;
+  color: inherit;
+  font: inherit;
+  text-align: inherit;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
 }
 
 .control-room__workflow-map::before {
@@ -3668,11 +3930,38 @@
   text-transform: uppercase;
   opacity: 0.16;
   filter: grayscale(0.7) brightness(0.6);
-  pointer-events: none;
+  pointer-events: auto;
   user-select: none;
   text-shadow:
     0 0 1px rgba(232, 255, 214, 0.14),
     0 0 6px rgba(143, 210, 103, 0.08);
+}
+
+.control-room__analysis-input button {
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  overflow: hidden;
+  color: inherit;
+  font: inherit;
+  font-weight: inherit;
+  letter-spacing: inherit;
+  text-align: left;
+  text-transform: inherit;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+}
+
+.control-room__analysis-input button:hover,
+.control-room__analysis-input button:focus-visible {
+  color: rgba(205, 255, 184, 0.92);
+  outline: 0;
+  text-shadow:
+    0 0 1px rgba(232, 255, 214, 0.32),
+    0 0 12px rgba(143, 210, 103, 0.24);
 }
 
 .control-room__analysis-input span {
@@ -3686,6 +3975,38 @@
 
   to {
     transform: translateX(100%);
+  }
+}
+
+@keyframes control-level-pulse {
+  0% {
+    filter: brightness(1);
+    transform: translateX(0);
+  }
+
+  38% {
+    filter: brightness(1.8);
+    transform: translateX(2px);
+  }
+
+  72% {
+    filter: brightness(0.8);
+    transform: translateX(-1px);
+  }
+}
+
+@keyframes control-level-image-jump {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  38% {
+    transform: translate(-4px, 1px);
+  }
+
+  68% {
+    transform: translate(3px, -1px);
   }
 }
 
@@ -4084,6 +4405,16 @@
     opacity: 1;
     clip-path: polygon(0 13px, 13px 0, calc(100% - 48px) 0, 100% 48px, 100% calc(100% - 13px), calc(100% - 13px) 100%, 48px 100%, 0 calc(100% - 48px));
     transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes control-preview-drift {
+  from {
+    transform: scale(1) translate3d(0, 0, 0);
+  }
+
+  to {
+    transform: scale(1.018) translate3d(0.4%, 0.2%, 0);
   }
 }
 
@@ -4606,6 +4937,7 @@
   }
 
   .control-room__guide,
+  .control-room__guide-backdrop,
   .control-room__guide-toggle,
   .control-room__contact,
   .control-room__contact-toggle {
@@ -4922,11 +5254,23 @@
   }
 
   .control-room__connection-modal {
+    grid-template-columns: 1fr;
+    gap: 16px;
     width: 100%;
+    min-height: 0;
     max-height: calc(100dvh - 24px);
     padding: 22px 16px 18px;
     overflow: auto;
     clip-path: polygon(0 10px, 10px 0, calc(100% - 34px) 0, 100% 34px, 100% calc(100% - 10px), calc(100% - 10px) 100%, 34px 100%, 0 calc(100% - 34px));
+  }
+
+  .control-room__connection-preview {
+    min-height: 220px;
+    padding: 16px;
+  }
+
+  .control-room__connection-preview b {
+    font-size: clamp(20px, 8vw, 34px);
   }
 
   .control-room__connection-close {

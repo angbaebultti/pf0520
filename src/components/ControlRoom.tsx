@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import gsap from 'gsap'
+import character06ProfileSrc from '@assets/character06_profile.jpg'
 import character07ProfileSrc from '@assets/character07_profile.jpg'
 import character06Src from '@assets/charcter06_profile_intro.png'
 import gunCharacterSrc from '@assets/gun_cha_main.png'
@@ -7,6 +8,9 @@ import catArchiveSrc from '@assets/cat_archive.jpg'
 import flowerArchiveSrc from '@assets/flower_archive.jpg'
 import juhee2ArchiveSrc from '@assets/juhee2_archive.jpg'
 import juheeArchiveSrc from '@assets/juhee_archive.jpg'
+import jibsaLifeSrc from '@assets/jibsa_life.png'
+import kukdeSrc from '@assets/kukde.png'
+import mmcaSrc from '@assets/mmca.png'
 import mmcaThumbSrc from '@assets/mmca_thumb.jpg'
 import nightviewArchiveSrc from '@assets/nightview_archive.jpg'
 import oceanArchiveSrc from '@assets/ocean_archive.jpg'
@@ -16,16 +20,17 @@ import kukdeThumbSrc from '@assets/kukde_thumb.jpg'
 import '@styles/controlroom.css'
 
 const projects = [
-  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', category: 'WEB / MOBILE UXUI', position: 'identity', thumbnail: kukdeThumbSrc },
-  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', category: 'K-BRAND CONTENTS', position: 'mmca', thumbnail: mmcaThumbSrc },
+  { id: '01', title: 'Cloning Mini Project 1 / Web/Mobile UX/UI', category: 'WEB / MOBILE UXUI', position: 'identity', thumbnail: kukdeThumbSrc, previewImage: kukdeSrc },
+  { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', category: 'K-BRAND CONTENTS', position: 'mmca', thumbnail: mmcaThumbSrc, previewImage: mmcaSrc },
   {
     id: '03',
     title: 'AI CHATBOT PLATFORM',
     category: 'AI CHATBOT SUPPORT',
     position: 'fandom',
     thumbnail: jibsaLifeThumbSrc,
+    previewImage: jibsaLifeSrc,
   },
-  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooCardSrc },
+  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooCardSrc, previewImage: bubblooCardSrc },
 ]
 
 const projectDetails = {
@@ -84,7 +89,7 @@ const signalArchive = [
   { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2ArchiveSrc },
 ]
 
-const profilePreloadAssets = [character07ProfileSrc, ...signalArchive.map((item) => item.image)]
+const profilePreloadAssets = [character06ProfileSrc, character07ProfileSrc, gunCharacterSrc, ...signalArchive.map((item) => item.image)]
 const modalFadeMs = 220
 const entryProfileRevealOpacity = 0.96
 type ProfileRevealMode = 'fast' | 'ready'
@@ -126,6 +131,7 @@ export default function ControlRoom() {
   const [isRoomInteractive, setIsRoomInteractive] = useState(false)
   const [openProfilePanel, setOpenProfilePanel] = useState<ProfilePanelId>('scan')
   const [profileRevealMode, setProfileRevealMode] = useState<ProfileRevealMode>('ready')
+  const [profileLevel, setProfileLevel] = useState(1)
   const hasResetScrollRef = useRef(false)
   const hasAutoOpenedProfileRef = useRef(false)
   const shouldOpenGuideAfterProfileRef = useRef(false)
@@ -403,8 +409,13 @@ export default function ControlRoom() {
     setIsProfileClosing(false)
     setProfileRevealMode(mode)
     setOpenProfilePanel('scan')
+    setProfileLevel(1)
     setIsProfileOpen(true)
   }
+
+  const upgradeProfileLevel = useCallback(() => {
+    setProfileLevel((level) => Math.min(level + 1, 3))
+  }, [])
 
   const closeProfile = useCallback(() => {
     if (!isProfileOpen) return
@@ -497,7 +508,10 @@ export default function ControlRoom() {
       <button
         className="control-room__accordion-trigger"
         type="button"
-        onClick={() => setOpenProfilePanel(panelId)}
+        onClick={() => {
+          setOpenProfilePanel(panelId)
+          upgradeProfileLevel()
+        }}
         aria-expanded={openProfilePanel === panelId}
         aria-controls={`profile-panel-${panelId}`}
         data-hud-click="true"
@@ -602,6 +616,11 @@ export default function ControlRoom() {
     return () => window.removeEventListener('pointerdown', handlePointerDown)
   }, [isContactOpen, isGuideOpen])
 
+  const profileVisualSrc = profileLevel >= 2 ? character06ProfileSrc : character07ProfileSrc
+  const profileCoreSrc = character06Src
+  const profileStatusLabel = profileLevel >= 3 ? 'BOOSTED' : profileLevel >= 2 ? 'SYNCED' : 'ACTIVE'
+  const profileCommandLabel = profileLevel >= 3 ? 'MAX LEVEL REACHED' : `RUN SYNC > LEVEL ${profileLevel + 1}`
+
   return (
     <section
       ref={roomRef}
@@ -701,6 +720,11 @@ export default function ControlRoom() {
           <span className="control-room__hud-button-label">ACCESS GUIDE</span>
           <span className="control-room__guide-reticle" aria-hidden="true" />
         </button>
+        <div
+          className={`control-room__guide-backdrop${isGuideOpen ? ' control-room__guide-backdrop--open' : ''}`}
+          aria-hidden="true"
+          onPointerDown={() => setIsGuideOpen(false)}
+        />
         <aside ref={guideRef} id="control-room-guide" className={`control-room__guide${isGuideOpen ? ' control-room__guide--open' : ''}`} aria-label="How to use" aria-hidden={!isGuideOpen}>
           <button className="control-room__guide-close" type="button" onClick={() => setIsGuideOpen(false)} aria-label="Close how to use" data-hud-click="true">
             ×
@@ -773,47 +797,53 @@ export default function ControlRoom() {
             <button className="control-room__connection-close" type="button" onClick={closeConnection} aria-label="Close connection" data-hud-click="true">
               ×
             </button>
-            <p>SELECT CONNECTION</p>
-            <h2>{selectedProjectDetails.fileName}</h2>
-            <dl>
-              <div>
-                <dt>STATUS</dt>
-                <dd className="control-room__connection-status">{selectedProjectDetails.status}</dd>
+            <div className={`control-room__connection-preview control-room__connection-preview--${selectedProject.position}`} aria-hidden="true">
+              <img src={selectedProject.previewImage} alt="" loading="eager" decoding="async" />
+              <span>LIVE PROJECT PREVIEW</span>
+            </div>
+            <div className="control-room__connection-info">
+              <p>SELECT CONNECTION</p>
+              <h2>{selectedProjectDetails.fileName}</h2>
+              <dl>
+                <div>
+                  <dt>STATUS</dt>
+                  <dd className="control-room__connection-status">{selectedProjectDetails.status}</dd>
+                </div>
+                <div>
+                  <dt>YEAR</dt>
+                  <dd>{selectedProjectDetails.year}</dd>
+                </div>
+                <div>
+                  <dt>TYPE</dt>
+                  <dd>{selectedProjectDetails.type}</dd>
+                </div>
+              </dl>
+              <div className="control-room__connection-options">
+                {'primaryUrl' in selectedProjectDetails ? (
+                  <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
+                    <HudScanButton
+                      label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
+                      index="01"
+                      variant="modal"
+                      isLoading={isAccessingPrimary}
+                    />
+                  </a>
+                ) : (
+                  <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
+                    <HudScanButton
+                      label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
+                      index="01"
+                      variant="modal"
+                      isLoading={isAccessingPrimary}
+                    />
+                  </button>
+                )}
+                {'secondaryAction' in selectedProjectDetails && 'secondaryUrl' in selectedProjectDetails && (
+                  <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer" data-hud-click="true">
+                    <HudScanButton label={`${selectedProjectDetails.secondaryAction} FILE`} index="02" variant="modal" />
+                  </a>
+                )}
               </div>
-              <div>
-                <dt>YEAR</dt>
-                <dd>{selectedProjectDetails.year}</dd>
-              </div>
-              <div>
-                <dt>TYPE</dt>
-                <dd>{selectedProjectDetails.type}</dd>
-              </div>
-            </dl>
-            <div className="control-room__connection-options">
-              {'primaryUrl' in selectedProjectDetails ? (
-                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
-                  <HudScanButton
-                    label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
-                    index="01"
-                    variant="modal"
-                    isLoading={isAccessingPrimary}
-                  />
-                </a>
-              ) : (
-                <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
-                  <HudScanButton
-                    label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
-                    index="01"
-                    variant="modal"
-                    isLoading={isAccessingPrimary}
-                  />
-                </button>
-              )}
-              {'secondaryAction' in selectedProjectDetails && 'secondaryUrl' in selectedProjectDetails && (
-                <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer" data-hud-click="true">
-                  <HudScanButton label={`${selectedProjectDetails.secondaryAction} FILE`} index="02" variant="modal" />
-                </a>
-              )}
             </div>
           </div>
         )}
@@ -827,7 +857,7 @@ export default function ControlRoom() {
         }}
       >
         {isProfileVisible && (
-        <div className="control-room__profile-shell" role="dialog" aria-modal="true" aria-label="User data">
+        <div className={`control-room__profile-shell control-room__profile-shell--level-${profileLevel}`} role="dialog" aria-modal="true" aria-label="User data">
           <div className="control-room__analysis">
             <header className="control-room__analysis-header">
               <div className="control-room__analysis-boot">
@@ -838,7 +868,7 @@ export default function ControlRoom() {
               <h2>IDENTITY ANALYSIS SYSTEM</h2>
               <div>
                 <p>USER ID : JUHEE</p>
-                <p>CLEARANCE : LEVEL 1</p>
+                <p className="control-room__analysis-clearance">CLEARANCE : LEVEL {profileLevel}</p>
               </div>
             </header>
 
@@ -847,10 +877,11 @@ export default function ControlRoom() {
             <section className={getProfilePanelClassName('visual', 'visual')}>
               {renderProfilePanelTitle('visual', 'ENTITY VISUAL')}
               <div id="profile-panel-visual" className="control-room__accordion-content">
-                <div className="control-room__analysis-portrait">
-                  <img src={character07ProfileSrc} alt="" loading="eager" decoding="async" />
-                  <span>SIGNAL SOURCE<br />LIVE FEED</span>
-                </div>
+                <button className="control-room__analysis-portrait" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
+                  <img src={profileVisualSrc} alt="" loading="eager" decoding="async" />
+                  <span>{profileLevel >= 2 ? 'VISUAL SOURCE' : 'SIGNAL SOURCE'}<br />{profileLevel >= 2 ? 'SYNC FEED' : 'LIVE FEED'}</span>
+                  <b aria-hidden="true">&gt; SCAN VISUAL</b>
+                </button>
               </div>
             </section>
 
@@ -870,13 +901,14 @@ export default function ControlRoom() {
             <main className={getProfilePanelClassName('core', 'core')}>
               {renderProfilePanelTitle('core', 'IDENTITY CORE')}
               <div id="profile-panel-core" className="control-room__accordion-content">
-                <div className="control-room__analysis-core-frame">
-                  <img src={character06Src} alt="" loading="eager" decoding="async" />
+                <button className="control-room__analysis-core-frame" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
+                  <img src={profileCoreSrc} alt="" loading="eager" decoding="async" />
                   <div className="control-room__analysis-status">
                     <span>STATUS</span>
-                    <b>ACTIVE</b>
+                    <b>{profileStatusLabel}</b>
                   </div>
-                </div>
+                  <span className="control-room__analysis-core-action" aria-hidden="true">&gt; BOOST CORE</span>
+                </button>
               </div>
             </main>
 
@@ -914,7 +946,7 @@ export default function ControlRoom() {
                 {renderProfilePanelTitle('scan', 'WORKFLOW SIGNAL', 'SIGNAL MAP')}
               </div>
               <div id="profile-panel-scan" className="control-room__accordion-content">
-              <div className="control-room__workflow-map" aria-hidden="true">
+              <button className="control-room__workflow-map" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
                 <svg viewBox="0 0 320 300" focusable="false">
                   <g className="control-room__workflow-particles">
                     <circle cx="160" cy="42" r="1.6" />
@@ -953,7 +985,8 @@ export default function ControlRoom() {
                     <circle cx="76.7" cy="101.7" r="7" />
                   </g>
                 </svg>
-              </div>
+                <span className="control-room__workflow-action" aria-hidden="true">&gt; ANALYZE SIGNAL</span>
+              </button>
               <div className="control-room__workflow-list">
                 {workflowSignals.map((signal) => (
                   <div className="control-room__workflow-item" key={signal.label}>
@@ -1015,7 +1048,7 @@ export default function ControlRoom() {
             </nav>
 
             <footer className="control-room__analysis-input">
-              <span>&gt; INPUT COMMAND [ READ ONLY ]</span>
+              <button type="button" onClick={upgradeProfileLevel} data-hud-click="true">&gt; INPUT COMMAND [ {profileCommandLabel} ]</button>
             </footer>
           </div>
 
