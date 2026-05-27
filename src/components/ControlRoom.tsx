@@ -19,7 +19,7 @@ const projects = [
   { id: '02', title: 'K-Brand Contents Web/Mobile UX/UI Project', category: 'K-BRAND CONTENTS', position: 'mmca', thumbnail: mmcaThumbSrc },
   {
     id: '03',
-    title: 'AI Chatbot Support Fandom Community Mobile UX/UI Project',
+    title: 'AI CHATBOT PLATFORM',
     category: 'AI CHATBOT SUPPORT',
     position: 'fandom',
     thumbnail: jibsaLifeThumbSrc,
@@ -153,7 +153,7 @@ export default function ControlRoom() {
 
     const normalizedX = imageX / character.naturalWidth
     const normalizedY = imageY / character.naturalHeight
-    const isNearCharacter = normalizedX >= 0.3 && normalizedX <= 0.72 && normalizedY >= 0.14 && normalizedY <= 0.93
+    const isNearCharacter = normalizedX >= 0.18 && normalizedX <= 0.92 && normalizedY >= 0.05 && normalizedY <= 0.96
 
     if (!isNearCharacter) return false
 
@@ -180,13 +180,20 @@ export default function ControlRoom() {
     }
 
     return (
-      inEllipse(0.51, 0.25, 0.075, 0.105) ||
-      (normalizedX >= 0.42 && normalizedX <= 0.59 && normalizedY >= 0.31 && normalizedY <= 0.61) ||
-      (normalizedX >= 0.39 && normalizedX <= 0.61 && normalizedY >= 0.54 && normalizedY <= 0.68) ||
-      (normalizedX >= 0.43 && normalizedX <= 0.51 && normalizedY >= 0.64 && normalizedY <= 0.91) ||
-      (normalizedX >= 0.53 && normalizedX <= 0.61 && normalizedY >= 0.64 && normalizedY <= 0.91) ||
-      nearLine(0.39, 0.38, 0.72, 0.76, 0.025) ||
-      nearLine(0.44, 0.43, 0.61, 0.57, 0.04)
+      inEllipse(0.51, 0.2, 0.15, 0.15) ||
+      inEllipse(0.51, 0.25, 0.12, 0.11) ||
+      (normalizedX >= 0.43 && normalizedX <= 0.58 && normalizedY >= 0.29 && normalizedY <= 0.39) ||
+      (normalizedX >= 0.35 && normalizedX <= 0.67 && normalizedY >= 0.35 && normalizedY <= 0.64) ||
+      (normalizedX >= 0.3 && normalizedX <= 0.7 && normalizedY >= 0.56 && normalizedY <= 0.72) ||
+      (normalizedX >= 0.36 && normalizedX <= 0.48 && normalizedY >= 0.63 && normalizedY <= 0.94) ||
+      (normalizedX >= 0.54 && normalizedX <= 0.67 && normalizedY >= 0.63 && normalizedY <= 0.94) ||
+      (normalizedX >= 0.22 && normalizedX <= 0.42 && normalizedY >= 0.36 && normalizedY <= 0.56) ||
+      (normalizedX >= 0.62 && normalizedX <= 0.78 && normalizedY >= 0.36 && normalizedY <= 0.68) ||
+      (normalizedX >= 0.2 && normalizedX <= 0.44 && normalizedY >= 0.27 && normalizedY <= 0.43) ||
+      inEllipse(0.34, 0.36, 0.12, 0.08) ||
+      nearLine(0.2, 0.34, 0.72, 0.69, 0.078) ||
+      nearLine(0.43, 0.43, 0.91, 0.83, 0.045) ||
+      nearLine(0.5, 0.36, 0.83, 0.59, 0.05)
     )
   }, [])
 
@@ -775,14 +782,16 @@ export default function ControlRoom() {
                     <line className="control-room__workflow-radar-axis" x1="60" y1="92" x2="260" y2="208" />
                     <line className="control-room__workflow-radar-axis" x1="260" y1="92" x2="60" y2="208" />
                   </g>
-                  <polygon className="control-room__workflow-shape" points="79.6,103.6 255,94.9 258.6,150 255,205.1 89.6,190.6 55.6,150" />
+                  <circle className="control-room__workflow-core" cx="160" cy="150" r="20" />
+                  <circle className="control-room__workflow-core-dot" cx="160" cy="150" r="5" />
+                  <polygon className="control-room__workflow-shape" points="160,63 251.7,96.8 226.7,188.7 160,256.3 118.3,174.2 76.7,101.7" />
                   <g className="control-room__workflow-nodes">
-                    <circle cx="79.6" cy="103.6" r="7" />
-                    <circle cx="255" cy="94.9" r="7" />
-                    <circle cx="258.6" cy="150" r="7" />
-                    <circle cx="255" cy="205.1" r="7" />
-                    <circle cx="89.6" cy="190.6" r="7" />
-                    <circle cx="55.6" cy="150" r="7" />
+                    <circle cx="160" cy="63" r="7" />
+                    <circle cx="251.7" cy="96.8" r="7" />
+                    <circle cx="226.7" cy="188.7" r="7" />
+                    <circle cx="160" cy="256.3" r="7" />
+                    <circle cx="118.3" cy="174.2" r="7" />
+                    <circle cx="76.7" cy="101.7" r="7" />
                   </g>
                 </svg>
               </div>

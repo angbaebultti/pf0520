@@ -238,7 +238,7 @@
   --project-cursor-y: 50%;
   position: absolute;
   display: block;
-  width: clamp(292px, 18.2vw, 380px);
+  width: clamp(304px, 18.8vw, 384px);
   padding: 0;
   color: rgba(215, 242, 204, 0.88);
   font-family: 'Courier New', Consolas, monospace;
@@ -258,10 +258,17 @@
 .control-room__project-shell {
   position: relative;
   display: grid;
-  grid-template-rows: auto auto auto auto 1fr auto;
-  gap: clamp(8px, 0.58vw, 12px);
-  min-height: clamp(282px, 18vw, 340px);
-  padding: clamp(16px, 1.15vw, 22px);
+  grid-template-rows:
+    clamp(16px, 1.05vw, 20px)
+    clamp(46px, 3.25vw, 62px)
+    clamp(14px, 0.9vw, 18px)
+    clamp(92px, 5.7vw, 116px)
+    clamp(82px, 5vw, 98px)
+    clamp(32px, 2vw, 38px);
+  gap: clamp(8px, 0.62vw, 12px);
+  height: clamp(344px, 20.8vw, 396px);
+  min-height: 0;
+  padding: clamp(18px, 1.22vw, 24px);
   overflow: hidden;
   clip-path: polygon(0 11px, 11px 0, calc(100% - 44px) 0, 100% 44px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 44px 100%, 0 calc(100% - 44px));
   isolation: isolate;
@@ -321,6 +328,7 @@
 
 .control-room__project-header {
   min-width: 0;
+  height: 100%;
   color: rgba(168, 225, 122, 0.72);
   font-size: clamp(10px, 0.68vw, 12px);
   font-weight: 900;
@@ -342,17 +350,27 @@
 }
 
 .control-room__project-title {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
   color: rgba(245, 247, 240, 0.9);
   font-family: Arial Black, Impact, system-ui, sans-serif;
-  font-size: clamp(16px, 1.05vw, 23px);
+  font-size: clamp(16px, 0.98vw, 21px);
   font-weight: 950;
-  line-height: 1;
+  line-height: 1.04;
   letter-spacing: 0;
   text-transform: uppercase;
   text-wrap: balance;
 }
 
 .control-room__project-category {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  height: 100%;
+  overflow: hidden;
   color: rgba(143, 210, 103, 0.76);
   font-size: clamp(10px, 0.72vw, 13px);
   font-weight: 900;
@@ -362,6 +380,7 @@
 .control-room__project-data {
   display: grid;
   grid-template-columns: 1fr;
+  grid-template-rows: repeat(4, 1fr);
   gap: 0;
   padding: 0;
   border-top: 1px solid rgba(143, 210, 103, 0.24);
@@ -371,7 +390,7 @@
 .control-room__project-data span {
   min-width: 0;
   gap: 8px;
-  min-height: 20px;
+  min-height: 0;
   padding: 0 2px;
   font-size: clamp(10px, 0.68vw, 12px);
   line-height: 1;
@@ -402,7 +421,7 @@
 .control-room__project-preview {
   position: relative;
   display: block;
-  height: clamp(78px, 5.8vw, 118px);
+  height: 100%;
   overflow: hidden;
   background:
     radial-gradient(ellipse at 50% 50%, rgba(143, 210, 103, 0.06), transparent 62%),
@@ -451,23 +470,23 @@
 }
 
 .control-room__project--identity {
-  top: 12.5%;
-  left: clamp(42px, 5vw, 126px);
+  top: clamp(82px, 10vh, 124px);
+  left: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--mmca {
-  top: 45.5%;
-  left: clamp(42px, 5vw, 126px);
+  top: calc(clamp(82px, 10vh, 124px) + clamp(372px, 23.5vw, 440px));
+  left: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--fandom {
-  top: 12.5%;
-  right: clamp(42px, 5vw, 126px);
+  top: clamp(82px, 10vh, 124px);
+  right: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--app {
-  top: 45.5%;
-  right: clamp(42px, 5vw, 126px);
+  top: calc(clamp(82px, 10vh, 124px) + clamp(372px, 23.5vw, 440px));
+  right: clamp(44px, 5.2vw, 126px);
 }
 
 .control-room__project--app .control-room__project-preview img {
@@ -526,7 +545,8 @@
 }
 
 .control-room__project-access {
-  min-height: 30px;
+  height: 100%;
+  min-height: 0;
   padding-top: 2px;
   color: rgba(205, 255, 184, 0.9);
   font-size: clamp(11px, 0.74vw, 13px);
@@ -1028,15 +1048,19 @@
 
 .control-room__guide-toggle,
 .control-room__contact-toggle {
+  --hud-nav-edge: clamp(28px, 3vw, 54px);
+  --hud-nav-width: clamp(220px, 14vw, 268px);
+  --hud-nav-height: clamp(52px, 3.5vw, 64px);
   position: absolute;
-  right: clamp(28px, 3vw, 54px);
+  right: var(--hud-nav-edge);
   z-index: 12;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 18px;
-  min-width: clamp(176px, 12.2vw, 248px);
-  height: clamp(50px, 3.5vw, 62px);
+  width: var(--hud-nav-width);
+  min-width: 0;
+  height: var(--hud-nav-height);
   padding: 0 clamp(16px, 1.2vw, 22px);
   overflow: hidden;
   color: rgba(205, 255, 184, 0.92);
@@ -1074,14 +1098,7 @@
 }
 
 .control-room__contact-toggle {
-  right: clamp(68px, 7vw, 140px);
-  bottom: clamp(26px, 4vh, 54px);
-  min-width: clamp(210px, 15.5vw, 300px);
-  height: clamp(52px, 3.8vw, 68px);
-  padding: 0 clamp(18px, 1.5vw, 26px);
-  gap: clamp(16px, 1.35vw, 24px);
-  font-size: clamp(14px, 1.05vw, 18px);
-  clip-path: polygon(0 11px, 11px 0, calc(100% - 14px) 0, 100% 14px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 14px 100%, 0 calc(100% - 14px));
+  bottom: clamp(28px, 3.2vh, 54px);
   background:
     linear-gradient(90deg, rgba(143, 210, 103, 0.06), transparent 28% 76%, rgba(143, 210, 103, 0.08)),
     linear-gradient(180deg, rgba(180, 255, 151, 0.08), transparent 24% 70%, rgba(143, 210, 103, 0.05)),
@@ -1187,8 +1204,8 @@
   position: relative;
   z-index: 2;
   flex: 0 0 auto;
-  width: clamp(34px, 2.6vw, 46px);
-  height: clamp(34px, 2.6vw, 46px);
+  width: 34px;
+  height: 34px;
   border: 1px solid rgba(180, 255, 151, 0.58);
   border-radius: 50%;
   box-shadow:
@@ -2027,19 +2044,22 @@
 }
 
 .control-room__analysis-panel--scan {
+  container-type: inline-size;
   grid-column: 3;
   grid-row: 3;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   align-items: stretch;
-  gap: clamp(10px, 0.8vw, 14px);
+  gap: clamp(8px, 0.65vw, 12px);
   min-height: 0;
-  padding: clamp(18px, 1.35vw, 26px) clamp(20px, 1.65vw, 32px);
+  padding: clamp(18px, 1.35vw, 26px) clamp(16px, 1.1vw, 22px) clamp(18px, 1.35vw, 26px);
   overflow: hidden;
   background:
     radial-gradient(circle at 50% 52%, rgba(119, 255, 74, 0.09), transparent 25%),
-    repeating-linear-gradient(to right, rgba(133, 205, 91, 0.038) 0 1px, transparent 1px 11px),
-    repeating-linear-gradient(to bottom, rgba(133, 205, 91, 0.035) 0 1px, transparent 1px 11px),
+    repeating-linear-gradient(to right, rgba(133, 205, 91, 0.03) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(to bottom, rgba(133, 205, 91, 0.028) 0 1px, transparent 1px 8px),
+    repeating-linear-gradient(to right, rgba(133, 205, 91, 0.07) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(to bottom, rgba(133, 205, 91, 0.06) 0 1px, transparent 1px 32px),
     rgba(0, 5, 2, 0.94);
   border-color: rgba(89, 142, 62, 0.58);
   box-shadow:
@@ -2055,22 +2075,11 @@
   content: '';
   pointer-events: none;
   background:
-    linear-gradient(rgba(142, 239, 98, 0.9), rgba(142, 239, 98, 0.9)) right top / 18px 3px no-repeat,
-    linear-gradient(rgba(142, 239, 98, 0.9), rgba(142, 239, 98, 0.9)) right top / 3px 18px no-repeat,
+    linear-gradient(rgba(142, 239, 98, 0.9), rgba(142, 239, 98, 0.9)) left top / 54px 4px no-repeat,
+    linear-gradient(rgba(142, 239, 98, 0.9), rgba(142, 239, 98, 0.9)) right top / 54px 8px no-repeat,
+    linear-gradient(rgba(142, 239, 98, 0.9), rgba(142, 239, 98, 0.9)) right top / 8px 58px no-repeat,
     repeating-linear-gradient(to bottom, rgba(209, 255, 184, 0.035) 0 1px, transparent 1px 5px);
   opacity: 0.34;
-}
-
-.control-room__analysis-panel--scan::after {
-  position: absolute;
-  z-index: 1;
-  right: clamp(16px, 1.35vw, 24px);
-  bottom: clamp(10px, 0.8vw, 16px);
-  left: clamp(16px, 1.35vw, 24px);
-  height: 2px;
-  content: '';
-  background: rgba(142, 239, 98, 0.42);
-  box-shadow: 0 0 12px rgba(142, 239, 98, 0.24);
 }
 
 .control-room__analysis-panel--archive {
@@ -2307,14 +2316,13 @@
 
 .control-room__analysis-panel--activity {
   height: 100%;
-  color: rgba(143, 210, 103, 0.82);
-  border-color: rgba(116, 184, 87, 0.48);
-  filter: none;
-  opacity: 1;
+  color: rgba(143, 210, 103, 0.42);
+  border-color: rgba(116, 184, 87, 0.24);
+  filter: grayscale(0.85) brightness(0.62);
+  opacity: 0.18;
 }
 
-.control-room__profile--open .control-room__analysis-wave,
-.control-room__profile--open .control-room__analysis-panel--activity {
+.control-room__profile--open .control-room__analysis-wave {
   animation: control-signal-rise 0.85s steps(7, end) 3.05s forwards;
 }
 
@@ -2405,19 +2413,25 @@
 
 .control-room__analysis-panel--activity .control-room__analysis-wave-line {
   stroke: #8fd267;
-  opacity: 0.78;
+  opacity: 0;
   filter: drop-shadow(0 0 6px rgba(143, 210, 103, 0.42));
 }
 
 .control-room__analysis-panel--activity .control-room__analysis-wave-line--dim {
   stroke: rgba(143, 210, 103, 0.68);
-  opacity: 0.5;
+  opacity: 0;
 }
 
 .control-room__profile--open .control-room__analysis-wave-line {
   animation:
     control-wave-pulse 2.2s ease-in-out infinite,
     control-wave-activate 0.85s steps(6, end) 3.05s forwards;
+}
+
+.control-room__profile--open .control-room__analysis-panel--activity .control-room__analysis-wave-line {
+  animation:
+    control-wave-pulse 2.2s ease-in-out infinite,
+    control-wave-activate 0.85s steps(6, end) 4.35s forwards;
 }
 
 .control-room__analysis-wave b {
@@ -2731,12 +2745,14 @@
   justify-content: space-between;
   gap: 14px;
   min-width: 0;
+  padding: 0;
 }
 
 .control-room__workflow-header h3 {
   color: var(--phosphor-green);
   font-size: clamp(15px, 1vw, 18px);
   letter-spacing: 0.035em;
+  line-height: 1;
   text-shadow:
     0 0 1px rgba(232, 255, 214, 0.28),
     0 0 5px rgba(143, 210, 103, 0.16);
@@ -2777,14 +2793,14 @@
 
 .control-room__workflow-map svg {
   position: absolute;
-  top: 51%;
+  top: 50%;
   left: 50%;
   z-index: 1;
-  width: min(54%, 340px);
-  height: min(90%, 340px);
+  width: min(56cqw, 400px);
+  height: min(56cqw, 400px);
   overflow: visible;
   filter: blur(0.18px) drop-shadow(0 0 5px rgba(143, 210, 103, 0.12));
-  transform: translate(-50%, -50%) scale(1.04);
+  transform: translate(-50%, -50%);
 }
 
 .control-room__workflow-radar polygon,
@@ -2824,14 +2840,26 @@
 }
 
 .control-room__workflow-shape {
-  fill: none;
+  fill: rgba(99, 190, 79, 0.23);
   stroke: rgba(172, 255, 117, 0.8);
-  stroke-width: 1.55;
+  stroke-width: 2;
   stroke-linejoin: round;
   filter:
     drop-shadow(0 0 3px rgba(160, 255, 100, 0.34))
     drop-shadow(0 0 9px rgba(143, 210, 103, 0.13));
   vector-effect: non-scaling-stroke;
+}
+
+.control-room__workflow-core {
+  fill: none;
+  stroke: rgba(118, 212, 89, 0.4);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.control-room__workflow-core-dot {
+  fill: rgba(151, 232, 101, 0.55);
+  filter: drop-shadow(0 0 8px rgba(151, 232, 101, 0.32));
 }
 
 .control-room__workflow-nodes circle {
@@ -2850,26 +2878,54 @@
 
 .control-room__workflow-list {
   position: absolute;
-  inset: clamp(54px, 4.15vw, 74px) clamp(16px, 1.25vw, 24px) clamp(38px, 2.8vw, 54px);
+  inset: clamp(50px, 8cqw, 70px) clamp(28px, 5cqw, 44px) clamp(18px, 4cqw, 32px);
   z-index: 2;
-  display: grid;
-  grid-template-columns: minmax(92px, 0.58fr) minmax(112px, 0.62fr);
-  grid-template-rows: repeat(3, 1fr);
-  grid-auto-flow: column;
-  justify-content: space-between;
-  column-gap: min(43%, 300px);
-  row-gap: clamp(8px, 1vw, 16px);
   pointer-events: none;
 }
 
 .control-room__workflow-item {
+  position: absolute;
   display: grid;
-  grid-template-columns: 13px 1fr;
+  grid-template-columns: 12px minmax(0, max-content);
   grid-template-rows: auto auto;
-  gap: 7px 8px;
+  gap: 6px 8px;
   align-content: center;
   color: rgba(226, 242, 216, 0.88);
   font-family: var(--terminal-font);
+}
+
+.control-room__workflow-item:nth-child(1) {
+  top: clamp(18px, 4cqw, 34px);
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.control-room__workflow-item:nth-child(2) {
+  top: 30%;
+  left: 0;
+  transform: translateX(12px);
+}
+
+.control-room__workflow-item:nth-child(3) {
+  top: 65%;
+  left: 0;
+}
+
+.control-room__workflow-item:nth-child(4) {
+  top: 30%;
+  right: 0;
+}
+
+.control-room__workflow-item:nth-child(5) {
+  top: 65%;
+  right: 0;
+  transform: translateX(10px);
+}
+
+.control-room__workflow-item:nth-child(6) {
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .control-room__workflow-item span {
@@ -2898,10 +2954,11 @@
 
 .control-room__workflow-item em {
   color: rgba(151, 211, 111, 0.72);
+  max-width: 12ch;
   font-size: clamp(7px, 0.54vw, 10px);
   font-style: normal;
   font-weight: 900;
-  line-height: 1;
+  line-height: 1.18;
   text-shadow: 0 0 4px rgba(143, 210, 103, 0.1);
 }
 
@@ -3883,8 +3940,8 @@
     bottom: auto;
     left: auto;
     display: grid;
-    gap: 10px;
-    width: min(260px, 58vw);
+    gap: 12px;
+    width: min(276px, 62vw);
     pointer-events: none;
   }
 
@@ -3895,24 +3952,26 @@
   }
 
   .control-room__project-shell {
-    min-height: 0;
+    grid-template-rows: 14px 42px 12px 48px 76px 30px;
     gap: 7px;
+    height: 258px;
+    min-height: 0;
     padding: 12px;
     clip-path: polygon(0 8px, 8px 0, calc(100% - 28px) 0, 100% 28px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 28px 100%, 0 calc(100% - 28px));
   }
 
   .control-room__project-title {
     font-size: clamp(13px, 3.2vw, 18px);
-    line-height: 1;
+    line-height: 1.04;
   }
 
   .control-room__project-preview {
-    height: 44px;
+    height: 100%;
   }
 
   .control-room__project-data {
-    gap: 5px 8px;
-    padding: 7px 0;
+    gap: 0;
+    padding: 0;
   }
 
   .control-room__project-data span,
@@ -4015,6 +4074,74 @@
 
   .control-room__archive-grid {
     min-height: 460px;
+  }
+
+  .control-room__analysis-panel--scan {
+    min-height: clamp(500px, 82vw, 600px);
+    padding: 16px;
+  }
+
+  .control-room__workflow-header {
+    padding: 0;
+  }
+
+  .control-room__workflow-header h3 {
+    max-width: none;
+    font-size: clamp(15px, 3.4vw, 18px);
+    line-height: 1;
+  }
+
+  .control-room__workflow-header span {
+    max-width: 10ch;
+    font-size: clamp(9px, 2.2vw, 12px);
+    line-height: 1.2;
+  }
+
+  .control-room__workflow-map svg {
+    width: min(58cqw, 360px);
+    height: min(58cqw, 360px);
+  }
+
+  .control-room__workflow-list {
+    inset: 68px 30px 28px;
+  }
+
+  .control-room__workflow-item {
+    grid-template-columns: 12px minmax(0, max-content);
+    gap: 5px 7px;
+  }
+
+  .control-room__workflow-item:nth-child(1) {
+    top: 24px;
+  }
+
+  .control-room__workflow-item:nth-child(2),
+  .control-room__workflow-item:nth-child(4) {
+    top: 30%;
+  }
+
+  .control-room__workflow-item:nth-child(3),
+  .control-room__workflow-item:nth-child(5) {
+    top: 65%;
+  }
+
+  .control-room__workflow-item:nth-child(6) {
+    bottom: 0;
+  }
+
+  .control-room__workflow-item span {
+    width: 8px;
+    height: 8px;
+  }
+
+  .control-room__workflow-item b {
+    font-size: clamp(11px, 2.8vw, 16px);
+  }
+
+  .control-room__workflow-item em {
+    max-width: 11ch;
+    font-size: clamp(7px, 1.9vw, 10px);
+    line-height: 1.2;
   }
 
 }
