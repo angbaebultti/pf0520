@@ -15,9 +15,12 @@ export default function GlobalHudCursor() {
 
     gsap.set(cursor, { xPercent: -50, yPercent: -50 })
 
-    const isInteractive = (target: EventTarget | null) => (
-      target instanceof Element &&
-      Boolean(target.closest('[data-hud-click="true"]'))
+    const clickLabel = cursor.querySelector<HTMLElement>('.global-hud-cursor__click-label')
+
+    const getInteractiveTarget = (target: EventTarget | null) => (
+      target instanceof Element
+        ? target.closest<HTMLElement>('[data-hud-click="true"]')
+        : null
     )
 
     const moveCursor = (event: PointerEvent) => {
@@ -26,7 +29,9 @@ export default function GlobalHudCursor() {
         return
       }
 
-      const isClickTarget = isInteractive(event.target)
+      const clickTarget = getInteractiveTarget(event.target)
+      const isClickTarget = Boolean(clickTarget)
+      if (clickLabel) clickLabel.textContent = clickTarget?.dataset.hudClickLabel || 'CLICK'
       gsap.set(cursor, { x: event.clientX, y: event.clientY })
       cursor.classList.add('global-hud-cursor--visible')
       cursor.classList.toggle('global-hud-cursor--click', isClickTarget)

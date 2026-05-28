@@ -25,7 +25,7 @@ export default function IntroSequence({ onTunnelStart }: IntroSequenceProps) {
       {phase === 'tunnel' && <GlassTunnel />}
       {phase === 'error' && (
         <>
-          <ErrorScreen durationMs={3000} breakDurationMs={3000} onComplete={goToTunnel} />
+          <ErrorScreen durationMs={1700} breakDurationMs={900} onComplete={goToTunnel} />
           <button className="intro-skip-button" type="button" onClick={goToTunnel} aria-label="Skip intro" data-hud-click="true">
             SKIP
           </button>

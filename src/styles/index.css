@@ -224,7 +224,8 @@ button {
 
 .global-hud-cursor--click {
   opacity: 1;
-  width: 118px;
+  width: max-content;
+  min-width: 118px;
   height: 38px;
   filter:
     drop-shadow(0 0 8px rgba(108, 255, 99, 0.28))
@@ -278,7 +279,8 @@ button {
   top: 50%;
   left: 50%;
   display: block;
-  width: 118px;
+  width: max-content;
+  min-width: 118px;
   height: 38px;
   overflow: hidden;
   color: rgba(248, 255, 243, 0.98);
@@ -288,6 +290,7 @@ button {
   line-height: 1;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: nowrap;
   text-shadow:
     0 1px 2px rgba(0, 0, 0, 0.94),
     0 0 8px rgba(248, 255, 243, 0.2);

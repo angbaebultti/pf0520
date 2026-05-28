@@ -86,10 +86,10 @@ const workflowSignals = [
 const signalArchive = [
   { label: 'NIGHT VIEW', archiveLabel: 'NIGHT_VIEW.LOG', tone: 'city', image: nightviewArchiveSrc },
   { label: 'INTERFACE', archiveLabel: 'CAT.LOG', tone: 'terminal', image: catArchiveSrc },
-  { label: 'SILENT MODE', archiveLabel: 'FLOWER.LOG', tone: 'coffee', image: flowerArchiveSrc },
+  { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2ArchiveSrc },
   { label: 'ANIMATION', archiveLabel: 'JUHEE.LOG', tone: 'portrait', image: juheeArchiveSrc },
   { label: 'CODE SIGNAL', archiveLabel: 'OCEAN_ARCHIVE', tone: 'code', image: oceanArchiveSrc },
-  { label: 'DEEP FOCUS', archiveLabel: 'JUHEE.LOG', tone: 'cloud', image: juhee2ArchiveSrc },
+  { label: 'SILENT MODE', archiveLabel: 'FLOWER.LOG', tone: 'coffee', image: flowerArchiveSrc },
 ]
 
 const profilePreloadAssets = [
@@ -936,7 +936,13 @@ export default function ControlRoom() {
             <section className={getProfilePanelClassName('visual', 'visual')}>
               {renderProfilePanelTitle('visual', 'ENTITY VISUAL')}
               <div id="profile-panel-visual" className="control-room__accordion-content">
-                <button className="control-room__analysis-portrait" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
+                <button
+                  className="control-room__analysis-portrait"
+                  type="button"
+                  onClick={upgradeProfileLevel}
+                  data-hud-click={profileLevel < 3 ? 'true' : undefined}
+                  data-hud-click-label={profileLevel < 3 ? 'CLICK TO BOOST' : undefined}
+                >
                   <img className="control-room__analysis-image control-room__analysis-image--base" src={character07ProfileSrc} alt="" loading="eager" decoding="async" />
                   <img className="control-room__analysis-image control-room__analysis-image--level-2" src={gunCharacterSyncedSrc} alt="" loading="eager" decoding="async" />
                   <img className="control-room__analysis-image control-room__analysis-image--level-3" src={gunCharacterBoostedSrc} alt="" loading="eager" decoding="async" />
@@ -962,7 +968,13 @@ export default function ControlRoom() {
             <main className={getProfilePanelClassName('core', 'core')}>
               {renderProfilePanelTitle('core', 'IDENTITY CORE')}
               <div id="profile-panel-core" className="control-room__accordion-content">
-                <button className="control-room__analysis-core-frame" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
+                <button
+                  className="control-room__analysis-core-frame"
+                  type="button"
+                  onClick={upgradeProfileLevel}
+                  data-hud-click={profileLevel < 3 ? 'true' : undefined}
+                  data-hud-click-label={profileLevel < 3 ? 'CLICK TO BOOST' : undefined}
+                >
                   <img className="control-room__analysis-image control-room__analysis-image--base" src={character06Src} alt="" loading="eager" decoding="async" />
                   <img className="control-room__analysis-image control-room__analysis-image--level-2" src={gunCharacterSyncedSrc} alt="" loading="eager" decoding="async" />
                   <img className="control-room__analysis-image control-room__analysis-image--level-3" src={gunCharacterBoostedSrc} alt="" loading="eager" decoding="async" />
@@ -970,7 +982,6 @@ export default function ControlRoom() {
                     <span>STATUS</span>
                     <b>{profileStatusLabel}</b>
                   </div>
-                  <span className="control-room__analysis-core-action" aria-hidden="true">&gt; BOOST CORE</span>
                 </button>
               </div>
             </main>
