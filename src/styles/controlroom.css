@@ -296,6 +296,8 @@
   inset: 0;
   z-index: 11;
   pointer-events: none;
+  perspective: 1400px;
+  transform-style: preserve-3d;
 }
 
 .control-room__project {
@@ -304,9 +306,17 @@
   --project-panel-bg: rgba(12, 14, 12, 0.9);
   --project-panel-wash: rgba(96, 106, 118, 0.16);
   --project-panel-edge: rgba(222, 226, 216, 0.13);
+  --project-scale: 1;
+  --project-offset-x: 0px;
+  --project-offset-y: 0px;
+  --project-depth-z: 0px;
+  --project-signal-opacity: 0.9;
+  --project-card-width: clamp(304px, 18.8vw, 384px);
+  --project-card-height: clamp(344px, 20.8vw, 396px);
   position: absolute;
   display: block;
-  width: clamp(304px, 18.8vw, 384px);
+  width: var(--project-card-width);
+  height: var(--project-card-height);
   padding: 0;
   color: rgba(215, 242, 204, 0.88);
   font-family: 'Courier New', Consolas, monospace;
@@ -314,13 +324,51 @@
   pointer-events: auto;
   text-shadow: 0 0 8px rgba(126, 210, 91, 0.12);
   cursor: pointer;
+  opacity: var(--project-signal-opacity);
   filter: brightness(0.92);
   transform-origin: center;
+  transform: translate3d(var(--project-offset-x), var(--project-offset-y), var(--project-depth-z)) scale(var(--project-scale));
   transition:
     filter 0.42s ease,
     opacity 0.32s ease,
     transform 0.42s cubic-bezier(0.2, 0.8, 0.2, 1),
     z-index 0.24s ease;
+  animation: project-signal-breathe 7.8s ease-in-out infinite;
+  will-change: opacity, filter, transform;
+}
+
+.control-room__project::before,
+.control-room__project::after {
+  position: absolute;
+  z-index: 0;
+  content: '';
+  pointer-events: none;
+}
+
+.control-room__project::before {
+  top: 50%;
+  left: 100%;
+  width: clamp(90px, 7vw, 150px);
+  height: 1px;
+  background: linear-gradient(90deg, rgba(143, 210, 103, 0.22), rgba(143, 210, 103, 0.055), transparent);
+  box-shadow: 0 0 8px rgba(143, 210, 103, 0.08);
+  opacity: 0.34;
+  transform: translateY(-50%);
+  transition:
+    opacity 0.28s ease,
+    transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.control-room__project::after {
+  inset: -16px;
+  background:
+    linear-gradient(90deg, transparent 0 48%, rgba(143, 210, 103, 0.22) 49% 51%, transparent 52% 100%),
+    linear-gradient(180deg, transparent 0 48%, rgba(143, 210, 103, 0.18) 49% 51%, transparent 52% 100%);
+  opacity: 0;
+  transform: scale(0.94);
+  transition:
+    opacity 0.24s ease,
+    transform 0.34s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
 .control-room__project-shell {
@@ -335,7 +383,7 @@
     clamp(82px, 5vw, 98px)
     clamp(32px, 2vw, 38px);
   gap: clamp(8px, 0.62vw, 12px);
-  height: clamp(344px, 20.8vw, 396px);
+  height: var(--project-card-height);
   min-height: 0;
   padding: clamp(18px, 1.22vw, 24px);
   overflow: hidden;
@@ -573,38 +621,67 @@
   --project-panel-bg: rgba(15, 15, 12, 0.92);
   --project-panel-wash: rgba(142, 119, 82, 0.18);
   --project-panel-edge: rgba(190, 170, 126, 0.24);
-  top: clamp(82px, 10vh, 124px);
-  left: clamp(44px, 5.2vw, 126px);
+  --project-offset-x: 0px;
+  --project-offset-y: 0px;
+  top: clamp(116px, 13vh, 150px);
+  left: clamp(260px, 17vw, 360px);
 }
 
 .control-room__project--mmca {
   --project-panel-bg: rgba(12, 13, 16, 0.92);
   --project-panel-wash: rgba(118, 125, 142, 0.2);
   --project-panel-edge: rgba(185, 191, 204, 0.22);
-  top: calc(clamp(82px, 10vh, 124px) + clamp(372px, 23.5vw, 440px));
-  left: clamp(44px, 5.2vw, 126px);
+  --project-offset-x: 0px;
+  --project-offset-y: 0px;
+  top: calc(clamp(116px, 13vh, 150px) + var(--project-card-height) + clamp(14px, 1.8vh, 28px));
+  left: clamp(260px, 17vw, 360px);
 }
 
 .control-room__project--fandom {
   --project-panel-bg: rgba(13, 12, 17, 0.92);
   --project-panel-wash: rgba(132, 118, 165, 0.2);
   --project-panel-edge: rgba(191, 178, 222, 0.22);
-  top: clamp(82px, 10vh, 124px);
-  right: clamp(44px, 5.2vw, 126px);
+  --project-offset-x: 0px;
+  --project-offset-y: 0px;
+  top: clamp(116px, 13vh, 150px);
+  right: clamp(260px, 17vw, 360px);
 }
 
 .control-room__project--app {
   --project-panel-bg: rgba(10, 14, 16, 0.92);
   --project-panel-wash: rgba(88, 136, 150, 0.18);
   --project-panel-edge: rgba(158, 204, 214, 0.22);
-  top: calc(clamp(82px, 10vh, 124px) + clamp(372px, 23.5vw, 440px));
-  right: clamp(44px, 5.2vw, 126px);
+  --project-offset-x: 0px;
+  --project-offset-y: 0px;
+  top: calc(clamp(116px, 13vh, 150px) + var(--project-card-height) + clamp(14px, 1.8vh, 28px));
+  right: clamp(260px, 17vw, 360px);
+}
+
+.control-room__project--fandom::before,
+.control-room__project--app::before {
+  right: 100%;
+  left: auto;
+  background: linear-gradient(270deg, rgba(143, 210, 103, 0.22), rgba(143, 210, 103, 0.055), transparent);
 }
 
 .control-room__project:hover {
   z-index: 20;
-  filter: brightness(1.1);
-  transform: translateY(-4px);
+  opacity: 0.96;
+  filter: brightness(1.08) blur(0);
+  transform: translate3d(var(--project-offset-x), calc(var(--project-offset-y) - 5px), 38px) scale(1.025);
+  animation-play-state: paused;
+}
+
+.control-room__project:hover::before,
+.control-room__project:focus-visible::before {
+  opacity: 0.68;
+  transform: translateY(-50%) scaleX(1.06);
+}
+
+.control-room__project:hover::after,
+.control-room__project:focus-visible::after {
+  opacity: 0.58;
+  transform: scale(1);
 }
 
 .control-room__project:hover .control-room__project-shell,
@@ -1586,16 +1663,12 @@
   padding: clamp(18px, 3vw, 48px);
   place-items: center;
   pointer-events: none;
-  opacity: 0;
   backdrop-filter: blur(0);
-  transition:
-    opacity 0.22s ease,
-    backdrop-filter 0.22s ease;
+  transition: backdrop-filter 0.22s ease;
 }
 
 .control-room__connection--open {
   pointer-events: auto;
-  opacity: 1;
   backdrop-filter: blur(9px) brightness(0.62);
 }
 
@@ -1610,6 +1683,12 @@
   background:
     repeating-linear-gradient(to bottom, rgba(255, 255, 255, 0.018) 0 1px, transparent 1px 5px),
     rgba(0, 0, 0, 0.74);
+  opacity: 0;
+  transition: opacity 0.22s ease;
+}
+
+.control-room__connection--open::before {
+  opacity: 1;
 }
 
 .control-room__connection-modal {
@@ -4396,6 +4475,21 @@
   }
 }
 
+@keyframes project-signal-breathe {
+  0%,
+  100% {
+    opacity: var(--project-signal-opacity);
+    filter: brightness(0.91);
+    transform: translate3d(var(--project-offset-x), var(--project-offset-y), var(--project-depth-z)) scale(var(--project-scale));
+  }
+
+  50% {
+    opacity: 0.96;
+    filter: brightness(0.98);
+    transform: translate3d(var(--project-offset-x), calc(var(--project-offset-y) - 2px), var(--project-depth-z)) scale(var(--project-scale));
+  }
+}
+
 @keyframes project-breathing-glow {
   0%,
   100% {
@@ -4584,7 +4678,10 @@
 
 @media (max-width: 1180px) {
   .control-room__project {
-    width: clamp(246px, 21vw, 304px);
+    --project-card-width: clamp(246px, 21vw, 304px);
+    --project-card-height: clamp(288px, 29vw, 344px);
+    width: var(--project-card-width);
+    height: var(--project-card-height);
   }
 
   .control-room__project-shell {
@@ -4595,28 +4692,28 @@
       clamp(70px, 7vw, 92px)
       clamp(70px, 6.5vw, 86px)
       30px;
-    height: clamp(288px, 29vw, 344px);
+    height: var(--project-card-height);
     padding: clamp(14px, 1.5vw, 18px);
   }
 
-  .control-room__project--identity,
-  .control-room__project--fandom {
-    top: clamp(76px, 9vh, 104px);
+  .control-room__project--identity {
+    top: clamp(92px, 11vh, 118px);
+    left: clamp(80px, 8vw, 126px);
   }
 
-  .control-room__project--mmca,
-  .control-room__project--app {
-    top: calc(clamp(76px, 9vh, 104px) + clamp(308px, 31vw, 372px));
-  }
-
-  .control-room__project--identity,
   .control-room__project--mmca {
-    left: clamp(24px, 3vw, 44px);
+    top: calc(clamp(92px, 11vh, 118px) + var(--project-card-height) + clamp(12px, 1.8vh, 24px));
+    left: clamp(80px, 8vw, 126px);
   }
 
-  .control-room__project--fandom,
+  .control-room__project--fandom {
+    top: clamp(92px, 11vh, 118px);
+    right: clamp(80px, 8vw, 126px);
+  }
+
   .control-room__project--app {
-    right: clamp(24px, 3vw, 44px);
+    top: calc(clamp(92px, 11vh, 118px) + var(--project-card-height) + clamp(12px, 1.8vh, 24px));
+    right: clamp(80px, 8vw, 126px);
   }
 
   .control-room__project-terminal {
@@ -4693,22 +4790,31 @@
   }
 
   .control-room__project {
-    width: clamp(228px, 18vw, 276px);
+    --project-card-width: clamp(228px, 18vw, 276px);
+    --project-card-height: 252px;
+    width: var(--project-card-width);
+    height: var(--project-card-height);
   }
 
   .control-room__project-shell {
     grid-template-rows: 14px 38px 12px 56px 64px 28px;
     gap: 6px;
-    height: 252px;
+    height: var(--project-card-height);
     padding: 12px;
   }
 
-  .control-room__project--identity,
+  .control-room__project--identity {
+    top: 74px;
+  }
+
   .control-room__project--fandom {
     top: 74px;
   }
 
-  .control-room__project--mmca,
+  .control-room__project--mmca {
+    top: 342px;
+  }
+
   .control-room__project--app {
     top: 342px;
   }
@@ -4825,8 +4931,17 @@
     position: static;
     width: 100%;
     max-width: none;
+    opacity: 1;
+    filter: none;
+    transform: none;
+    animation: none;
     pointer-events: auto;
     cursor: pointer;
+  }
+
+  .control-room__project::before,
+  .control-room__project::after {
+    display: none;
   }
 
   .control-room__project-shell {

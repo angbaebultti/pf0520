@@ -249,7 +249,7 @@ export default function ControlRoom() {
   }, [])
 
   useEffect(() => {
-    const criticalAssets = [gunCharacterSrc, ...projectThumbnailAssets, mmcaSrc]
+    const criticalAssets = [gunCharacterSrc, ...projectThumbnailAssets, ...projectPreviewAssets]
     const criticalPreloads = criticalAssets.map((asset) => {
       const preload = document.createElement('link')
       preload.rel = 'preload'
@@ -489,22 +489,21 @@ export default function ControlRoom() {
     }, modalFadeMs)
   }, [isProfileOpen])
 
+  const prewarmProjectAssets = (projectId: keyof typeof projectDetails) => {
+    const project = projects.find((item) => item.id === projectId)
+    if (project) {
+      void decodeImageAsset(project.thumbnail)
+      void decodeImageAsset(project.previewImage)
+    }
+  }
+
   const openConnection = (projectId: keyof typeof projectDetails) => {
     clearConnectionCloseTimeout()
     clearAccessingPrimaryTimeout()
     setIsConnectionClosing(false)
     setIsAccessingPrimary(false)
     setSelectedProjectId(projectId)
-
-    const project = projects.find((item) => item.id === projectId)
-    if (project) {
-      window.requestAnimationFrame(() => {
-        void Promise.all([
-          decodeImageAsset(project.thumbnail),
-          decodeImageAsset(project.previewImage),
-        ])
-      })
-    }
+    window.requestAnimationFrame(() => prewarmProjectAssets(projectId))
   }
 
   const closeConnection = useCallback(() => {
@@ -555,7 +554,7 @@ export default function ControlRoom() {
     event.currentTarget.style.setProperty('--project-cursor-y', `${event.clientY - rect.top}px`)
   }
 
-  const openConnectionFromProject = (event: React.MouseEvent<HTMLButtonElement>, projectId: keyof typeof projectDetails) => {
+  const openConnectionFromProject = (event: React.SyntheticEvent<HTMLButtonElement>, projectId: keyof typeof projectDetails) => {
     if (!(event.target instanceof Element)) return
     void openConnection(projectId)
   }
@@ -727,7 +726,13 @@ export default function ControlRoom() {
                 className={`control-room__project control-room__project--${project.position}${selectedProjectId === project.id ? ' control-room__project--selected' : ''}${selectedProjectId && selectedProjectId !== project.id ? ' control-room__project--signal-lost' : ''}`}
                 type="button"
                 key={project.id}
+                onPointerDown={(event) => {
+                  if (event.button !== 0) return
+                  openConnectionFromProject(event, project.id as keyof typeof projectDetails)
+                }}
                 onClick={(event) => openConnectionFromProject(event, project.id as keyof typeof projectDetails)}
+                onPointerEnter={() => prewarmProjectAssets(project.id as keyof typeof projectDetails)}
+                onFocus={() => prewarmProjectAssets(project.id as keyof typeof projectDetails)}
                 onPointerMove={updateProjectGlowTarget}
               >
                 <span className="control-room__project-shell" data-hud-click={canUseControlRoom ? 'true' : undefined}>
