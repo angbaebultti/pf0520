@@ -2588,17 +2588,19 @@
   animation: control-core-sync 0.95s steps(6, end) 3s forwards;
 }
 
-.control-room__profile-shell--level-2 .control-room__analysis-portrait img,
-.control-room__profile-shell--level-3 .control-room__analysis-portrait img {
+.control-room__profile-shell--level-2 .control-room__analysis-portrait .control-room__analysis-image--level-2,
+.control-room__profile-shell--level-3 .control-room__analysis-portrait .control-room__analysis-image--level-3 {
+  width: 96%;
+  height: 96%;
+  object-fit: contain;
+  object-position: 50% 100%;
+  mix-blend-mode: screen;
+  transform: none;
   filter: grayscale(0.22) sepia(0.18) hue-rotate(32deg) saturate(1.3) contrast(1.08) brightness(0.86) !important;
-  opacity: 1 !important;
-  animation: control-level-image-settle 0.28s ease-out !important;
 }
 
-.control-room__profile-shell--level-3 .control-room__analysis-core-frame img {
+.control-room__profile-shell--level-3 .control-room__analysis-core-frame .control-room__analysis-image--level-3 {
   filter: grayscale(0.28) sepia(0.2) hue-rotate(42deg) saturate(1.45) contrast(1.14) brightness(0.98) !important;
-  opacity: 1 !important;
-  animation: control-level-image-settle 0.28s ease-out !important;
 }
 
 .control-room__analysis-core-frame::after {
@@ -2627,7 +2629,7 @@
   z-index: 4;
   display: grid;
   gap: 10px;
-  width: max-content;
+  width: clamp(92px, 6.4vw, 116px);
   color: rgba(205, 232, 188, 0.56);
   font-family: var(--terminal-font);
   font-weight: 900;
@@ -2652,6 +2654,8 @@
 }
 
 .control-room__analysis-status b::before {
+  display: inline-block;
+  min-width: 7ch;
   color: rgba(205, 232, 188, 0.5);
   content: 'UNKNOWN';
   font-size: clamp(15px, 1.05vw, 19px);
@@ -3700,6 +3704,35 @@
   animation-delay: 1s;
 }
 
+.control-room__analysis-portrait .control-room__analysis-image,
+.control-room__analysis-core-frame .control-room__analysis-image {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  transition:
+    opacity 0.46s ease,
+    filter 0.46s ease;
+  will-change: opacity;
+  animation: none !important;
+}
+
+.control-room__profile .control-room__profile-shell .control-room__analysis-image {
+  opacity: 0 !important;
+}
+
+.control-room__profile .control-room__profile-shell--level-1 .control-room__analysis-image--base,
+.control-room__profile .control-room__profile-shell--level-2 .control-room__analysis-image--level-2,
+.control-room__profile .control-room__profile-shell--level-3 .control-room__analysis-image--level-3 {
+  opacity: 0.88 !important;
+}
+
+.control-room__profile .control-room__profile-shell--level-2 .control-room__analysis-portrait .control-room__analysis-image--level-2,
+.control-room__profile .control-room__profile-shell--level-3 .control-room__analysis-portrait .control-room__analysis-image--level-3,
+.control-room__profile .control-room__profile-shell--level-2 .control-room__analysis-core-frame .control-room__analysis-image--level-2,
+.control-room__profile .control-room__profile-shell--level-3 .control-room__analysis-core-frame .control-room__analysis-image--level-3 {
+  opacity: 1 !important;
+}
+
 .control-room__archive-card--code img {
   object-position: 50% 62%;
 }
@@ -3993,17 +4026,14 @@
 @keyframes control-level-pulse {
   0% {
     filter: brightness(1);
-    transform: translateX(0);
   }
 
   38% {
     filter: brightness(1.8);
-    transform: translateX(2px);
   }
 
   72% {
     filter: brightness(0.8);
-    transform: translateX(-1px);
   }
 }
 

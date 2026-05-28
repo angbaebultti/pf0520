@@ -7,10 +7,10 @@ function App() {
   const [hasEnteredTunnel, setHasEnteredTunnel] = useState(false)
 
   return (
-    <div className="app-shell">
+    <div className={`app-shell${hasEnteredTunnel ? ' app-shell--hud-cursor' : ''}`}>
       <IntroSequence onTunnelStart={() => setHasEnteredTunnel(true)} />
       {hasEnteredTunnel && <ControlRoom />}
-      <GlobalHudCursor />
+      {hasEnteredTunnel && <GlobalHudCursor />}
     </div>
   )
 }

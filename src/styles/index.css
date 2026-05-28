@@ -421,11 +421,11 @@ button {
 }
 
 @media (hover: hover) and (pointer: fine) and (min-width: 761px) {
-  .app-shell,
-  .app-shell a,
-  .app-shell button,
-  .app-shell [role='button'],
-  .app-shell [tabindex]:not([tabindex='-1']) {
+  .app-shell--hud-cursor,
+  .app-shell--hud-cursor a,
+  .app-shell--hud-cursor button,
+  .app-shell--hud-cursor [role='button'],
+  .app-shell--hud-cursor [tabindex]:not([tabindex='-1']) {
     cursor: none;
   }
 }

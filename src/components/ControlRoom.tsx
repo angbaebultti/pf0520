@@ -249,7 +249,7 @@ export default function ControlRoom() {
   }, [])
 
   useEffect(() => {
-    const criticalAssets = [gunCharacterSrc, ...projectThumbnailAssets]
+    const criticalAssets = [gunCharacterSrc, ...projectThumbnailAssets, mmcaSrc]
     const criticalPreloads = criticalAssets.map((asset) => {
       const preload = document.createElement('link')
       preload.rel = 'preload'
@@ -489,21 +489,22 @@ export default function ControlRoom() {
     }, modalFadeMs)
   }, [isProfileOpen])
 
-  const openConnection = async (projectId: keyof typeof projectDetails) => {
+  const openConnection = (projectId: keyof typeof projectDetails) => {
     clearConnectionCloseTimeout()
     clearAccessingPrimaryTimeout()
     setIsConnectionClosing(false)
     setIsAccessingPrimary(false)
+    setSelectedProjectId(projectId)
 
     const project = projects.find((item) => item.id === projectId)
     if (project) {
-      await Promise.all([
-        decodeImageAsset(project.thumbnail),
-        decodeImageAsset(project.previewImage),
-      ])
+      window.requestAnimationFrame(() => {
+        void Promise.all([
+          decodeImageAsset(project.thumbnail),
+          decodeImageAsset(project.previewImage),
+        ])
+      })
     }
-
-    setSelectedProjectId(projectId)
   }
 
   const closeConnection = useCallback(() => {
@@ -681,9 +682,6 @@ export default function ControlRoom() {
     return () => window.removeEventListener('pointerdown', handlePointerDown)
   }, [isContactOpen, isGuideOpen])
 
-  const profileSyncedSrc = profileLevel >= 3 ? gunCharacterBoostedSrc : gunCharacterSyncedSrc
-  const profileVisualSrc = profileLevel >= 2 ? profileSyncedSrc : character07ProfileSrc
-  const profileCoreSrc = profileLevel >= 2 ? profileSyncedSrc : character06Src
   const profileStatusLabel = profileLevel >= 3 ? 'BOOSTED' : profileLevel >= 2 ? 'SYNCED' : 'ACTIVE'
   const profileCommandLabel = profileLevel >= 3 ? 'MAX LEVEL REACHED' : `RUN SYNC > LEVEL ${profileLevel + 1}`
 
@@ -944,7 +942,9 @@ export default function ControlRoom() {
               {renderProfilePanelTitle('visual', 'ENTITY VISUAL')}
               <div id="profile-panel-visual" className="control-room__accordion-content">
                 <button className="control-room__analysis-portrait" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
-                  <img src={profileVisualSrc} alt="" loading="eager" decoding="async" />
+                  <img className="control-room__analysis-image control-room__analysis-image--base" src={character07ProfileSrc} alt="" loading="eager" decoding="async" />
+                  <img className="control-room__analysis-image control-room__analysis-image--level-2" src={gunCharacterSyncedSrc} alt="" loading="eager" decoding="async" />
+                  <img className="control-room__analysis-image control-room__analysis-image--level-3" src={gunCharacterBoostedSrc} alt="" loading="eager" decoding="async" />
                   <span>{profileLevel >= 2 ? 'VISUAL SOURCE' : 'SIGNAL SOURCE'}<br />{profileLevel >= 2 ? 'SYNC FEED' : 'LIVE FEED'}</span>
                   <b aria-hidden="true">&gt; SCAN VISUAL</b>
                 </button>
@@ -968,7 +968,9 @@ export default function ControlRoom() {
               {renderProfilePanelTitle('core', 'IDENTITY CORE')}
               <div id="profile-panel-core" className="control-room__accordion-content">
                 <button className="control-room__analysis-core-frame" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
-                  <img src={profileCoreSrc} alt="" loading="eager" decoding="async" />
+                  <img className="control-room__analysis-image control-room__analysis-image--base" src={character06Src} alt="" loading="eager" decoding="async" />
+                  <img className="control-room__analysis-image control-room__analysis-image--level-2" src={gunCharacterSyncedSrc} alt="" loading="eager" decoding="async" />
+                  <img className="control-room__analysis-image control-room__analysis-image--level-3" src={gunCharacterBoostedSrc} alt="" loading="eager" decoding="async" />
                   <div className="control-room__analysis-status">
                     <span>STATUS</span>
                     <b>{profileStatusLabel}</b>
