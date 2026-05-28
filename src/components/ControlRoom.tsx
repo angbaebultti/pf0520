@@ -16,7 +16,7 @@ import mmcaSrc from '@assets/mmca.png'
 import mmcaThumbSrc from '@assets/mmca_thumb.jpg'
 import nightviewArchiveSrc from '@assets/nightview_archive.jpg'
 import oceanArchiveSrc from '@assets/ocean_archive.jpg'
-import bubblooCardSrc from '@assets/bubbloo_card.png'
+import innogridSrc from '@assets/innogrid.png'
 import jibsaLifeThumbSrc from '@assets/jibsa_life_thumb.jpg'
 import kukdeThumbSrc from '@assets/kukde_thumb.jpg'
 import '@styles/controlroom.css'
@@ -32,7 +32,7 @@ const projects = [
     thumbnail: jibsaLifeThumbSrc,
     previewImage: jibsaLifeSrc,
   },
-  { id: '04', title: 'Personal App Project', category: 'PERSONAL APP', position: 'app', thumbnail: bubblooCardSrc, previewImage: bubblooCardSrc },
+  { id: '04', title: 'INNOGRID WEB CLONE PROJECT', category: 'INNOGRID', position: 'app', thumbnail: innogridSrc, previewImage: innogridSrc },
 ]
 
 const projectDetails = {
@@ -65,11 +65,12 @@ const projectDetails = {
     secondaryUrl: 'https://www.figma.com/deck/twdFcOofR67TXZqo25bhVL',
   },
   '04': {
-    fileName: 'BUBBLOO',
-    status: 'DEVELOPMENT',
+    fileName: 'INNOGRID',
+    status: 'ACTIVE',
     year: '2026',
     type: 'PERSONAL',
     primaryAction: 'ACCESS LIVE',
+    primaryUrl: 'https://angbaebultti.github.io/innogrid/',
   },
 } as const
 
@@ -888,25 +889,14 @@ export default function ControlRoom() {
                 </div>
               </dl>
               <div className="control-room__connection-options">
-                {'primaryUrl' in selectedProjectDetails ? (
-                  <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
-                    <HudScanButton
-                      label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
-                      index="01"
-                      variant="modal"
-                      isLoading={isAccessingPrimary}
-                    />
-                  </a>
-                ) : (
-                  <button type="button" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
-                    <HudScanButton
-                      label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
-                      index="01"
-                      variant="modal"
-                      isLoading={isAccessingPrimary}
-                    />
-                  </button>
-                )}
+                <a href={selectedProjectDetails.primaryUrl} target="_blank" rel="noreferrer" onMouseEnter={previewPrimaryAccess} onFocus={previewPrimaryAccess} data-hud-click="true">
+                  <HudScanButton
+                    label={`${isAccessingPrimary ? 'ACCESSING...' : selectedProjectDetails.primaryAction} SYSTEM`}
+                    index="01"
+                    variant="modal"
+                    isLoading={isAccessingPrimary}
+                  />
+                </a>
                 {'secondaryAction' in selectedProjectDetails && 'secondaryUrl' in selectedProjectDetails && (
                   <a href={selectedProjectDetails.secondaryUrl} target="_blank" rel="noreferrer" data-hud-click="true">
                     <HudScanButton label={`${selectedProjectDetails.secondaryAction} FILE`} index="02" variant="modal" />
