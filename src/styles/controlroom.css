@@ -310,7 +310,7 @@
   --project-offset-x: 0px;
   --project-offset-y: 0px;
   --project-depth-z: 0px;
-  --project-signal-opacity: 0.9;
+  --project-signal-opacity: 1;
   --project-card-width: clamp(304px, 18.8vw, 384px);
   --project-card-height: clamp(344px, 20.8vw, 396px);
   position: absolute;
@@ -325,7 +325,7 @@
   text-shadow: 0 0 8px rgba(126, 210, 91, 0.12);
   cursor: pointer;
   opacity: var(--project-signal-opacity);
-  filter: brightness(0.92);
+  filter: none;
   transform-origin: center;
   transform: translate3d(var(--project-offset-x), var(--project-offset-y), var(--project-depth-z)) scale(var(--project-scale));
   transition:
@@ -562,7 +562,7 @@
       transparent 1px,
       transparent 6px),
     linear-gradient(90deg, rgba(8, 255, 47, 0.04), transparent 32% 72%, rgba(8, 255, 47, 0.03));
-  mix-blend-mode: screen;
+  mix-blend-mode: normal;
   opacity: 0;
 }
 
@@ -704,7 +704,7 @@
 .control-room__project:focus-visible .control-room__project-preview img {
   filter: none;
   opacity: 1;
-  animation: project-hologram-flicker 1.4s steps(2, end);
+  animation: none;
 }
 
 .control-room__project:hover .control-room__project-scan,
@@ -721,7 +721,7 @@
 .control-room__project--selected {
   z-index: 21;
   opacity: 1;
-  filter: brightness(1.14);
+  filter: none;
 }
 
 .control-room__project--signal-lost {
@@ -1805,8 +1805,8 @@
   background:
     repeating-linear-gradient(to bottom, rgba(205, 255, 184, 0.024) 0 1px, transparent 1px 5px),
     linear-gradient(90deg, rgba(0, 0, 0, 0.28), transparent 18% 82%, rgba(0, 0, 0, 0.24));
-  mix-blend-mode: screen;
-  opacity: 0.42;
+  mix-blend-mode: normal;
+  opacity: 0;
 }
 
 .control-room__connection-preview::after {
@@ -4479,13 +4479,11 @@
   0%,
   100% {
     opacity: var(--project-signal-opacity);
-    filter: brightness(0.91);
     transform: translate3d(var(--project-offset-x), var(--project-offset-y), var(--project-depth-z)) scale(var(--project-scale));
   }
 
   50% {
-    opacity: 0.96;
-    filter: brightness(0.98);
+    opacity: 1;
     transform: translate3d(var(--project-offset-x), calc(var(--project-offset-y) - 2px), var(--project-depth-z)) scale(var(--project-scale));
   }
 }
@@ -4493,11 +4491,11 @@
 @keyframes project-breathing-glow {
   0%,
   100% {
-    filter: brightness(0.96);
+    filter: none;
   }
 
   48% {
-    filter: brightness(1.08);
+    filter: none;
   }
 }
 
