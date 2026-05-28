@@ -1009,7 +1009,7 @@ export default function ControlRoom() {
                 {renderProfilePanelTitle('scan', 'WORKFLOW SIGNAL', 'SIGNAL MAP')}
               </div>
               <div id="profile-panel-scan" className="control-room__accordion-content">
-              <button className="control-room__workflow-map" type="button" onClick={upgradeProfileLevel} data-hud-click="true">
+              <div className="control-room__workflow-map">
                 <svg viewBox="0 0 320 300" focusable="false">
                   <g className="control-room__workflow-particles">
                     <circle cx="160" cy="42" r="1.6" />
@@ -1048,8 +1048,7 @@ export default function ControlRoom() {
                     <circle cx="76.7" cy="101.7" r="7" />
                   </g>
                 </svg>
-                <span className="control-room__workflow-action" aria-hidden="true">&gt; ANALYZE SIGNAL</span>
-              </button>
+              </div>
               <div className="control-room__workflow-list">
                 {workflowSignals.map((signal) => (
                   <div className="control-room__workflow-item" key={signal.label}>

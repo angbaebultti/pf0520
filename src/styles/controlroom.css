@@ -3250,7 +3250,7 @@
   text-align: inherit;
   background: transparent;
   border: 0;
-  cursor: pointer;
+  cursor: default;
 }
 
 .control-room__workflow-map::before {
