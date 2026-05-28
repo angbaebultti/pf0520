@@ -18,8 +18,8 @@ const STAR_COUNT = 500
 const GALAXY_DESKTOP_COUNT = 540
 const GALAXY_MOBILE_COUNT = 240
 const STAR_NEAR_LIMIT_Z = -7
-const CONTROL_ROOM_REVEAL_START = 0.72
-const CONTROL_ROOM_REVEAL_END = 0.9
+const CONTROL_ROOM_REVEAL_START = 0.34
+const CONTROL_ROOM_REVEAL_END = 0.43
 const ENTITY_PANEL_REVEAL_START = -0.02
 const ENTITY_PANEL_REVEAL_END = 0
 const ENTITY_PANEL_FADE_START = 0.31
@@ -425,15 +425,13 @@ const GlassTunnel: FC<GlassTunnelProps> = () => {
     }
 
     const updateCharacter = () => {
-      const sequenceProgress = getSequenceProgress()
-      const characterProgress = (CAMERA_START_Z - currentZ) / (CAMERA_START_Z - CHARACTER_END_Z)
-      const progress = clamp(characterProgress, 0, 1)
+      const progress = clamp((CAMERA_START_Z - currentZ) / (CAMERA_START_Z - CHARACTER_END_Z), 0, 1)
       const earlyPull = smoothstep(0.18, 0.48, progress)
       const transformationPull = smoothstep(0.48, 0.78, progress)
       const finalPull = smoothstep(0.72, 1, progress)
       const suction = clamp(earlyPull * 0.22 + transformationPull * 0.32 + finalPull * 0.46, 0, 1)
-      const morph = smoothstep(0.26, 0.58, progress)
-      const vanish = smoothstep(0.86, 0.96, sequenceProgress)
+      const morph = smoothstep(0.52, 0.84, progress)
+      const vanish = smoothstep(0.84, 1, progress)
       const distanceFromCamera = 3.4 + earlyPull * 4.5 + transformationPull * 11 + finalPull ** 1.55 * 40
       const z = currentZ - distanceFromCamera
       const x = 0
