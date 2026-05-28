@@ -52,7 +52,7 @@ const projectDetails = {
     primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
     primaryUrl: 'https://angbaebultti.github.io/mmca02/',
-    secondaryUrl: 'https://www.figma.com/deck/ZXh2NGrYdXA2vKlNkcS0iO',
+    secondaryUrl: 'https://www.figma.com/deck/PSvfoiJ9oeYKg4WO1ZH72v',
   },
   '03': {
     fileName: '집사인생',
@@ -62,7 +62,7 @@ const projectDetails = {
     primaryAction: 'ACCESS LIVE',
     secondaryAction: 'OPEN ARCHIVE',
     primaryUrl: 'https://new-jibsalife.vercel.app',
-    secondaryUrl: 'https://www.figma.com/deck/twdFcOofR67TXZqo25bhVL',
+    secondaryUrl: 'https://www.figma.com/deck/jNv6LFm5IhVZ7EAnzKaCZf',
   },
   '04': {
     fileName: 'INNOGRID',
