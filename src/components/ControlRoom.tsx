@@ -102,7 +102,7 @@ const profilePreloadAssets = [
 const projectThumbnailAssets = projects.map((project) => project.thumbnail)
 const projectPreviewAssets = projects.map((project) => project.previewImage)
 const modalFadeMs = 220
-const entryProfileRevealOpacity = 0.96
+const entryProfileRevealOpacity = 0.5
 type ProfileRevealMode = 'fast' | 'ready'
 
 type HudScanButtonProps = {
