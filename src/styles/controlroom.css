@@ -3117,37 +3117,37 @@
 .control-room__analysis-panel--log p:nth-of-type(1) {
   --log-delay: 1.15s;
   --log-duration: 0.72s;
-  --log-steps: 24;
+  --log-steps: 25;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(2) {
   --log-delay: 1.95s;
   --log-duration: 0.95s;
-  --log-steps: 38;
+  --log-steps: 39;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(3) {
   --log-delay: 2.98s;
   --log-duration: 0.88s;
-  --log-steps: 35;
+  --log-steps: 38;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(4) {
   --log-delay: 3.94s;
   --log-duration: 0.9s;
-  --log-steps: 36;
+  --log-steps: 40;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(5) {
   --log-delay: 4.92s;
   --log-duration: 0.9s;
-  --log-steps: 36;
+  --log-steps: 40;
 }
 
 .control-room__analysis-panel--log p:nth-of-type(6) {
   --log-delay: 5.9s;
   --log-duration: 0.78s;
-  --log-steps: 30;
+  --log-steps: 33;
 }
 
 .control-room__analysis-panel--log b {
@@ -3634,6 +3634,14 @@
 
 .control-room__profile--ready.control-room__profile--open .control-room__analysis-capability b {
   transform: scaleX(1);
+  animation: none;
+}
+
+.control-room__profile--ready.control-room__profile--open .control-room__analysis-panel--log p,
+.control-room__profile--ready.control-room__profile--open .control-room__analysis-panel--log b {
+  max-width: none;
+  opacity: 1;
+  transform: none;
   animation: none;
 }
 
