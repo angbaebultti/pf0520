@@ -198,7 +198,7 @@
 .control-room__intro {
   position: absolute;
   left: clamp(24px, 6vw, 120px);
-  bottom: clamp(46px, 9vh, 110px);
+  bottom: clamp(34px, 6vh, 76px);
   z-index: 10;
   width: min(620px, 46vw);
   max-width: calc(100vw - 48px);
@@ -229,7 +229,7 @@
   margin: 0;
   overflow: hidden;
   color: rgba(176, 220, 158, calc(0.75 + var(--intro-title-glow) * 0.045 + var(--intro-title-hover) * 0.014));
-  font-size: clamp(48px, 6.4vw, 124px);
+  font-size: clamp(48px, 4.8vw, 96px);
   font-weight: 950;
   line-height: 0.86;
   letter-spacing: calc(var(--intro-title-hover) * 0.72px);
@@ -311,8 +311,8 @@
   --project-offset-y: 0px;
   --project-depth-z: 0px;
   --project-signal-opacity: 1;
-  --project-card-width: clamp(304px, 18.8vw, 384px);
-  --project-card-height: clamp(344px, 20.8vw, 396px);
+  --project-card-width: clamp(246px, 15vw, 304px);
+  --project-card-height: clamp(288px, 15.8vw, 304px);
   position: absolute;
   display: block;
   width: var(--project-card-width);
@@ -376,16 +376,16 @@
   z-index: 1;
   display: grid;
   grid-template-rows:
-    clamp(16px, 1.05vw, 20px)
-    clamp(46px, 3.25vw, 62px)
-    clamp(14px, 0.9vw, 18px)
-    clamp(92px, 5.7vw, 116px)
-    clamp(82px, 5vw, 98px)
-    clamp(32px, 2vw, 38px);
-  gap: clamp(8px, 0.62vw, 12px);
+    clamp(14px, 0.85vw, 17px)
+    clamp(38px, 2.6vw, 48px)
+    clamp(12px, 0.7vw, 15px)
+    clamp(74px, 4.65vw, 90px)
+    clamp(64px, 4.05vw, 78px)
+    clamp(28px, 1.75vw, 32px);
+  gap: clamp(6px, 0.45vw, 8px);
   height: var(--project-card-height);
   min-height: 0;
-  padding: clamp(18px, 1.22vw, 24px);
+  padding: clamp(14px, 0.95vw, 18px);
   overflow: hidden;
   clip-path: polygon(0 11px, 11px 0, calc(100% - 44px) 0, 100% 44px, 100% calc(100% - 11px), calc(100% - 11px) 100%, 44px 100%, 0 calc(100% - 44px));
   isolation: isolate;
@@ -623,8 +623,8 @@
   --project-panel-edge: rgba(190, 170, 126, 0.24);
   --project-offset-x: 0px;
   --project-offset-y: 0px;
-  top: clamp(116px, 13vh, 150px);
-  left: clamp(260px, 17vw, 360px);
+  top: clamp(104px, 12vh, 128px);
+  left: clamp(220px, 14vw, 320px);
 }
 
 .control-room__project--mmca {
@@ -633,8 +633,8 @@
   --project-panel-edge: rgba(185, 191, 204, 0.22);
   --project-offset-x: 0px;
   --project-offset-y: 0px;
-  top: calc(clamp(116px, 13vh, 150px) + var(--project-card-height) + clamp(14px, 1.8vh, 28px));
-  left: clamp(260px, 17vw, 360px);
+  top: calc(clamp(104px, 12vh, 128px) + var(--project-card-height) + clamp(18px, 2.4vh, 28px));
+  left: clamp(220px, 14vw, 320px);
 }
 
 .control-room__project--fandom {
@@ -643,8 +643,8 @@
   --project-panel-edge: rgba(191, 178, 222, 0.22);
   --project-offset-x: 0px;
   --project-offset-y: 0px;
-  top: clamp(116px, 13vh, 150px);
-  right: clamp(260px, 17vw, 360px);
+  top: clamp(104px, 12vh, 128px);
+  right: clamp(220px, 14vw, 320px);
 }
 
 .control-room__project--app {
@@ -653,8 +653,8 @@
   --project-panel-edge: rgba(158, 204, 214, 0.22);
   --project-offset-x: 0px;
   --project-offset-y: 0px;
-  top: calc(clamp(116px, 13vh, 150px) + var(--project-card-height) + clamp(14px, 1.8vh, 28px));
-  right: clamp(260px, 17vw, 360px);
+  top: calc(clamp(104px, 12vh, 128px) + var(--project-card-height) + clamp(18px, 2.4vh, 28px));
+  right: clamp(220px, 14vw, 320px);
 }
 
 .control-room__project--fandom::before,
@@ -4853,12 +4853,12 @@
 
 @media (max-height: 820px) and (min-width: 761px) {
   .control-room__intro {
-    bottom: clamp(28px, 5vh, 54px);
-    width: min(540px, 40vw);
+    bottom: clamp(18px, 3.2vh, 34px);
+    width: min(470px, 36vw);
   }
 
   .control-room__intro h1 {
-    font-size: clamp(42px, 5vw, 82px);
+    font-size: clamp(38px, 4.45vw, 74px);
   }
 
   .control-room__project {
@@ -4884,11 +4884,11 @@
   }
 
   .control-room__project--mmca {
-    top: 342px;
+    top: 320px;
   }
 
   .control-room__project--app {
-    top: 342px;
+    top: 320px;
   }
 }
 
